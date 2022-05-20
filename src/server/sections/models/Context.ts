@@ -1,4 +1,3 @@
-import * as app from '../..';
 import * as clv from 'class-validator';
 import * as clt from 'class-transformer';
 import {ContextXml} from './ContextXml';
@@ -21,7 +20,7 @@ export class Context {
   static async saveAsync(filePath: string, context: Context) {
     await clv.validateOrReject(context);  
     const contextXml = await getOrCreateAsync(filePath);
-    app.mergeProperties(context, contextXml);
+    contextXml.sections = context.sections;
     await fs.promises.mkdir(path.dirname(filePath), {recursive: true});
     await fs.promises.writeFile(filePath, contextXml.toString());
   }

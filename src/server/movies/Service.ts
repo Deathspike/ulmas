@@ -35,17 +35,16 @@ export class Service {
   private async fetchAsync(rootPath: string, forceUpdate: boolean) {
     return await this.cacheService.cacheAsync('movies', rootPath, forceUpdate, async () => {
       const context = await this.contextService
-        .contextAsync(rootPath)
-        .catch(() => new app.core.Context());
+        .contextAsync(rootPath);
       const rootMovies = await app.sequenceAsync(
         Object.entries(context.info).filter(([x]) => x !== 'movie.nfo'),
-        ([_, x]) => this.loadAsync(x, forceUpdate).catch(() => logger.warn(`Invalid movie: ${x}`)));
+        ([_, x]) => this.loadAsync(x.fullPath, forceUpdate).catch(() => logger.warn(`Invalid movie: ${x}`)));
       const subdirContexts = await app.sequenceAsync(
         Object.values(context.directories),
-        x => this.contextService.contextAsync(x));
+        x => this.contextService.contextAsync(x.fullPath));
       const subdirMovies = await app.sequenceAsync(
         subdirContexts.flatMap(x => Object.entries(x.info).filter(([x]) => x !== 'movie.nfo')),
-        ([_, x]) => this.loadAsync(x, forceUpdate).catch(() => logger.warn(`Invalid movie: ${x}`)));
+        ([_, x]) => this.loadAsync(x.fullPath, forceUpdate).catch(() => logger.warn(`Invalid movie: ${x}`)));
       return ensure(rootMovies.concat(subdirMovies)).map(x => x.path);
     });
   }
@@ -59,17 +58,19 @@ export class Service {
         .loadAsync(moviePath);
       const images = Object.entries(context.images)
         .filter(([x]) => x.startsWith(`${pathData.name}-`))
-        .map(([_, x]) => new Source(app.create(x, {type: 'image'})));
+        .map(([_, x]) => new Source({id: app.id(x.fullPath), path: x.fullPath, mtime: x.mtimeMs, type: 'image'}));
       const subtitles = Object.entries(context.subtitles)
         .filter(([x]) => x.startsWith(`${pathData.name}.`))
-        .map(([_, x]) => new Source(app.create(x, {type: 'subtitle'})));
+        .map(([_, x]) => new Source({id: app.id(x.fullPath), path: x.fullPath, mtime: x.mtimeMs, type: 'subtitle'}));
       const videos = Object.entries(context.videos)
         .filter(([x]) => x.startsWith(`${pathData.name}.`))
-        .map(([_, x]) => new Source(app.create(x, {type: 'video'})));
-      return new Movie(app.create(moviePath, {
+        .map(([_, x]) => new Source({id: app.id(x.fullPath), path: x.fullPath, mtime: x.mtimeMs, type: 'video'}));
+      return new Movie({
         ...movieInfo,
-        media: images.concat(subtitles, videos),
-      }));
+        id: app.id(moviePath),
+        path: moviePath,
+        media: images.concat(subtitles, videos)
+      });
     });
   }
 }

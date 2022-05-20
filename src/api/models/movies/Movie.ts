@@ -6,7 +6,6 @@ import * as swg from '@nestjs/swagger';
 export class Movie {
   constructor(source?: Movie) {
     this.id = source?.id ?? '';
-    this.path = source?.path ?? '';
     this.media = source?.media ?? [];
     this.plot = source?.plot ?? undefined;
     this.title = source?.title ?? '';
@@ -16,11 +15,6 @@ export class Movie {
   @clv.IsNotEmpty()
   @swg.ApiProperty()
   readonly id: string;
-
-  @clv.IsString()
-  @clv.IsNotEmpty()
-  @swg.ApiProperty()
-  readonly path: string;
 
   @clv.IsArray()
   @clv.ValidateNested({each: true})

@@ -37,14 +37,13 @@ export class Service {
   private async fetchAsync(rootPath: string, forceUpdate: boolean) {
     return await this.cacheService.cacheAsync('series', rootPath, forceUpdate, async () => {
       const context = await this.contextService
-        .contextAsync(rootPath)
-        .catch(() => new app.core.Context());
+        .contextAsync(rootPath);
       const subdirContexts = await app.sequenceAsync(
         Object.values(context.directories),
-        x => this.contextService.contextAsync(x));
+        x => this.contextService.contextAsync(x.fullPath));
       const subdirSeries = await app.sequenceAsync(
-        subdirContexts.map(x => x.info['tvshow.nfo']).filter(Boolean),
-        x => this.loadSeriesAsync(x, forceUpdate).catch(() => logger.warn(`Invalid series: ${x}`)));
+        ensure(subdirContexts.map(x => x.info['tvshow.nfo'])),
+        x => this.loadSeriesAsync(x.fullPath, forceUpdate).catch(() => logger.warn(`Invalid series: ${x}`)));
       return ensure(subdirSeries).map(x => x.path);
     });
   }
@@ -57,45 +56,49 @@ export class Service {
       const seriesInfo = await SeriesInfo
         .loadAsync(seriesPath);
       const images = Object.entries(context.images)
-        .filter(([x]) => !/-[a-z]+\./i.test(x))
-        .map(([_, x]) => new Source(app.create(x, {type: 'image'})));
+        .filter(([x]) => Object.keys(context.info).every(y => !x.startsWith(`${y.replace(/\.[^\.]*$/, '')}-`)))
+        .map(([_, x]) => new Source({id: app.id(x.fullPath), path: x.fullPath, mtime: x.mtimeMs, type: 'image'}));
       const rootEpisodes = await app.sequenceAsync(
         Object.entries(context.info).filter(([x]) => x !== 'tvshow.nfo'),
-        ([_, x]) => this.loadEpisodeAsync(context, x).catch(() => logger.warn(`Invalid episode: ${x}`)));
+        ([_, x]) => this.loadEpisodeAsync(context, x.fullPath).catch(() => logger.warn(`Invalid episode: ${x}`)));
       const subdirContexts = await app.sequenceAsync(
         Object.values(context.directories),
-        x => this.contextService.contextAsync(x));
+        x => this.contextService.contextAsync(x.fullPath));
       const subdirEpisodes = await app.sequenceAsync(
-        subdirContexts.flatMap(context => Object.values(context.info).map(path => ({context, path}))),
-        x => this.loadEpisodeAsync(x.context, x.path).catch(() => logger.warn(`Invalid episode: ${x.path}`)));
+        subdirContexts.flatMap(context => Object.values(context.info).map(x => ({...x, context}))),
+        x => this.loadEpisodeAsync(x.context, x.fullPath).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
       const episodes = ensure(rootEpisodes
         .concat(subdirEpisodes))
         .sort((a, b) => a.season !== b.season ? a.season - b.season : a.episode - b.episode);
-      return new Series(app.create(seriesPath, {
+      return new Series({
         ...seriesInfo,
+        id: app.id(seriesPath),
+        path: seriesPath,
         episodes: episodes,
         media: images
-      }));
+      });
     });
   }
   
-  private async loadEpisodeAsync(context: app.core.Context, episodePath: string) {
+  private async loadEpisodeAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, episodePath: string) {
     const {name} = path.parse(episodePath);
     const episodeInfo = await EpisodeInfo
       .loadAsync(episodePath);
     const images = Object.entries(context.images)
       .filter(([x]) => x.startsWith(`${name}-`))
-      .map(([_, x]) => new Source(app.create(x, {type: 'image'})));
+      .map(([_, x]) => new Source({id: app.id(x.fullPath), path: x.fullPath, mtime: x.mtimeMs, type: 'image'}));
     const subtitles = Object.entries(context.subtitles)
       .filter(([x]) => x.startsWith(`${name}.`))
-      .map(([_, x]) => new Source(app.create(x, {type: 'subtitle'})));
+      .map(([_, x]) => new Source({id: app.id(x.fullPath), path: x.fullPath, mtime: x.mtimeMs, type: 'subtitle'}));
     const videos = Object.entries(context.videos)
       .filter(([x]) => x.startsWith(`${name}.`))
-      .map(([_, x]) => new Source(app.create(x, {type: 'video'})));
-    return new Episode(app.create(episodePath, {
+      .map(([_, x]) => new Source({id: app.id(x.fullPath), path: x.fullPath, mtime: x.mtimeMs, type: 'video'}));
+    return new Episode({
       ...episodeInfo,
+      id: app.id(episodePath),
+      path: episodePath,
       media: images.concat(subtitles, videos)
-    }));
+    });
   }
 }
 

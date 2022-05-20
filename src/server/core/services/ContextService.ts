@@ -1,24 +1,31 @@
-import * as mod from '..';
+import * as app from '../..';
 import * as nst from '@nestjs/common';
+import {Context} from '../models/Context';
 import fs from 'fs';
 import path from 'path';
 
 @nst.Injectable()
 export class ContextService {
   async contextAsync(rootPath: string) {
-    const context = new mod.Context();
-    const entries = await fs.promises.readdir(rootPath, {withFileTypes: true});
-    entries.forEach(x => this.tryAdd(context, rootPath, x));
+    const context = new Context();
+    const entries = await fs.promises.readdir(rootPath).catch(() => []);
+    await app.sequenceAsync(entries, x => this.inspectAsync(context, rootPath, x));
     return context;
   }
   
-  private tryAdd(context: mod.Context, rootPath: string, value: fs.Dirent) {
-    const extname = path.extname(value.name);
-    const valuePath = path.join(rootPath, value.name);
-    if (value.isDirectory()) context.directories[value.name] = valuePath;
-    else if (/^\.(gif|jpg|png|webp)$/i.test(extname)) context.images[value.name] = valuePath;
-    else if (/^\.(nfo)$/i.test(extname)) context.info[value.name] = valuePath;
-    else if (/^\.(ass|srt|vtt)$/i.test(extname)) context.subtitles[value.name] = valuePath;
-    else if (/^\.(avi|mp4|mkv|ogm|webm)$/i.test(extname)) context.videos[value.name] = valuePath;
+  private async inspectAsync(context: Context, rootPath: string, name: string) {
+    const extname = path.extname(name);
+    const stats = await this.statAsync(rootPath, name);
+    if (stats.isDirectory()) context.directories[name] = stats;
+    else if (/^\.(gif|jpg|png|webp)$/i.test(extname)) context.images[name] = stats;
+    else if (/^\.(nfo)$/i.test(extname)) context.info[name] = stats;
+    else if (/^\.(ass|srt|vtt)$/i.test(extname)) context.subtitles[name] = stats;
+    else if (/^\.(avi|mp4|mkv|ogm|webm)$/i.test(extname)) context.videos[name] = stats;
+  }
+
+  private async statAsync(rootPath: string, name: string) {
+    const fullPath = path.join(rootPath, name);
+    const stats = await fs.promises.stat(fullPath);
+    return Object.assign(stats, {fullPath});
   }
 }

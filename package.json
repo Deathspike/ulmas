@@ -43,7 +43,7 @@
     "electron-builder": "23.0.3",    
     "rimraf": "3.0.2",
     "source-map-loader": "3.0.0",
-    "typescript": "4.3.5",
+    "typescript": "4.6.4",
     "webpack": "5.72.0",
     "webpack-cli": "4.9.2",
     "webpack-dev-server": "4.8.1"
@@ -53,7 +53,7 @@
     "electron:serve": "electron dist/electron/app.js",
     "prepare": "npm run repository:prune && npm run repository:build && npm run webpack:build",
     "repository:build": "tsc",
-    "repository:prune": "rimraf dist && rimraf public/ui.min.js",
+    "repository:prune": "rimraf dist && rimraf public/client.min.js",
     "webpack:build": "webpack build --config webpack.production.js",
     "webpack:serve": "webpack serve --config webpack.development.js"
   }

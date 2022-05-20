@@ -6,7 +6,6 @@ import * as swg from '@nestjs/swagger';
 export class Series {
   constructor(source?: Series) {
     this.id = source?.id ?? '';
-    this.path = source?.path ?? '';
     this.media = source?.media ?? [];
     this.episodes = source?.episodes ?? [];
     this.plot = source?.plot ?? undefined;
@@ -17,11 +16,6 @@ export class Series {
   @clv.IsNotEmpty()
   @swg.ApiProperty()
   readonly id: string;
-
-  @clv.IsString()
-  @clv.IsNotEmpty()
-  @swg.ApiProperty()
-  readonly path: string;
 
   @clv.IsArray()
   @clv.ValidateNested({each: true})

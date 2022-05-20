@@ -6,8 +6,8 @@ module.exports = Object.assign(common, {
   module: {
     rules: [{
       test: /\.js$/,
-      enforce: "pre",
-      use: ["source-map-loader"]
+      enforce: 'pre',
+      use: ['source-map-loader']
     }]
   }
 });
