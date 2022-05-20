@@ -1,6 +1,6 @@
 import * as api from '../..';
 import * as clv from 'class-validator';
-import * as nst from '@nestjs/swagger';
+import * as swg from '@nestjs/swagger';
 
 export class SectionPart {
   constructor(source?: SectionPart, sourcePatch?: Partial<SectionPart>) {
@@ -12,16 +12,16 @@ export class SectionPart {
   @clv.IsArray()
   @clv.IsString({each: true})
   @clv.IsNotEmpty({each: true})
-  @nst.ApiProperty()
+  @swg.ApiProperty()
   readonly paths: Array<string>;
   
   @clv.IsString()
   @clv.IsNotEmpty()
-  @nst.ApiProperty()
+  @swg.ApiProperty()
   readonly title: string;
 
   @clv.IsString()
   @clv.IsIn(['movies', 'series'])
-  @nst.ApiProperty({enum: ['movies', 'series']})
+  @swg.ApiProperty({enum: ['movies', 'series']})
   readonly type: string;
 }

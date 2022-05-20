@@ -1,5 +1,5 @@
 import * as app from '..';
-import * as nst from '../../nest';
+import * as nst from '@nestjs/common';
 import {Movie} from './models/Movie';
 import fs from 'fs';
 import path from 'path';

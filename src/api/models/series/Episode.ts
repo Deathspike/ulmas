@@ -1,6 +1,6 @@
 import * as api from '../..';
 import * as clv from 'class-validator';
-import * as nst from '@nestjs/swagger';
+import * as swg from '@nestjs/swagger';
 
 export class Episode {
   constructor(source?: Episode, sourcePatch?: Partial<Episode>) {
@@ -13,27 +13,27 @@ export class Episode {
   
   @clv.IsString()
   @clv.IsNotEmpty()
-  @nst.ApiProperty()
+  @swg.ApiProperty()
   readonly id: string;
 
   @clv.IsString()
   @clv.IsNotEmpty()
-  @nst.ApiProperty()
+  @swg.ApiProperty()
   readonly path: string;
 
   @clv.IsNumber()
   @clv.Min(1)
-  @nst.ApiProperty()
+  @swg.ApiProperty()
   readonly number: number;
 
   @clv.IsOptional()
   @clv.IsString()
   @clv.IsNotEmpty()
-  @nst.ApiPropertyOptional()
+  @swg.ApiPropertyOptional()
   readonly synopsis?: string;
 
   @clv.IsOptional()
   @clv.IsString()
-  @nst.ApiPropertyOptional()
+  @swg.ApiPropertyOptional()
   readonly title?: string;
 }

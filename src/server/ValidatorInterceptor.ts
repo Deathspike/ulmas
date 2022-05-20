@@ -1,6 +1,6 @@
 import * as clt from 'class-transformer';
 import * as clv from 'class-validator';
-import * as nst from '../nest';
+import * as nst from '@nestjs/common';
 import * as rxo from 'rxjs/operators';
 
 export class ValidatorInterceptor<T extends object> implements nst.NestInterceptor {

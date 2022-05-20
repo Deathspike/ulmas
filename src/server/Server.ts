@@ -1,5 +1,7 @@
 import * as app from '.';
-import * as nst from '../nest';
+import * as nst from '@nestjs/common';
+import * as swg from '@nestjs/swagger';
+import {NestFactory} from '@nestjs/core';
 import express from 'express';
 
 export class Server {
@@ -8,7 +10,7 @@ export class Server {
 
   static async createAsync() {
     const options = {cors: true};
-    const server = await nst.NestFactory.create(app.ServerModule, options);
+    const server = await NestFactory.create(app.ServerModule, options);
     return new Server(server);
   }
 
@@ -30,7 +32,7 @@ export class Server {
 
   private attachSwagger() {
     const packageData = require('../../package');
-    const builder = new nst.DocumentBuilder().setDescription(packageData.description).setTitle(packageData.name).setVersion(packageData.version);
-    nst.SwaggerModule.setup('api', this.server, nst.SwaggerModule.createDocument(this.server, builder.build()));
+    const builder = new swg.DocumentBuilder().setDescription(packageData.description).setTitle(packageData.name).setVersion(packageData.version);
+    swg.SwaggerModule.setup('api', this.server, swg.SwaggerModule.createDocument(this.server, builder.build()));
   }
 }

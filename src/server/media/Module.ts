@@ -1,5 +1,5 @@
 import * as mod from '.';
-import * as nst from '../../nest';
+import * as nst from '@nestjs/common';
 
 @nst.Module({
   providers: [mod.Service],

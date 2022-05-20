@@ -1,6 +1,6 @@
 import * as api from '../..';
 import * as clv from 'class-validator';
-import * as nst from '@nestjs/swagger';
+import * as swg from '@nestjs/swagger';
 
 export class Movie {
   constructor(source?: Movie, sourcePatch?: Partial<Movie>) {
@@ -10,11 +10,11 @@ export class Movie {
 
   @clv.IsString()
   @clv.IsNotEmpty()
-  @nst.ApiProperty()
+  @swg.ApiProperty()
   readonly sectionId: string;
 
   @clv.IsString()
   @clv.IsNotEmpty()
-  @nst.ApiProperty()
+  @swg.ApiProperty()
   readonly movieId: string;
 }

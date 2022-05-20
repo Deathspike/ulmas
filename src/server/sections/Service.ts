@@ -1,5 +1,5 @@
 import * as app from '..';
-import * as nst from '../../nest';
+import * as nst from '@nestjs/common';
 import {Context} from './models/Context';
 import path from 'path';
 import os from 'os';

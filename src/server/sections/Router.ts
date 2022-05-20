@@ -1,24 +1,25 @@
 import * as app from '..';
 import * as mod from '.';
-import * as nst from '../../nest';
+import * as nst from '@nestjs/common';
+import * as swg from '@nestjs/swagger';
 
 @nst.Controller('api/sections')
-@nst.ApiTags('sections')
+@swg.ApiTags('sections')
 export class Router {
   constructor(
     private readonly sectionsService: mod.Service) {}
 
   @app.Validator([app.api.models.Section])
   @nst.Get()
-  @nst.ApiResponse({status: 200, type: [app.api.models.Section]})
+  @swg.ApiResponse({status: 200, type: [app.api.models.Section]})
   async sectionListAsync() {
     return await this.sectionsService.sectionListAsync();
   }
 
   @app.Validator(app.api.models.Section)
   @nst.Get(':sectionId')
-  @nst.ApiResponse({status: 200, type: app.api.models.Section})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 200, type: app.api.models.Section})
+  @swg.ApiResponse({status: 404})
   async sectionDetailAsync(
     @nst.Param() params: app.api.params.Section) {
     const sectionList = await this.sectionListAsync();
@@ -28,8 +29,8 @@ export class Router {
   }
 
   @nst.Post()
-  @nst.ApiResponse({status: 201})
-  @nst.ApiResponse({status: 409})
+  @swg.ApiResponse({status: 201})
+  @swg.ApiResponse({status: 409})
   async createAsync(
     @nst.Body() model: app.api.models.SectionPart) {
     const id = app.createId(model.title);
@@ -41,8 +42,8 @@ export class Router {
 
   @nst.Delete(':sectionId')
   @nst.HttpCode(204)
-  @nst.ApiResponse({status: 204})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 204})
+  @swg.ApiResponse({status: 404})
   async deleteAsync(
     @nst.Param() params: app.api.params.Section) {
     const section = await this.sectionDetailAsync(params);
@@ -51,8 +52,8 @@ export class Router {
   
   @nst.Put(':sectionId')
   @nst.HttpCode(204)
-  @nst.ApiResponse({status: 204})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 204})
+  @swg.ApiResponse({status: 404})
   async updateAsync(
     @nst.Param() params: app.api.params.Section,
     @nst.Body() model: app.api.models.SectionPart) {

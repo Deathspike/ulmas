@@ -1,6 +1,6 @@
 import * as api from '../..';
 import * as clv from 'class-validator';
-import * as nst from '@nestjs/swagger';
+import * as swg from '@nestjs/swagger';
 
 export class Section {
   constructor(source?: Section, sourcePatch?: Partial<Section>) {
@@ -9,6 +9,6 @@ export class Section {
 
   @clv.IsString()
   @clv.IsNotEmpty()
-  @nst.ApiProperty()
+  @swg.ApiProperty()
   readonly sectionId: string;
 }

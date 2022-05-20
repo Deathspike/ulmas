@@ -1,10 +1,11 @@
 import * as app from '..';
 import * as mod from '.';
-import * as nst from '../../nest';
+import * as nst from '@nestjs/common';
+import * as swg from '@nestjs/swagger';
 import express from 'express';
 
 @nst.Controller('api/movies')
-@nst.ApiTags('movies')
+@swg.ApiTags('movies')
 export class Router {
   constructor(
     private readonly mediaService: app.media.Service,
@@ -13,8 +14,8 @@ export class Router {
 
   @app.Validator([app.api.models.ItemOfMovies])
   @nst.Get(':sectionId')
-  @nst.ApiResponse({status: 200, type: [app.api.models.ItemOfMovies]})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 200, type: [app.api.models.ItemOfMovies]})
+  @swg.ApiResponse({status: 404})
   async movieListAsync(
     @nst.Param() params: app.api.params.Section) {
     const sectionList = await this.sectionsService.sectionListAsync();
@@ -25,8 +26,8 @@ export class Router {
 
   @app.Validator(app.api.models.Movie)
   @nst.Get(':sectionId/:movieId')
-  @nst.ApiResponse({status: 200, type: app.api.models.Movie})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 200, type: app.api.models.Movie})
+  @swg.ApiResponse({status: 404})
   async movieDetailAsync(
     @nst.Param() params: app.api.params.Movie) {
     const movieList = await this.movieListAsync(params);
@@ -36,8 +37,8 @@ export class Router {
   }
 
   @nst.Get(':sectionId/:movieId/image')
-  @nst.ApiResponse({status: 200})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 200})
+  @swg.ApiResponse({status: 404})
   async movieImageAsync(
     @nst.Param() params: app.api.params.Movie,
     @nst.Query() query: app.api.queries.Image,
@@ -50,8 +51,8 @@ export class Router {
   }
 
   @nst.Get(':sectionId/:movieId/video')
-  @nst.ApiResponse({status: 200})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 200})
+  @swg.ApiResponse({status: 404})
   async movieVideoAsync(
     @nst.Param() params: app.api.params.Movie,
     @nst.Response() response: express.Response) {

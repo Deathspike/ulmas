@@ -1,4 +1,4 @@
-import * as nst from '../../nest';
+import * as nst from '@nestjs/common';
 import fs from 'fs';
 
 @nst.Injectable()

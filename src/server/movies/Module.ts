@@ -1,6 +1,6 @@
 import * as app from '..';
 import * as mod from '.';
-import * as nst from '../../nest';
+import * as nst from '@nestjs/common';
 
 @nst.Module({
   imports: [app.media.Module, app.sections.Module],

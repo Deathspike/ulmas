@@ -1,11 +1,12 @@
 import * as app from '..';
 import * as mod from '.';
-import * as nst from '../../nest';
+import * as nst from '@nestjs/common';
+import * as swg from '@nestjs/swagger';
 import express from 'express';
 import path from 'path';
 
 @nst.Controller('api/series')
-@nst.ApiTags('series')
+@swg.ApiTags('series')
 export class Router {
   constructor(
     private readonly mediaService: app.media.Service,
@@ -14,8 +15,8 @@ export class Router {
 
   @app.Validator([app.api.models.ItemOfSeries])
   @nst.Get(':sectionId')
-  @nst.ApiResponse({status: 200, type: [app.api.models.ItemOfSeries]})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 200, type: [app.api.models.ItemOfSeries]})
+  @swg.ApiResponse({status: 404})
   async seriesListAsync(
     @nst.Param() params: app.api.params.Section) {
     const sectionList = await this.sectionsService.sectionListAsync();
@@ -26,8 +27,8 @@ export class Router {
 
   @app.Validator(app.api.models.Series)
   @nst.Get(':sectionId/:seriesId')
-  @nst.ApiResponse({status: 200, type: app.api.models.Series})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 200, type: app.api.models.Series})
+  @swg.ApiResponse({status: 404})
   async seriesDetailAsync(
     @nst.Param() params: app.api.params.Series) {
     const seriesList = await this.seriesListAsync(params);
@@ -37,8 +38,8 @@ export class Router {
   }
 
   @nst.Get(':sectionId/:seriesId/image')
-  @nst.ApiResponse({status: 200})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 200})
+  @swg.ApiResponse({status: 404})
   async seriesImageAsync(
     @nst.Param() params: app.api.params.Series,
     @nst.Query() query: app.api.queries.Image,
@@ -52,8 +53,8 @@ export class Router {
 
   @app.Validator(app.api.models.Episode)
   @nst.Get(':sectionId/:seriesId/:episodeId')
-  @nst.ApiResponse({status: 200, type: app.api.models.Episode})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 200, type: app.api.models.Episode})
+  @swg.ApiResponse({status: 404})
   async episodeDetailAsync(
     @nst.Param() params: app.api.params.Episode) {
     const series = await this.seriesDetailAsync(params);
@@ -63,8 +64,8 @@ export class Router {
   }
 
   @nst.Get(':sectionId/:seriesId/:episodeId/image')
-  @nst.ApiResponse({status: 200})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 200})
+  @swg.ApiResponse({status: 404})
   async episodeImageAsync(
     @nst.Param() params: app.api.params.Episode,
     @nst.Query() query: app.api.queries.Image,
@@ -77,8 +78,8 @@ export class Router {
   }
    
   @nst.Get(':sectionId/:seriesId/:episodeId/video')
-  @nst.ApiResponse({status: 200})
-  @nst.ApiResponse({status: 404})
+  @swg.ApiResponse({status: 200})
+  @swg.ApiResponse({status: 404})
   async episodeVideoAsync(
     @nst.Param() params: app.api.params.Episode,
     @nst.Response() response: express.Response) {

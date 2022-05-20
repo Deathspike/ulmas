@@ -1,5 +1,5 @@
 import * as app from '..';
-import * as nst from '../../nest';
+import * as nst from '@nestjs/common';
 import {Episode} from './models/Episode';
 import {Series} from './models/Series';
 import fs from 'fs';

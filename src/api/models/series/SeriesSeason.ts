@@ -2,7 +2,7 @@ import * as api from '../..';
 import * as clv from 'class-validator';
 import * as clt from 'class-transformer';
 import * as mod from '..';
-import * as nst from '@nestjs/swagger';
+import * as swg from '@nestjs/swagger';
 
 export class SeriesSeason {
   constructor(source?: SeriesSeason, sourcePatch?: Partial<SeriesSeason>) {
@@ -15,27 +15,27 @@ export class SeriesSeason {
   
   @clv.IsString()
   @clv.IsNotEmpty()
-  @nst.ApiProperty()
+  @swg.ApiProperty()
   readonly id: string;
 
   @clv.IsString()
   @clv.IsNotEmpty()
-  @nst.ApiProperty()
+  @swg.ApiProperty()
   readonly path: string;
 
   @clv.IsArray()
   @clv.ValidateNested({each: true})
   @clt.Type(() => mod.SeriesSeasonEpisode)
-  @nst.ApiProperty({type: [mod.SeriesSeasonEpisode]})
+  @swg.ApiProperty({type: [mod.SeriesSeasonEpisode]})
   readonly episodes: Array<mod.SeriesSeasonEpisode>;
 
   @clv.IsNumber()
   @clv.Min(0)
-  @nst.ApiProperty()
+  @swg.ApiProperty()
   readonly number: number;
 
   @clv.IsString()
   @clv.IsNotEmpty()
-  @nst.ApiProperty()
+  @swg.ApiProperty()
   readonly title: string;
 }
