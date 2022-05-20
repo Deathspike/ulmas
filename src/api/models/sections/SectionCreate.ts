@@ -1,8 +1,8 @@
 import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
 
-export class SectionPart {
-  constructor(source?: SectionPart) {
+export class SectionCreate {
+  constructor(source?: SectionCreate) {
     this.paths = source?.paths ?? [];
     this.title = source?.title ?? '';
     this.type = source?.type ?? '';

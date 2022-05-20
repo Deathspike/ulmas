@@ -30,7 +30,7 @@ export class Server {
   }
 
   private attachRequestValidation() {
-    const options = {forbidNonWhitelisted: true, forbidUnknownValues: true, transform: true};
+    const options = {forbidNonWhitelisted: true, forbidUnknownValues: true, transform: true, whitelist: true};
     this.server.useGlobalPipes(new nst.ValidationPipe(options));
   }
 
