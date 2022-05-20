@@ -71,8 +71,10 @@ export class Service {
     const {name} = path.parse(moviePath);
     const movieInfo = await MovieInfo
       .loadAsync(moviePath);
+    const hasPrivateRoot = Object.values(context.info)
+      .every(x => x.fullPath === moviePath);
     const images = Object.entries(context.images)
-      .filter(([x]) => x.startsWith(`${name}-`))
+      .filter(([x]) => x.startsWith(`${name}-`) || hasPrivateRoot)
       .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
     const subtitles = Object.entries(context.subtitles)
       .filter(([x]) => x.startsWith(`${name}.`))
