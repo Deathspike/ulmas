@@ -21,7 +21,7 @@ async function fileAsync(resourcePath: string, extensions: Array<string>) {
   const resource = path.parse(resourcePath);
   return await Promise.all(extensions.map(async (extension) => {
     const filePath = path.join(resource.dir, resource.name + extension);
-    const stat = await fs.promises.stat(filePath).catch(() => undefined);
-    return stat && filePath;
+    const invalid = await fs.promises.access(filePath).catch(() => true);
+    return !invalid && filePath;
   }));
 }
