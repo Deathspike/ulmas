@@ -10,6 +10,7 @@ export class MainViewModel {
 
   constructor(
     private readonly apiService: core.ApiService,
+    private readonly mediaService: core.MediaService,
     private readonly routeService: core.RouteService) {
     mobx.makeObservable(this);
   }
@@ -33,7 +34,7 @@ export class MainViewModel {
     return this.seriesSource
       ?.slice()
       ?.sort((a, b) => a.dateEpisodeAdded && b.dateEpisodeAdded ? b.dateEpisodeAdded.localeCompare(a.dateEpisodeAdded) : 0)
-      ?.map(x => new app.SeriesViewModel(x));
+      ?.map(x => new app.SeriesViewModel(x.id, this.mediaService.seriesImageUrl(x, 'poster'), x.title));
   }
   
   @mobx.computed

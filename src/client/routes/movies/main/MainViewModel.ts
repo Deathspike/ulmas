@@ -33,7 +33,7 @@ export class MainViewModel {
     return this.moviesSource
       ?.slice()
       ?.sort((a, b) => b.dateAdded.localeCompare(a.dateAdded))
-      ?.map(x => new app.MovieViewModel(x));
+      ?.map(x => new app.MovieViewModel(x.id, x.title));
   }
   
   @mobx.computed

@@ -11,6 +11,7 @@ export class MainViewModel {
 
   constructor(
     private readonly apiService: core.ApiService,
+    private readonly mediaService: core.MediaService,
     private readonly routeService: core.RouteService) {
     mobx.makeObservable(this);
   }
@@ -34,11 +35,8 @@ export class MainViewModel {
 
   @mobx.computed
   get posterUrl() {
-    const image = this.source
-      ?.images
-      ?.find(x => /[\\/]poster\.[^\.]+$/i.test(x.path));
-    return image
-      ? this.apiService.series.mediaUrl(this.sectionId, this.seriesId, image.id)
+    return this.source
+      ? this.mediaService.seriesImageUrl(this.source, 'poster')
       : undefined;
   }
 

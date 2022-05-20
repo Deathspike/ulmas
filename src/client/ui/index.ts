@@ -4,3 +4,5 @@ export * from './router';
 export * from './common/icons';
 export * from './common/theme';
 export * from './views/HeaderView';
+export * from './views/ImageLinkView';
+export * from './views/ImageView';

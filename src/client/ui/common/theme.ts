@@ -31,9 +31,7 @@ export const theme = ui.material.createTheme({
     },
     MuiAppBar: {
       styleOverrides: {
-        colorPrimary: {
-          backgroundColor: '#333'
-        }
+        colorPrimary: {backgroundColor: '#333'}
       }
     },
     MuiToolbar: {

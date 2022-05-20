@@ -18,7 +18,7 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
       <ui.HeaderView title={this.props.vm.title}>
         {this.props.vm.movies?.map(x =>
           <ui.material.Grid key={x.id}>
-            <ReactLocation.Link to={x.url}>
+            <ReactLocation.Link to={x.id}>
               {x.title}
             </ReactLocation.Link>
           </ui.material.Grid>
