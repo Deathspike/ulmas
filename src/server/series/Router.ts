@@ -71,6 +71,7 @@ export class Router {
     @nst.Response() response: express.Response) {
     const media = await this.findAsync(params).catch(() => {});
     if (!media) throw new nst.NotFoundException();
+    response.attachment(media.path);
     response.set('Cache-Control', 'max-age=31536000');
     response.sendFile(media.path, () => response.status(404).end());
   }
