@@ -1,39 +1,30 @@
 import * as clv from 'class-validator';
 import * as clt from 'class-transformer';
-import {ContextXml} from './ContextXml';
 import {Section} from './Section';
 import fs from 'fs';
 import path from 'path';
 
 export class Context {
-  constructor(contextXml?: Context) {
-    this.sections = contextXml?.sections.map(x => new Section(x)) ?? [];
+  constructor(sections?: Array<Section>) {
+    this.sections = sections?.map(x => new Section(x)) ?? [];
   }
   
   static async loadAsync(fullPath: string) {
-    const contextXml = await getOrCreateAsync(fullPath);
-    const context = new Context(contextXml);
+    const contextJson = await fs.promises.readFile(fullPath, 'utf-8').catch(() => '[]');
+    const context = new Context(JSON.parse(contextJson));
     await clv.validateOrReject(context);
     return context;
   }
 
   static async saveAsync(fullPath: string, context: Context) {
     await clv.validateOrReject(context);  
-    const contextXml = await getOrCreateAsync(fullPath);
-    contextXml.sections = context.sections;
     await fs.promises.mkdir(path.dirname(fullPath), {recursive: true});
-    await fs.promises.writeFile(fullPath, contextXml.toString());
+    await fs.promises.writeFile(`${fullPath}.tmp`, JSON.stringify(context.sections, null, 2));
+    await fs.promises.rename(`${fullPath}.tmp`, fullPath);
   }
 
   @clv.IsArray()
-  @clv.ArrayNotEmpty()
   @clv.ValidateNested({each: true})
   @clt.Type(() => Section)
   readonly sections: Array<Section>;
-}
-
-async function getOrCreateAsync(fullPath: string) {
-  return await fs.promises.readFile(fullPath)
-    .then(ContextXml.parseAsync)
-    .catch(() => new ContextXml());
 }

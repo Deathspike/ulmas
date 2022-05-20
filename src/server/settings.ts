@@ -10,7 +10,7 @@ const app = {
 
 const paths = {
   cache: path.join(os.homedir(), packageData.name, packageData.version),
-  sections: path.join(os.homedir(), packageData.name, 'sections.xml')
+  sections: path.join(os.homedir(), packageData.name, 'sections.json')
 };
 
 export const settings = {app, paths};

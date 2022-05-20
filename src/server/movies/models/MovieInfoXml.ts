@@ -1,30 +1,20 @@
-import xml2js from 'xml2js';
+import * as cheerio from 'cheerio';
 
 export class MovieInfoXml {
   private constructor(
-    private readonly value: ParsedXml = {}) {}
+    private readonly value: cheerio.Cheerio<cheerio.Element>) {}
 
   static async parseAsync(xml: string) {
-    const value = await xml2js.parseStringPromise(xml);
+    const $ = cheerio.load(xml, {xml: true});
+    const value = $('movie');
     return new MovieInfoXml(value);
   }
 
   get plot() {
-    return this.value.movie
-      ?.plot
-      ?.find(Boolean);
+    return this.value.find('plot').text() || undefined;
   }
-
+  
   get title() {
-    return this.value.movie
-      ?.title
-      ?.find(Boolean) ?? '';
+    return this.value.find('title').text();
   }
 }
-
-type ParsedXml = {
-  movie?: {
-    plot?: Array<string>;
-    title?: Array<string>;
-  }
-};
