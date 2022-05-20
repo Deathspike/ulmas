@@ -16,7 +16,7 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
     return (
       <ui.HeaderView title={this.props.vm.title}>
         <ui.material.Paper sx={styles.seriesContainer} square>
-          {this.props.vm.series?.map(x => <app.SeriesView key={x.id} vm={x} />)}
+          {this.props.vm.pages?.map((x, i) => <app.PageView key={i} vm={x} />)}
         </ui.material.Paper>
       </ui.HeaderView>
     );
@@ -25,11 +25,6 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
 
 const styles = {
   seriesContainer: {
-    display: 'grid',
-    gridGap: '1vw 2vw',
-    gridTemplateColumns: 'repeat(auto-fill, calc((100% - 10vw) / 6))',
-    justifyContent: 'center',
-    padding: '1vw 2vw',
-    width: '100%'
+    padding: '1vw 2vw'
   }
 };

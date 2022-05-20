@@ -4,7 +4,7 @@ import * as ui from '..';
 
 export function HeaderView(props: React.PropsWithChildren<{title?: string}>) {
   return (
-    <mui.Grid>
+    <React.Fragment>
       <mui.AppBar>
         <mui.Toolbar>
           <mui.IconButton sx={styles.toolBarButton} onClick={() => history.back()}>
@@ -17,10 +17,10 @@ export function HeaderView(props: React.PropsWithChildren<{title?: string}>) {
           </mui.Grid>
         </mui.Toolbar>
       </mui.AppBar>
-      {props.children && <mui.Grid sx={styles.children}>
+      <mui.Grid sx={styles.children}>
         {props.children}
-      </mui.Grid>}
-    </mui.Grid>
+      </mui.Grid>
+    </React.Fragment>
   );
 }
 

@@ -6,8 +6,9 @@ import * as ui from 'client/ui';
 export function SeriesView(props: {vm: app.SeriesViewModel}) {
   const navigate = ReactLocation.useNavigate();
   return (
-    <ui.ImageLinkView height="20vw" onClick={() => navigate({to: props.vm.id})}
+    <ui.ImageLinkView imageHeight="20vw" titleHeight="3vw"
       imageUrl={props.vm.posterUrl}
-      title={props.vm.title} />
+      title={props.vm.title} 
+      onClick={() => navigate({to: props.vm.id})} />
   );
 }

@@ -1,15 +1,15 @@
 import * as React from 'react';
 import * as ui from 'client/ui';
 
-export function ImageLinkView(props: {height: string, imageUrl?: string, title: string, onClick: () => void}) {
+export function ImageLinkView(props: {imageHeight: string, imageUrl?: string, title: string, titleHeight: string, onClick: () => void}) {
   return (
-    <ui.material.Grid sx={styles.sourceContainer} onClick={props.onClick}>
-      <ui.material.Grid sx={styles.paddingContainer} style={{height: props.height}}>
+    <ui.material.Grid sx={styles.rootContainer} onClick={props.onClick}>
+      <ui.material.Grid sx={styles.paddingContainer} style={{height: props.imageHeight}}>
         <ui.material.Grid sx={styles.borderContainer}>
           <ui.ImageView imageUrl={props.imageUrl} />
         </ui.material.Grid>
       </ui.material.Grid>
-      <ui.material.Typography sx={styles.title}>
+      <ui.material.Typography sx={styles.title} style={{height: props.titleHeight}}>
         {props.title}
       </ui.material.Typography>
     </ui.material.Grid>
@@ -17,7 +17,7 @@ export function ImageLinkView(props: {height: string, imageUrl?: string, title: 
 }
 
 const styles = {
-  sourceContainer: {
+  rootContainer: {
     cursor: 'pointer',
     '&:hover > *': {padding: 0},
     '&:hover > * > *': {borderColor: 'primary.main'}
