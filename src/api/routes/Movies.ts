@@ -9,17 +9,17 @@ export class Movies {
     return await api.ServerResponse.emptyAsync(this.baseUrl, {method});
   }
 
-  async listAsync(params: api.params.Section) {
-    const url = new URL(`${params.sectionId}`, this.baseUrl).toString();
+  async listAsync(sectionId: string) {
+    const url = new URL(`${sectionId}`, this.baseUrl).toString();
     return await api.ServerResponse.jsonAsync<Array<api.models.MovieListItem>>(url);
   }
 
-  async detailAsync(params: api.params.Resource) {
-    const url = new URL(`${params.sectionId}/${params.resourceId}`, this.baseUrl).toString();
+  async detailAsync(sectionId: string, resourceId: string) {
+    const url = new URL(`${sectionId}/${resourceId}`, this.baseUrl).toString();
     return await api.ServerResponse.jsonAsync<api.models.Movie>(url);
   }
 
-  mediaUrl(params: api.params.Media) {
-    return new URL(`${params.sectionId}/${params.resourceId}/${params.mediaId}`, this.baseUrl).toString();
+  mediaUrl(sectionId: string, resourceId: string, mediaId: string) {
+    return new URL(`${sectionId}/${resourceId}/${mediaId}`, this.baseUrl).toString();
   }
 }

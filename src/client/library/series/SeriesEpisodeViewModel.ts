@@ -12,9 +12,9 @@ export class SeriesEpisodeViewModel {
   @mobx.action
   async openAsync() {
     const subtitleUrls = this.episode.media.subtitles
-      .map(x => app.server.series.mediaUrl({sectionId: this.sectionId, resourceId: this.resourceId, mediaId: x.id}));
+      .map(x => app.server.series.mediaUrl(this.sectionId, this.resourceId, x.id));
     const videoUrl = this.episode.media.videos
-      .map(x => app.server.series.mediaUrl({sectionId: this.sectionId, resourceId: this.resourceId, mediaId: x.id}))
+      .map(x => app.server.series.mediaUrl(this.sectionId, this.resourceId, x.id))
       .find(Boolean);
     if (videoUrl) {
       const position = 0;

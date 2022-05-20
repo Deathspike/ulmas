@@ -5,7 +5,6 @@ import {Service} from './Service';
 import {mapSeriesListItem} from './maps/mapSeriesListItem';
 import {mapSeries} from './maps/mapSeries';
 import express from 'express';
-import inspector from 'inspector';
 const logger = new nst.Logger('Series');
 
 @nst.Controller('api/series')
@@ -65,7 +64,7 @@ export class Router {
   }
 
   onModuleInit() {
-    if (inspector.url()) return;
+    if (app.isDebugging()) return;
     this.checkAsync().catch(x => logger.error(x));
   }
 

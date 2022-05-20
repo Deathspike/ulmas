@@ -11,7 +11,7 @@ export class SectionViewModel {
   async refreshAsync() {
     const sectionList = await app.server.sections.readAsync();
     const section = sectionList.value?.find(x => x.id === this.sectionId);
-    const series = await app.server.series.listAsync({sectionId: this.sectionId});
+    const series = await app.server.series.listAsync(this.sectionId);
     if (section && series.value) {
       this.series = series.value.map(x => new app.SectionSeriesViewModel(x));
       this.title = section.title;

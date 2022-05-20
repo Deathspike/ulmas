@@ -8,7 +8,8 @@ let mainWindow: electron.BrowserWindow;
 function createMenu() {
   if (process.platform !== 'darwin') return;
   const launch = {click: createWindow, label: 'Launch'};
-  electron.Menu.setApplicationMenu(electron.Menu.buildFromTemplate([{label: '', submenu: [launch, {role: 'quit'}]}]));
+  const menu = electron.Menu.buildFromTemplate([{label: '', submenu: [launch, {role: 'quit'}]}]);
+  electron.Menu.setApplicationMenu(menu);
 }
 
 function createWindow() {
@@ -36,12 +37,9 @@ function onWebBeforeInputEvent(event: electron.Event, input: electron.Input) {
 }
 
 function onWindowClose() {
-  if (process.platform === 'darwin') {
-    stderrForwarder.unregister();
-    stdoutForwarder.unregister();
-  } else {
-    electron.app.quit();
-  }
+  if (process.platform !== 'darwin') electron.app.quit();
+  stderrForwarder.unregister();
+  stdoutForwarder.unregister();
 }
 
 function startApplication() {
