@@ -1,8 +1,10 @@
 import * as app from '..';
 import * as nst from '@nestjs/common';
-import {Movie} from './models/Movie';
+import {MovieCache} from './cache/MovieCache';
+import {SectionCache} from './cache/SectionCache';
+import {StreamCache} from './cache/StreamCache';
 import {MovieInfo} from './models/MovieInfo';
-import {Source} from './models/Source';
+import {StreamMap} from './models/StreamMap';
 import path from 'path';
 const logger = new nst.Logger('Movies');
 
@@ -12,69 +14,48 @@ export class Service {
     private readonly cacheService: app.core.CacheService,
     private readonly contextService: app.core.ContextService) {}
 
-  async listAsync(rootPaths: Array<string>) {
-    const moviePaths = await app.sequenceAsync(
-      rootPaths,
-      x => this.fetchAsync(x, false));
-    const movies = await app.sequenceAsync(
-      moviePaths.flatMap(x => x),
-      x => this.loadAsync(x, false));
-    movies.sort((a, b) => a.title.localeCompare(b.title));
-    return movies;
-  }
-  
-  async refreshAsync(rootPaths: Array<string>) {
-    await Promise.all(rootPaths.map(async (x) => {
-      const startTime = Date.now();
-      logger.verbose(`Checking ${x}`);
-      await this.fetchAsync(x, true);
-      logger.verbose(`Finished ${x} in ${Date.now() - startTime}ms`);
+  async checkAsync(sectionId: string, rootPaths: Array<string>) {
+    const purgeAsync = this.cacheService.createPurgeable(`movies.${sectionId}`);
+    const result: Array<app.api.models.MovieListItem> = [];
+    await Promise.all(rootPaths.map(async (rootPath) => {
+      for await (const {movie, streamMap} of this.rebuildAsync(rootPath)) {
+        await new MovieCache(sectionId, movie.id).saveAsync(movie);
+        await new StreamCache(sectionId, movie.id).saveAsync(streamMap);
+        result.push(new app.api.models.MovieListItem({...movie, images: movie.media.images}));
+      }
     }));
+    await new SectionCache(sectionId).saveAsync(result);
+    await purgeAsync();
   }
 
-  private async fetchAsync(rootPath: string, forceUpdate: boolean) {
-    return await this.cacheService.cacheAsync('movies', rootPath, forceUpdate, async () => {
-      const context = await this.contextService
-        .contextAsync(rootPath);
-      const rootMovies = await app.sequenceAsync(
-        Object.entries(context.info).filter(([x]) => x !== 'movie.nfo'),
-        ([_, x]) => this.loadAsync(x.fullPath, forceUpdate).catch(() => logger.warn(`Invalid movie: ${x}`)));
-      const subdirContexts = await app.sequenceAsync(
-        Object.values(context.directories),
-        x => this.contextService.contextAsync(x.fullPath));
-      const subdirMovies = await app.sequenceAsync(
-        subdirContexts.flatMap(x => Object.entries(x.info).filter(([x]) => x !== 'movie.nfo')),
-        ([_, x]) => this.loadAsync(x.fullPath, forceUpdate).catch(() => logger.warn(`Invalid movie: ${x}`)));
-      return ensure(rootMovies.concat(subdirMovies)).map(x => x.path);
+  private async *rebuildAsync(rootPath: string) {
+    const context = await this.contextService.contextAsync(rootPath);
+    for (const {fullPath} of Object.values(context.info)) {
+      const streamMap = new StreamMap();
+      const movie = await this
+        .rebuildMovieAsync(context, fullPath, streamMap)
+        .catch(() => logger.error(`Invalid movie: ${fullPath}`));
+      if (movie) yield {movie, streamMap};
+    }
+  }
+
+  private async rebuildMovieAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, moviePath: string, streamMap: StreamMap) {
+    const {name} = path.parse(moviePath);
+    const movieInfo = await MovieInfo
+      .loadAsync(moviePath);
+    const images = Object.entries(context.images)
+      .filter(([x]) => x.startsWith(`${name}-`))
+      .map(([x, y]) => streamMap.add(y.mtimeMs, x, y.fullPath));
+    const subtitles = Object.entries(context.subtitles)
+      .filter(([x]) => x.startsWith(`${name}.`))
+      .map(([x, y]) => streamMap.add(y.mtimeMs, x, y.fullPath));
+    const videos = Object.entries(context.videos)
+      .filter(([x]) => x.startsWith(`${name}.`))
+      .map(([x, y]) => streamMap.add(y.mtimeMs, x, y.fullPath));
+    return new app.api.models.Movie({
+      ...movieInfo,
+      id: app.id(moviePath),
+      media: new app.api.models.Media({images, subtitles, videos})
     });
   }
-
-  private async loadAsync(moviePath: string, forceUpdate: boolean) {
-    const pathData = path.parse(moviePath);
-    return await this.cacheService.cacheAsync('movies', moviePath, forceUpdate, async () => {
-      const context = await this.contextService
-        .contextAsync(pathData.dir);
-      const movieInfo = await MovieInfo
-        .loadAsync(moviePath);
-      const images = Object.entries(context.images)
-        .filter(([x]) => x.startsWith(`${pathData.name}-`))
-        .map(([_, x]) => new Source({id: app.id(x.fullPath), path: x.fullPath, mtime: x.mtimeMs, type: 'image'}));
-      const subtitles = Object.entries(context.subtitles)
-        .filter(([x]) => x.startsWith(`${pathData.name}.`))
-        .map(([_, x]) => new Source({id: app.id(x.fullPath), path: x.fullPath, mtime: x.mtimeMs, type: 'subtitle'}));
-      const videos = Object.entries(context.videos)
-        .filter(([x]) => x.startsWith(`${pathData.name}.`))
-        .map(([_, x]) => new Source({id: app.id(x.fullPath), path: x.fullPath, mtime: x.mtimeMs, type: 'video'}));
-      return new Movie({
-        ...movieInfo,
-        id: app.id(moviePath),
-        path: moviePath,
-        sources: images.concat(subtitles, videos)
-      });
-    });
-  }
-}
-
-function ensure<T>(items: Array<T | void>): Array<T> {
-  return items.filter(Boolean) as Array<T>;
 }

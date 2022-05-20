@@ -6,8 +6,7 @@ import {MediaFile} from '../MediaFile';
 export class MovieListItem {
   constructor(source?: MovieListItem) {
     this.id = source?.id ?? '';
-    this.images = source?.images ?? [];
-    this.plot = source?.plot;
+    this.images = source?.images;
     this.title = source?.title ?? '';
   }
   
@@ -16,17 +15,13 @@ export class MovieListItem {
   @swg.ApiProperty()
   readonly id: string;
 
+  @clv.IsOptional()
   @clv.IsArray()
+  @clv.ArrayNotEmpty()
   @clv.ValidateNested({each: true})
   @clt.Type(() => MediaFile)
-  @swg.ApiProperty({type: [MediaFile]})
-  readonly images: Array<MediaFile>;
-
-  @clv.IsOptional()
-  @clv.IsString()
-  @clv.IsNotEmpty()
-  @swg.ApiPropertyOptional()
-  readonly plot?: string;
+  @swg.ApiPropertyOptional({type: [MediaFile]})
+  readonly images?: Array<MediaFile>;
   
   @clv.IsString()
   @clv.IsNotEmpty()

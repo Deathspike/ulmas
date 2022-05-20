@@ -10,7 +10,7 @@ export class SeriesViewModel {
 
   @mobx.action
   async refreshAsync() {
-    const series = await app.server.series.detailAsync(this.sectionId, this.resourceId);
+    const series = await app.server.series.itemAsync(this.sectionId, this.resourceId);
     if (series.value) {
       this.source = series.value;
     } else if (series.statusCode === 404) {
@@ -27,7 +27,7 @@ export class SeriesViewModel {
 
   @mobx.computed
   get posterUrl() {
-    const poster = this.source?.images.find(x => /^poster\.[^\.]+$/i.test(x.name));
+    const poster = this.source?.images?.find(x => /^poster\.[^\.]+$/i.test(x.name));
     return poster && app.server.series.mediaUrl(this.sectionId, this.resourceId, poster.id);
   }
 

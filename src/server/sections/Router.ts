@@ -9,7 +9,6 @@ export class Router {
   constructor(
     private readonly sectionsService: Service) {}
 
-  @app.Validator([app.api.models.Section])
   @nst.Get()
   @swg.ApiResponse({status: 200, type: [app.api.models.Section]})
   async readAsync() {

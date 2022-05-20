@@ -4,17 +4,18 @@ export class Movies {
   constructor(
     private readonly baseUrl: string) {}
 
-  async checkAsync() {
+  async checkAsync(sectionId: string) {
     const method = 'PUT';
-    return await api.ServerResponse.emptyAsync(this.baseUrl, {method});
+    const url = new URL(`${sectionId}`, this.baseUrl).toString();
+    return await api.ServerResponse.emptyAsync(url, {method});
   }
 
-  async listAsync(sectionId: string) {
+  async everyAsync(sectionId: string) {
     const url = new URL(`${sectionId}`, this.baseUrl).toString();
     return await api.ServerResponse.jsonAsync<Array<api.models.MovieListItem>>(url);
   }
 
-  async detailAsync(sectionId: string, resourceId: string) {
+  async itemAsync(sectionId: string, resourceId: string) {
     const url = new URL(`${sectionId}/${resourceId}`, this.baseUrl).toString();
     return await api.ServerResponse.jsonAsync<api.models.Movie>(url);
   }

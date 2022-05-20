@@ -8,7 +8,7 @@ export class Series {
   constructor(source?: Series) {
     this.id = source?.id ?? '';
     this.episodes = source?.episodes ?? [];
-    this.images = source?.images ?? [];
+    this.images = source?.images;
     this.plot = source?.plot;
     this.title = source?.title ?? '';
   }
@@ -24,11 +24,13 @@ export class Series {
   @swg.ApiProperty({type: [SeriesEpisode]})
   readonly episodes: Array<SeriesEpisode>;
 
+  @clv.IsOptional()
   @clv.IsArray()
+  @clv.ArrayNotEmpty()
   @clv.ValidateNested({each: true})
   @clt.Type(() => MediaFile)
-  @swg.ApiProperty({type: [MediaFile]})
-  readonly images: Array<MediaFile>;
+  @swg.ApiPropertyOptional({type: [MediaFile]})
+  readonly images?: Array<MediaFile>;
 
   @clv.IsOptional()
   @clv.IsString()

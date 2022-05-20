@@ -1,6 +1,5 @@
-import * as app from '../..';
 import * as nst from '@nestjs/common';
-import {Context} from './Context';
+import {Context} from '../models/Context';
 import fs from 'fs';
 import path from 'path';
 
@@ -8,8 +7,8 @@ import path from 'path';
 export class ContextService {
   async contextAsync(rootPath: string) {
     const context = new Context();
-    const entries = await fs.promises.readdir(rootPath).catch(() => []);
-    await app.sequenceAsync(entries, x => this.inspectAsync(context, rootPath, x));
+    const items = await fs.promises.readdir(rootPath).catch(() => []);
+    for (const item of items) await this.inspectAsync(context, rootPath, item);
     return context;
   }
   

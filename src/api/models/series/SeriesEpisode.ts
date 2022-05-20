@@ -5,7 +5,6 @@ import {Media} from '../Media';
 
 export class SeriesEpisode {
   constructor(source?: SeriesEpisode) {
-    this.id = source?.id ?? '';
     this.media = source?.media ?? new Media();
     this.episode = source?.episode ?? NaN;
     this.plot = source?.plot;
@@ -13,11 +12,6 @@ export class SeriesEpisode {
     this.title = source?.title ?? '';
   }
   
-  @clv.IsString()
-  @clv.IsNotEmpty()
-  @swg.ApiProperty()
-  readonly id: string;
-
   @clv.IsObject()
   @clt.Type(() => Media)
   @swg.ApiProperty({type: [Media]})

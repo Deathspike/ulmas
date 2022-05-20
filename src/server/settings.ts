@@ -9,7 +9,7 @@ const app = {
 };
 
 const paths = {
-  cache: path.join(os.homedir(), packageData.name, 'cache'),
+  cache: path.join(os.homedir(), packageData.name, packageData.version),
   sections: path.join(os.homedir(), packageData.name, 'sections.xml')
 };
 

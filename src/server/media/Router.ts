@@ -7,7 +7,6 @@ import {LocalRequestFilter} from './filters/LocalRequestFilter';
 @nst.Controller('api/media')
 @swg.ApiTags('media')
 export class Router {
-  @app.Validator(app.api.models.MediaStatus)
   @nst.UseGuards(LocalRequestFilter)
   @nst.Post('mpv')
   @nst.HttpCode(200)
