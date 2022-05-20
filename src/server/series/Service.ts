@@ -26,12 +26,12 @@ export class Service {
   }
 
   async refreshAsync(rootPaths: Array<string>) {
-    await app.sequenceAsync(rootPaths, async (x) => {
+    await Promise.all(rootPaths.map(async (x) => {
       const startTime = Date.now();
       logger.verbose(`Checking ${x}`);
       await this.fetchAsync(x, true);
       logger.verbose(`Finished ${x} in ${Date.now() - startTime}ms`);
-    });
+    }));
   }
 
   private async fetchAsync(rootPath: string, forceUpdate: boolean) {
