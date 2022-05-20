@@ -1,6 +1,6 @@
 export * from './Media';
 export * from './MediaFile';
-export * from './MediaStatus';
+export * from './MediaResume';
 export * from './media/MediaRequest';
 export * from './movies/Movie';
 export * from './movies/MovieListItem';

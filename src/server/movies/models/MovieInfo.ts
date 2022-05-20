@@ -12,7 +12,7 @@ export class MovieInfo {
     this.lastPlayed = movieInfo?.lastPlayed;
     this.playCount = movieInfo?.playCount;
     this.plot = movieInfo?.plot;
-    this.resume = movieInfo?.resume && new app.api.models.MediaStatus(movieInfo.resume);
+    this.resume = movieInfo?.resume && new app.api.models.MediaResume(movieInfo.resume);
     this.watched = movieInfo?.watched;
   }
 
@@ -56,8 +56,8 @@ export class MovieInfo {
 
   @clv.IsOptional()
   @clv.ValidateNested()
-  @clt.Type(() => app.api.models.MediaStatus)
-  readonly resume?: app.api.models.MediaStatus;
+  @clt.Type(() => app.api.models.MediaResume)
+  readonly resume?: app.api.models.MediaResume;
 
   @clv.IsOptional()
   @clv.IsBoolean()

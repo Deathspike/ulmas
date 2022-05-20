@@ -1,8 +1,8 @@
 import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
 
-export class MediaStatus {
-  constructor(source?: MediaStatus) {
+export class MediaResume {
+  constructor(source?: MediaResume) {
     this.position = source?.position ?? NaN;
     this.total = source?.total ?? NaN;
   }

@@ -87,9 +87,9 @@ export class Service {
       id: app.id(seriesPath),
       path: seriesPath,
       images, episodes,
-      dateEpisodeAdded: this.refreshEpisodeAdded(episodes),
-      lastPlayed: this.refreshLastPlayed(episodes),
-      unwatchedCount: this.refreshUnwatchedCount(episodes)
+      dateEpisodeAdded: fetchEpisodeAdded(episodes),
+      lastPlayed: fetchLastPlayed(episodes),
+      unwatchedCount: fetchUnwatchedCount(episodes)
     });
   }
   
@@ -121,9 +121,9 @@ export class Service {
       .forEach(({x, i}) => series.episodes[i] = this.rebuildEpisode(series.episodes[i], x));
     return new app.api.models.Series({
       ...series,
-      dateEpisodeAdded: this.refreshEpisodeAdded(series.episodes),
-      lastPlayed: this.refreshLastPlayed(series.episodes),
-      unwatchedCount: this.refreshUnwatchedCount(series.episodes)
+      dateEpisodeAdded: fetchEpisodeAdded(series.episodes),
+      lastPlayed: fetchLastPlayed(series.episodes),
+      unwatchedCount: fetchUnwatchedCount(series.episodes)
     });
   }
 
@@ -132,26 +132,26 @@ export class Service {
     const playCount = episodePatch.watched ? (episode.playCount ?? 0) + 1 : episode.playCount;
     return new app.api.models.Episode({...episode, ...episodePatch, lastPlayed, playCount});
   }
-
-  private refreshEpisodeAdded(episodes: Array<app.api.models.Episode>) {
-    const datesAdded = ensure(episodes.map(x => x.dateAdded));
-    datesAdded.sort((a, b) => b.localeCompare(a));
-    return datesAdded.length ? datesAdded[0] : undefined;
-  }
-
-  private refreshLastPlayed(episodes: Array<app.api.models.Episode>) {
-    const lastPlayed = ensure(episodes.map(x => x.lastPlayed));
-    lastPlayed.sort((a, b) => b.localeCompare(a));
-    return lastPlayed.length ? lastPlayed[0] : undefined;
-  }
-
-  private refreshUnwatchedCount(episodes: Array<app.api.models.Episode>) {
-    let unwatchedEpisodes = 0;
-    for (const episode of episodes) if (!episode.watched) unwatchedEpisodes++;
-    return unwatchedEpisodes;
-  }
 }
 
 function ensure<T>(items: Array<T | undefined | void>): Array<T> {
   return items.filter(Boolean) as Array<T>;
+}
+
+function fetchEpisodeAdded(episodes: Array<app.api.models.Episode>) {
+  const datesAdded = ensure(episodes.map(x => x.dateAdded));
+  datesAdded.sort((a, b) => b.localeCompare(a));
+  return datesAdded.length ? datesAdded[0] : undefined;
+}
+
+function fetchLastPlayed(episodes: Array<app.api.models.Episode>) {
+  const lastPlayed = ensure(episodes.map(x => x.lastPlayed));
+  lastPlayed.sort((a, b) => b.localeCompare(a));
+  return lastPlayed.length ? lastPlayed[0] : undefined;
+}
+
+function fetchUnwatchedCount(episodes: Array<app.api.models.Episode>) {
+  let unwatchedCount = 0;
+  for (const episode of episodes) if (!episode.watched) unwatchedCount++;
+  return unwatchedCount;
 }

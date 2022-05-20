@@ -14,7 +14,7 @@ export class EpisodeInfo {
     this.lastPlayed = episodeInfo?.lastPlayed;
     this.playCount = episodeInfo?.playCount;
     this.plot = episodeInfo?.plot;
-    this.resume = episodeInfo?.resume && new app.api.models.MediaStatus(episodeInfo.resume);
+    this.resume = episodeInfo?.resume && new app.api.models.MediaResume(episodeInfo.resume);
     this.watched = episodeInfo?.watched;
   }
 
@@ -66,8 +66,8 @@ export class EpisodeInfo {
 
   @clv.IsOptional()
   @clv.ValidateNested()
-  @clt.Type(() => app.api.models.MediaStatus)
-  readonly resume?: app.api.models.MediaStatus;
+  @clt.Type(() => app.api.models.MediaResume)
+  readonly resume?: app.api.models.MediaResume;
 
   @clv.IsOptional()
   @clv.IsBoolean()

@@ -8,6 +8,6 @@ export class Media {
     const headers = {'Content-Type': 'application/json'};
     const method = 'POST';
     const url = `http://localhost:6877/api/media/mpv`;
-    return await api.ServerResponse.jsonAsync<api.models.MediaStatus>(url, {body, method, headers});
+    return await api.ServerResponse.jsonAsync<api.models.MediaResume>(url, {body, method, headers});
   }
 }

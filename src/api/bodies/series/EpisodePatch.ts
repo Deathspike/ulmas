@@ -1,7 +1,7 @@
 import * as clt from 'class-transformer';
 import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
-import {MediaStatus} from '../../models/MediaStatus';
+import {MediaResume} from '../../models/MediaResume';
 
 export class EpisodePatch {
   constructor(source?: EpisodePatch) {
@@ -17,9 +17,9 @@ export class EpisodePatch {
 
   @clv.IsOptional()
   @clv.ValidateNested()
-  @clt.Type(() => MediaStatus)
+  @clt.Type(() => MediaResume)
   @swg.ApiPropertyOptional()
-  readonly resume?: MediaStatus;
+  readonly resume?: MediaResume;
 
   @clv.IsOptional()
   @clv.IsBoolean()
