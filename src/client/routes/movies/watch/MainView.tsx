@@ -18,10 +18,9 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
 
   render() {
     return (
-      <ui.material.ThemeProvider theme={ui.theme}>
-        <ui.material.CssBaseline />
+      <ui.HeaderView title={this.props.vm.title}>
         {this.props.vm.title}
-      </ui.material.ThemeProvider>
+      </ui.HeaderView>
     );
   }
 }

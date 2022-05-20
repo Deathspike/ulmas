@@ -15,11 +15,7 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
 
   render() {
     return (
-      <ui.material.ThemeProvider theme={ui.theme}>
-        <ui.material.CssBaseline />
-        <ui.material.Grid>
-          {this.props.vm.title}
-        </ui.material.Grid>
+      <ui.HeaderView title={this.props.vm.title}>
         {this.props.vm.posterUrl
           ? <img src={this.props.vm.posterUrl} style={{maxWidth: 300}} />
           : undefined}
@@ -28,7 +24,7 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
             Watch Now
           </ReactLocation.Link>
         </ui.material.Grid>
-      </ui.material.ThemeProvider>
+      </ui.HeaderView>
     );
   }
 }

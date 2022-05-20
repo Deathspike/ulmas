@@ -15,11 +15,7 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
 
   render() {
     return (
-      <ui.material.ThemeProvider theme={ui.theme}>
-        <ui.material.CssBaseline />
-        <ui.material.Grid>
-          {this.props.vm.title}
-        </ui.material.Grid>
+      <ui.HeaderView title={this.props.vm.title}>
         {this.props.vm.movies?.map(x =>
           <ui.material.Grid key={x.id}>
             <ReactLocation.Link to={x.url}>
@@ -27,7 +23,7 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
             </ReactLocation.Link>
           </ui.material.Grid>
         )}
-      </ui.material.ThemeProvider>
+      </ui.HeaderView>
     );
   }
 }
