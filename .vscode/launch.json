@@ -1,0 +1,24 @@
+{
+  "version": "0.2.0",
+  "compounds": [{
+    "name": "Client & Server",
+    "configurations": ["Server", "Client"]
+  }],
+  "configurations": [{
+    "args": ["bin/dms"],
+    "name": "Server",
+    "outFiles": ["${workspaceFolder}/dist/**/*"],
+    "outputCapture": "std",
+    "preLaunchTask": "TypeScript",
+    "request": "launch",
+    "type": "node"
+  }, {
+    "name": "Client",
+    "outFiles": ["${workspaceFolder}/dist/**/*"],
+    "outputCapture": "std",
+    "preLaunchTask": "Webpack",
+    "request": "launch",
+    "type": "pwa-chrome",
+    "url": "http://localhost:8080/"
+  }]
+}

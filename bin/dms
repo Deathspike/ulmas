@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+const {join} = require('path');
+const {Server} = require(join(__dirname, '..'));
+Server.createAsync().then(x => x.runAsync());
