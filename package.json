@@ -53,10 +53,10 @@
   },
   "scripts": {
     "electron:build": "electron-builder",
-    "electron:serve": "electron dist/electron/app.js",
+    "electron:serve": "electron dist/shell/app.js",
     "prepare": "npm run repository:prune && npm run repository:build && npm run webpack:build",
     "repository:build": "tsc",
-    "repository:prune": "rimraf dist && rimraf public/client.min.js",
+    "repository:prune": "rimraf build && rimraf dist && rimraf public/client.min.js",
     "webpack:build": "webpack build --config webpack.production.js",
     "webpack:serve": "webpack serve --config webpack.development.js"
   }

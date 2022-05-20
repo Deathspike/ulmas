@@ -4,7 +4,7 @@
     "output": "build"
   },
   "extraMetadata": {
-    "main": "dist/electron/app.js"
+    "main": "dist/shell/app.js"
   },
   "files": [
     {"from": "", "to": "", "filter": ["dist/**/*"]},

@@ -7,7 +7,7 @@
     "presentation": {"order": 1}
   }],
   "configurations": [{
-    "args" : ["dist/electron/app.js"],
+    "args" : ["dist/shell/app.js"],
     "name": "Electron Main",
     "outFiles": ["${workspaceFolder}/dist/**/*.js"],
     "outputCapture": "std",
