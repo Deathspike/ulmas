@@ -16,9 +16,9 @@ function createWindow() {
     const isDebugging = electron.app.commandLine.hasSwitch('remote-debugging-port');
     mainWindow = new electron.BrowserWindow({fullscreen: !isDebugging, icon: 'electron-icon.png', show: false});
     mainWindow.removeMenu();
-    mainWindow.on('ready-to-show', onWindowReady);
-    mainWindow.webContents.on('before-input-event', onWebBeforeInputEvent);
+    mainWindow.on('ready-to-show', () => mainWindow.show());
     mainWindow.loadURL(`http://localhost:${isDebugging ? 8080 : 6877}/`);
+    mainWindow.webContents.on('before-input-event', onWebBeforeInputEvent);
     stderrForwarder.register(mainWindow.webContents);
     stdoutForwarder.register(mainWindow.webContents);
   } else if (mainWindow.isMinimized()) {
@@ -31,7 +31,7 @@ function createWindow() {
 
 function onWebBeforeInputEvent(event: electron.Event, input: electron.Input) {
   if (input.key !== 'F12') return;
-  mainWindow?.webContents.toggleDevTools();
+  mainWindow.webContents.toggleDevTools();
   event.preventDefault();
 }
 
@@ -42,11 +42,6 @@ function onWindowClose() {
   } else {
     electron.app.quit();
   }
-}
-
-function onWindowReady() {
-  if (!mainWindow) return;
-  mainWindow.show();
 }
 
 function startApplication() {

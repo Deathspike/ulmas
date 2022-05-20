@@ -2,7 +2,7 @@ import * as electron from 'electron';
 
 export class StreamForwarder {
   private readonly sendQueue: Array<string> = [];
-  private engine?: electron.WebContents;
+  private renderer?: electron.WebContents;
   private sendPromise = Promise.resolve();
 
   private constructor(
@@ -23,13 +23,13 @@ export class StreamForwarder {
     };
   }
 
-  register(engine: electron.WebContents) {
-    this.engine = engine;
+  register(renderer: electron.WebContents) {
+    this.renderer = renderer;
     this.flush();
   }
 
   unregister() {
-    delete this.engine;
+    delete this.renderer;
   }
 
   private flush() {
@@ -41,8 +41,8 @@ export class StreamForwarder {
   }
 
   private send(value: string) {
-    this.sendPromise = this.sendPromise.then(() => this.engine
-      ? this.engine.executeJavaScript(`setTimeout(() => console.log(${JSON.stringify(value.trim())}))`)
+    this.sendPromise = this.sendPromise.then(() => this.renderer
+      ? this.renderer.executeJavaScript(`console.log(${JSON.stringify(value.trim())})`)
       : this.sendQueue.push(value));
   }
 }
