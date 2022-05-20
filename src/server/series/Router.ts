@@ -77,8 +77,8 @@ export class Router {
 
   private async findAsync(params: app.api.params.Media) {
     const series = await new SeriesCache(params.sectionId, params.resourceId).loadAsync();
-    for (const media of mediaOf(series)) if (media.id === params.mediaId) return media;
-    return undefined;
+    const media = Array.from(mediaOf(series));
+    return media.find(x => x.id === params.mediaId);
   }
 }
 
