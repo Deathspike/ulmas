@@ -3,7 +3,6 @@ import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
 import {SectionCache} from './cache/SectionCache';
 import {MovieCache} from './cache/MovieCache';
-import {StreamCache} from './cache/StreamCache';
 import {Service} from './Service';
 import express from 'express';
 import fs from 'fs';
@@ -56,18 +55,22 @@ export class Router {
   @swg.ApiResponse({status: 404})
   async mediaAsync(
     @nst.Param() params: app.api.params.Media,
-    @nst.Request() request: express.Request,
     @nst.Response() response: express.Response) {
-    const media = await this.findAsync(params);
+    const media = await this.findAsync(params).catch(() => {});
     if (!media) throw new nst.NotFoundException();
-    const mtime = Date.parse(request.headers['if-modified-since'] ?? '');
-    if (mtime >= media.mtime) throw new nst.HttpException(media.path, 304);
+    response.set('Cache-Control', 'max-age=31536000');
     response.sendFile(media.path, () => response.status(404).end());
   }
 
   private async findAsync(params: app.api.params.Media) {
-    return await new StreamCache(params.sectionId, params.resourceId)
-      .loadAsync().then(x => x.get(params.mediaId))
-      .catch(() => {});
+    const movie = await new MovieCache(params.sectionId, params.resourceId).loadAsync();
+    for (const media of mediaOf(movie)) if (media.id === params.mediaId) return media;
+    return undefined;
   }
+}
+
+function *mediaOf(movie: app.api.models.Movie) {
+  if (movie.media.images) yield *movie.media.images;
+  if (movie.media.subtitles) yield *movie.media.subtitles;
+  if (movie.media.videos) yield *movie.media.videos;
 }

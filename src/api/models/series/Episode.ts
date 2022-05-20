@@ -4,8 +4,8 @@ import * as swg from '@nestjs/swagger';
 import {Media} from '../Media';
 import {MediaStatus} from '../MediaStatus';
 
-export class SeriesEpisode {
-  constructor(source?: SeriesEpisode) {
+export class Episode {
+  constructor(source?: Episode) {
     this.media = source?.media ?? new Media();
     this.episode = source?.episode ?? NaN;
     this.season = source?.season ?? NaN;

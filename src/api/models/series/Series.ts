@@ -1,7 +1,7 @@
 import * as clt from 'class-transformer';
 import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
-import {SeriesEpisode} from './SeriesEpisode';
+import {Episode} from './Episode';
 import {MediaFile} from '../MediaFile';
 
 export class Series {
@@ -24,9 +24,9 @@ export class Series {
 
   @clv.IsArray()
   @clv.ValidateNested({each: true})
-  @clt.Type(() => SeriesEpisode)
-  @swg.ApiProperty({type: [SeriesEpisode]})
-  readonly episodes: Array<SeriesEpisode>;
+  @clt.Type(() => Episode)
+  @swg.ApiProperty({type: [Episode]})
+  readonly episodes: Array<Episode>;
 
   @clv.IsOptional()
   @clv.IsArray()

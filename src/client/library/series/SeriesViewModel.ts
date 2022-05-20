@@ -27,7 +27,7 @@ export class SeriesViewModel {
 
   @mobx.computed
   get posterUrl() {
-    const poster = this.source?.images?.find(x => /^poster\.[^\.]+$/i.test(x.name));
+    const poster = this.source?.images?.find(x => /[\\/]poster\.[^\.]+$/i.test(x.path));
     return poster && app.server.series.mediaUrl(this.sectionId, this.resourceId, poster.id);
   }
 

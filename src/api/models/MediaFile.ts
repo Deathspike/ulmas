@@ -4,7 +4,7 @@ import * as swg from '@nestjs/swagger';
 export class MediaFile {
   constructor(source?: MediaFile) {
     this.id = source?.id ?? '';
-    this.name = source?.name ?? '';
+    this.path = source?.path ?? '';
   }
   
   @clv.IsString()
@@ -15,5 +15,5 @@ export class MediaFile {
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()
-  readonly name: string;
+  readonly path: string;
 }
