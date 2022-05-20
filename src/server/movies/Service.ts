@@ -4,6 +4,7 @@ import {DateTime} from 'luxon';
 import {MovieCache} from './cache/MovieCache';
 import {SectionCache} from './cache/SectionCache';
 import {MovieInfo} from './models/MovieInfo';
+import fs from 'fs';
 import path from 'path';
 const logger = new nst.Logger('Movies');
 
@@ -53,26 +54,26 @@ export class Service {
     const context = await this.contextService
       .contextAsync(rootPath);
     const contextMovies = Object.values(context.info)
-      .map(({fullPath}) => ({context, fullPath}));
+      .map(x => ({context, ...x}));
     const subdirContexts = await app.sequenceAsync(
       Object.values(context.directories),
       x => this.contextService.contextAsync(x.fullPath));
     const subdirMovies = subdirContexts
-      .flatMap(context => Object.values(context.info).map(({fullPath}) => ({context, fullPath})));
-    for (const {context, fullPath} of contextMovies.concat(subdirMovies)) {
+      .flatMap(context => Object.values(context.info).map(x => ({context, ...x})));
+    for (const movieData of contextMovies.concat(subdirMovies)) {
       const movie = await this
-        .inspectMovieAsync(context, fullPath)
-        .catch(() => logger.error(`Invalid movie: ${fullPath}`));
+        .inspectMovieAsync(movieData.context, movieData)
+        .catch(() => logger.error(`Invalid movie: ${movieData.fullPath}`));
       if (movie) yield movie;
     }
   }
 
-  private async inspectMovieAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, moviePath: string) {
-    const {name} = path.parse(moviePath);
+  private async inspectMovieAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, movieStats: fs.Stats & {fullPath: string}) {
+    const {name} = path.parse(movieStats.fullPath);
     const movieInfo = await MovieInfo
-      .loadAsync(moviePath);
+      .loadAsync(movieStats.fullPath);
     const hasPrivateRoot = Object.values(context.info)
-      .every(x => x.fullPath === moviePath);
+      .every(x => x.fullPath === movieStats.fullPath);
     const images = Object.entries(context.images)
       .filter(([x]) => x.startsWith(`${name}-`) || hasPrivateRoot)
       .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
@@ -84,9 +85,10 @@ export class Service {
       .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
     return new app.api.models.Movie({
       ...movieInfo,
-      id: app.id(moviePath),
-      path: moviePath,
-      media: new app.api.models.Media({images, subtitles, videos})
+      id: app.id(movieStats.fullPath),
+      path: movieStats.fullPath,
+      media: new app.api.models.Media({images, subtitles, videos}),
+      dateAdded: movieInfo.dateAdded ?? DateTime.fromJSDate(movieStats.birthtime).toUTC().toISO()
     });
   }
 
@@ -94,7 +96,7 @@ export class Service {
     return new app.api.models.Movie({
       ...movie,
       ...moviePatch,
-      lastPlayed: moviePatch.watched ? DateTime.now().toISO() : movie.lastPlayed,
+      lastPlayed: moviePatch.watched ? DateTime.utc().toISO() : movie.lastPlayed,
       playCount: moviePatch.watched ? (movie.playCount ?? 0) + 1 : movie.playCount
     });
   }

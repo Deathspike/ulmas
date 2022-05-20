@@ -6,6 +6,7 @@ import {SeriesCache} from './cache/SeriesCache';
 import {SectionCache} from './cache/SectionCache';
 import {EpisodeInfo} from './models/EpisodeInfo';
 import {SeriesInfo} from './models/SeriesInfo';
+import fs from 'fs';
 import path from 'path';
 const logger = new nst.Logger('Series');
 
@@ -58,25 +59,25 @@ export class Service {
       const seriesInfo = context.info['tvshow.nfo'];
       if (seriesInfo) {
         const series = await this
-          .inspectSeriesAsync(context, seriesInfo.fullPath)
+          .inspectSeriesAsync(context, seriesInfo)
           .catch(() => logger.error(`Invalid series: ${seriesInfo.fullPath}`));
         if (series) yield series;
       }
     }
   }
 
-  private async inspectSeriesAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, seriesPath: string) {
+  private async inspectSeriesAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, seriesStats: fs.Stats & {fullPath: string}) {
     const seriesInfo = await SeriesInfo
-      .loadAsync(seriesPath);
+      .loadAsync(seriesStats.fullPath);
     const rootEpisodes = await app.sequenceAsync(
       Object.entries(context.info).filter(([x]) => x !== 'tvshow.nfo'),
-      ([_, x]) => this.inspectEpisodeAsync(context, x.fullPath).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
+      ([_, x]) => this.inspectEpisodeAsync(context, x).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
     const subdirContexts = await app.sequenceAsync(
       Object.values(context.directories),
       x => this.contextService.contextAsync(x.fullPath));
     const subdirEpisodes = await app.sequenceAsync(
-      subdirContexts.flatMap(context => Object.values(context.info).map(({fullPath}) => ({context, fullPath}))),
-      x => this.inspectEpisodeAsync(x.context, x.fullPath).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
+      subdirContexts.flatMap(context => Object.values(context.info).map(x => ({context, ...x}))),
+      x => this.inspectEpisodeAsync(x.context, x).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
     const episodes = fun.ensure(rootEpisodes
       .concat(subdirEpisodes))
       .sort((a, b) => a.season !== b.season ? a.season - b.season : a.episode - b.episode);
@@ -85,19 +86,20 @@ export class Service {
       .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
     return new app.api.models.Series({
       ...seriesInfo,
-      id: app.id(seriesPath),
-      path: seriesPath,
+      id: app.id(seriesStats.fullPath),
+      path: seriesStats.fullPath,
       images, episodes,
       dateEpisodeAdded: fun.fetchEpisodeAdded(episodes),
       lastPlayed: fun.fetchLastPlayed(episodes),
-      unwatchedCount: fun.fetchUnwatchedCount(episodes)
+      unwatchedCount: fun.fetchUnwatchedCount(episodes),
+      dateAdded: seriesInfo.dateAdded ?? DateTime.fromJSDate(seriesStats.birthtime).toUTC().toISO()
     });
   }
   
-  private async inspectEpisodeAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, episodePath: string) {
-    const {name} = path.parse(episodePath);
+  private async inspectEpisodeAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, episodeStats: fs.Stats & {fullPath: string}) {
+    const {name} = path.parse(episodeStats.fullPath);
     const episodeInfo = await EpisodeInfo
-      .loadAsync(episodePath);
+      .loadAsync(episodeStats.fullPath);
     const images = Object.entries(context.images)
       .filter(([x]) => x.startsWith(`${name}-`))
       .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
@@ -109,9 +111,10 @@ export class Service {
       .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
     return new app.api.models.Episode({
       ...episodeInfo,
-      id: app.id(episodePath),
-      path: episodePath,
-      media: new app.api.models.Media({images, subtitles, videos})
+      id: app.id(episodeStats.fullPath),
+      path: episodeStats.fullPath,
+      media: new app.api.models.Media({images, subtitles, videos}),
+      dateAdded: episodeInfo.dateAdded ?? DateTime.fromJSDate(episodeStats.birthtime).toUTC().toISO()
     });
   }
 
@@ -132,7 +135,7 @@ export class Service {
     return new app.api.models.Episode({
       ...episode,
       ...episodePatch,
-      lastPlayed: episodePatch.watched ? DateTime.now().toISO() : episode.lastPlayed,
+      lastPlayed: episodePatch.watched ? DateTime.utc().toISO() : episode.lastPlayed,
       playCount: episodePatch.watched ? (episode.playCount ?? 0) + 1 : episode.playCount
     });
   }
