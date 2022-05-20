@@ -14,7 +14,7 @@ export class SectionSeriesViewModel {
 
   @mobx.computed
   get title() {
-    return this.series.title;
+    return `${this.series.title} (${this.series.unwatchedCount ?? 0})`;
   }
 
   @mobx.computed

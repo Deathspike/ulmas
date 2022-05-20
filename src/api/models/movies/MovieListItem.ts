@@ -1,5 +1,5 @@
-import * as clv from 'class-validator';
 import * as clt from 'class-transformer';
+import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
 import {MediaFile} from '../MediaFile';
 
@@ -8,6 +8,9 @@ export class MovieListItem {
     this.id = source?.id ?? '';
     this.images = source?.images;
     this.title = source?.title ?? '';
+    this.dateAdded = source?.dateAdded;
+    this.lastPlayed = source?.lastPlayed;
+    this.watched = source?.watched;
   }
   
   @clv.IsString()
@@ -27,4 +30,19 @@ export class MovieListItem {
   @clv.IsNotEmpty()
   @swg.ApiProperty()
   readonly title: string;
+  
+  @clv.IsOptional()
+  @clv.IsDateString()
+  @swg.ApiPropertyOptional()
+  readonly dateAdded?: string;
+  
+  @clv.IsOptional()
+  @clv.IsDateString()
+  @swg.ApiPropertyOptional()
+  readonly lastPlayed?: string;
+
+  @clv.IsOptional()
+  @clv.IsBoolean()
+  @swg.ApiPropertyOptional()
+  readonly watched?: boolean;
 }

@@ -19,7 +19,7 @@ export class Service {
       const section: Array<app.api.models.MovieListItem> = [];
       const sectionCache = new SectionCache(sectionId);
       await Promise.all(rootPaths.map(async (rootPath) => {
-        for await (const {movie, streamMap} of this.rebuildAsync(rootPath)) {
+        for await (const {movie, streamMap} of this.buildAsync(rootPath)) {
           await new MovieCache(sectionId, movie.id).saveAsync(movie);
           await new StreamCache(sectionId, movie.id).saveAsync(streamMap);
           section.push(new app.api.models.MovieListItem({...movie, images: movie.media.images}));
@@ -29,21 +29,21 @@ export class Service {
     });
   }
 
-  private async *rebuildAsync(rootPath: string) {
+  private async *buildAsync(rootPath: string) {
     const context = await this.contextService.contextAsync(rootPath);
     for (const {fullPath} of Object.values(context.directories)) {
       const context = await this.contextService.contextAsync(fullPath);
       for (const {fullPath} of Object.values(context.info)) {
         const streamMap = new StreamMap();
         const movie = await this
-          .rebuildMovieAsync(context, fullPath, streamMap)
+          .buildMovieAsync(context, fullPath, streamMap)
           .catch(() => logger.error(`Invalid movie: ${fullPath}`));
         if (movie) yield {movie, streamMap};
       }
     }
   }
 
-  private async rebuildMovieAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, moviePath: string, streamMap: StreamMap) {
+  private async buildMovieAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, moviePath: string, streamMap: StreamMap) {
     const {name} = path.parse(moviePath);
     const movieInfo = await MovieInfo
       .loadAsync(moviePath);

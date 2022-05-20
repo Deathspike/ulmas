@@ -1,5 +1,5 @@
-import * as clv from 'class-validator';
 import * as clt from 'class-transformer';
+import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
 import {SeriesEpisode} from './SeriesEpisode';
 import {MediaFile} from '../MediaFile';
@@ -9,8 +9,12 @@ export class Series {
     this.id = source?.id ?? '';
     this.episodes = source?.episodes ?? [];
     this.images = source?.images;
-    this.plot = source?.plot;
     this.title = source?.title ?? '';
+    this.dateAdded = source?.dateAdded;
+    this.dateEpisodeAdded = source?.dateEpisodeAdded;
+    this.lastPlayed = source?.lastPlayed;
+    this.plot = source?.plot;
+    this.unwatchedCount = source?.unwatchedCount;
   }
   
   @clv.IsString()
@@ -32,14 +36,35 @@ export class Series {
   @swg.ApiPropertyOptional({type: [MediaFile]})
   readonly images?: Array<MediaFile>;
 
+  @clv.IsString()
+  @clv.IsNotEmpty()
+  @swg.ApiProperty()
+  readonly title: string;
+
+  @clv.IsOptional()
+  @clv.IsDateString()
+  @swg.ApiPropertyOptional()
+  readonly dateAdded?: string;
+
+  @clv.IsOptional()
+  @clv.IsDateString()
+  @swg.ApiPropertyOptional()
+  readonly dateEpisodeAdded?: string;
+
+  @clv.IsOptional()
+  @clv.IsDateString()
+  @swg.ApiPropertyOptional()
+  readonly lastPlayed?: string;
+
   @clv.IsOptional()
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiPropertyOptional()
   readonly plot?: string;
 
-  @clv.IsString()
-  @clv.IsNotEmpty()
-  @swg.ApiProperty()
-  readonly title: string;
+  @clv.IsOptional()
+  @clv.IsNumber()
+  @clv.Min(1)
+  @swg.ApiPropertyOptional()
+  readonly unwatchedCount?: number;
 }

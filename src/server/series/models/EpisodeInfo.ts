@@ -1,30 +1,32 @@
+import * as app from '../..';
+import * as clt from 'class-transformer';
 import * as clv from 'class-validator';
 import {EpisodeInfoXml} from './EpisodeInfoXml';
 import fs from 'fs';
 
 export class EpisodeInfo {
-  constructor(episodeXml?: EpisodeInfo) {
-    this.episode = episodeXml?.episode ?? NaN;
-    this.plot = episodeXml?.plot;
-    this.season = episodeXml?.season ?? NaN;
-    this.title = episodeXml?.title ?? '';
+  constructor(episodeInfo?: EpisodeInfo) {
+    this.episode = episodeInfo?.episode ?? NaN;
+    this.season = episodeInfo?.season ?? NaN;
+    this.title = episodeInfo?.title ?? '';
+    this.dateAdded = episodeInfo?.dateAdded;
+    this.lastPlayed = episodeInfo?.lastPlayed;
+    this.playCount = episodeInfo?.playCount;
+    this.plot = episodeInfo?.plot;
+    this.resume = episodeInfo?.resume && new app.api.models.MediaStatus(episodeInfo.resume);
+    this.watched = episodeInfo?.watched;
   }
 
   static async loadAsync(fullPath: string) {
-    const episodeXml = await fs.promises.readFile(fullPath, 'utf-8').then(EpisodeInfoXml.parseAsync);
-    const episode = new EpisodeInfo(episodeXml);
-    await clv.validateOrReject(episode);
-    return episode;
+    const episodeInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(EpisodeInfoXml.parseAsync);
+    const episodeInfo = new EpisodeInfo(episodeInfoXml);
+    await clv.validateOrReject(episodeInfo);
+    return episodeInfo;
   }
 
   @clv.IsNumber()
   @clv.Min(1)
   readonly episode: number;
-
-  @clv.IsOptional()
-  @clv.IsString()
-  @clv.IsNotEmpty()
-  readonly plot?: string;
 
   @clv.IsNumber()
   @clv.Min(0)
@@ -33,4 +35,31 @@ export class EpisodeInfo {
   @clv.IsString()
   @clv.IsNotEmpty()
   readonly title: string;
+
+  @clv.IsOptional()
+  @clv.IsDateString()
+  readonly dateAdded?: string;
+
+  @clv.IsOptional()
+  @clv.IsDateString()
+  readonly lastPlayed?: string;
+
+  @clv.IsOptional()
+  @clv.IsNumber()
+  @clv.Min(1)
+  readonly playCount?: number;
+
+  @clv.IsOptional()
+  @clv.IsString()
+  @clv.IsNotEmpty()
+  readonly plot?: string;
+
+  @clv.IsOptional()
+  @clv.ValidateNested()
+  @clt.Type(() => app.api.models.MediaStatus)
+  readonly resume?: app.api.models.MediaStatus;
+
+  @clv.IsOptional()
+  @clv.IsBoolean()
+  readonly watched?: boolean;
 }

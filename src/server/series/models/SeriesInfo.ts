@@ -3,24 +3,34 @@ import {SeriesInfoXml} from './SeriesInfoXml';
 import fs from 'fs';
 
 export class SeriesInfo {
-  constructor(seriesXml?: SeriesInfo) {
-    this.plot = seriesXml?.plot;
-    this.title = seriesXml?.title ?? '';
+  constructor(seriesInfo?: SeriesInfo) {
+    this.title = seriesInfo?.title ?? '';
+    this.dateAdded = seriesInfo?.dateAdded;
+    this.lastPlayed = seriesInfo?.lastPlayed;
+    this.plot = seriesInfo?.plot;
   }
 
   static async loadAsync(fullPath: string) {
-    const seriesXml = await fs.promises.readFile(fullPath, 'utf-8').then(SeriesInfoXml.parseAsync);
-    const series = new SeriesInfo(seriesXml);
-    await clv.validateOrReject(series);
-    return series;
+    const seriesInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(SeriesInfoXml.parseAsync);
+    const seriesInfo = new SeriesInfo(seriesInfoXml);
+    await clv.validateOrReject(seriesInfo);
+    return seriesInfo;
   }
+
+  @clv.IsString()
+  @clv.IsNotEmpty()
+  readonly title: string;
+
+  @clv.IsOptional()
+  @clv.IsDateString()
+  readonly dateAdded?: string;
+
+  @clv.IsOptional()
+  @clv.IsDateString()
+  readonly lastPlayed?: string;
 
   @clv.IsOptional()
   @clv.IsString()
   @clv.IsNotEmpty()
   readonly plot?: string;
-  
-  @clv.IsString()
-  @clv.IsNotEmpty()
-  readonly title: string;
 }

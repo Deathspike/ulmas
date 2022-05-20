@@ -1,5 +1,5 @@
-import * as clv from 'class-validator';
 import * as clt from 'class-transformer';
+import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
 import {MediaFile} from './MediaFile';
 

@@ -13,7 +13,9 @@ export class SectionViewModel {
     const section = sectionList.value?.find(x => x.id === this.sectionId);
     const series = await app.server.series.everyAsync(this.sectionId);
     if (section && series.value) {
-      this.series = series.value.map(x => new app.SectionSeriesViewModel(x));
+      this.series = series.value
+        .sort((a, b) => a.dateEpisodeAdded && b.dateEpisodeAdded ? b.dateEpisodeAdded.localeCompare(a.dateEpisodeAdded) : 0)
+        .map(x => new app.SectionSeriesViewModel(x));
       this.title = section.title;
     } else {
       // Handle error.
