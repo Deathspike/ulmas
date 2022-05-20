@@ -1,5 +1,4 @@
 import * as clv from 'class-validator';
-import * as swg from '@nestjs/swagger';
 
 export class Source {
   constructor(source?: Source) {
@@ -10,16 +9,13 @@ export class Source {
   
   @clv.IsString()
   @clv.IsNotEmpty()
-  @swg.ApiProperty()
   readonly id: string;
 
   @clv.IsString()
   @clv.IsNotEmpty()
-  @swg.ApiProperty()
   readonly path: string;
 
   @clv.IsString()
   @clv.IsIn(['image', 'subtitle', 'video'])
-  @swg.ApiProperty({enum: ['image', 'subtitle', 'video']})
   readonly type: string;
 }
