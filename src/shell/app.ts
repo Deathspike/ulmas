@@ -1,8 +1,8 @@
-import * as app from '.';
 import * as electron from 'electron';
 import {Server} from '../server';
-const stderrForwarder = app.StreamForwarder.create(process.stderr);
-const stdoutForwarder = app.StreamForwarder.create(process.stdout);
+import {StreamForwarder} from './classes/StreamForwarder';
+const stderrForwarder = StreamForwarder.create(process.stderr);
+const stdoutForwarder = StreamForwarder.create(process.stdout);
 let mainWindow: electron.BrowserWindow;
 
 function createMenu() {

@@ -10,7 +10,8 @@ export class SectionCache {
 
   async loadAsync() {
     const sectionJson = await fs.promises.readFile(this.fullPath, 'utf-8');
-    const section = (JSON.parse(sectionJson) as Array<any>).map(x => new app.api.models.MovieEntry(x));
+    const sectionRoot: Array<app.api.models.MovieEntry> = JSON.parse(sectionJson);
+    const section = sectionRoot.map(x => new app.api.models.MovieEntry(x));
     await clv.validateOrReject(section);
     return section;
   }

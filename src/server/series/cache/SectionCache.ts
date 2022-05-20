@@ -10,7 +10,8 @@ export class SectionCache {
 
   async loadAsync() {
     const sectionJson = await fs.promises.readFile(this.fullPath, 'utf-8');
-    const section = (JSON.parse(sectionJson) as Array<any>).map(x => new app.api.models.SeriesEntry(x));
+    const sectionRoot: Array<app.api.models.SeriesEntry> = JSON.parse(sectionJson);
+    const section = sectionRoot.map(x => new app.api.models.SeriesEntry(x));
     await clv.validateOrReject(section);
     return section;
   }
