@@ -43,7 +43,7 @@ export class EpisodeInfoXml {
       .first()
       .text();
     return value.length
-      ? DateTime.fromSQL(value).toISO()
+      ? DateTime.fromSQL(value).toUTC().toISO({suppressMilliseconds: true})
       : undefined;
   }
 
@@ -52,7 +52,7 @@ export class EpisodeInfoXml {
       .first()
       .text();
     return value.length
-      ? DateTime.fromSQL(value).toISO()
+      ? DateTime.fromSQL(value).toUTC().toISO({suppressMilliseconds: true})
       : undefined;
   }
 
