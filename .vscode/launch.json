@@ -23,6 +23,7 @@
     "presentation": {"hidden": true},
     "request": "attach",
     "port": 9000,
+    "timeout": 30000,
     "type": "pwa-chrome"
   }, {
     "name": "Standalone Client",
