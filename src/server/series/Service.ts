@@ -1,4 +1,5 @@
 import * as app from '..';
+import * as fun from './utilities';
 import * as nst from '@nestjs/common';
 import {DateTime} from 'luxon';
 import {SeriesCache} from './cache/SeriesCache';
@@ -15,15 +16,15 @@ export class Service {
     private readonly contextService: app.core.ContextService,
     private readonly lockService: app.core.LockService) {}
   
-  async checkAsync(sectionId: string, rootPaths: Array<string>) {
+  async inspectAsync(sectionId: string, rootPaths: Array<string>) {
     await this.lockService.lockAsync(sectionId, async () => {
       const purgeAsync = this.cacheService.createPurgeable(`series.${sectionId}`);
-      const section: Array<app.api.models.SeriesListItem> = [];
+      const section: Array<app.api.models.SeriesEntry> = [];
       const sectionCache = new SectionCache(sectionId);
       await Promise.all(rootPaths.map(async (rootPath) => {
-        for await (const series of this.buildAsync(rootPath)) {
+        for await (const series of this.inspectRootAsync(rootPath)) {
           await new SeriesCache(sectionId, series.id).saveAsync(series);
-          section.push(new app.api.models.SeriesListItem(series));
+          section.push(new app.api.models.SeriesEntry(series));
         }
       }));
       await sectionCache.saveAsync(section);
@@ -31,7 +32,7 @@ export class Service {
     });
   }
 
-  async patchAsync(sectionId: string, seriesId: string, seriesPatch: app.api.bodies.SeriesPatch) {
+  async patchAsync(sectionId: string, seriesId: string, seriesPatch: app.api.models.SeriesPatch) {
     return await this.lockService.lockAsync(sectionId, async () => {
       const sectionCache = new SectionCache(sectionId);
       const section = await sectionCache.loadAsync();
@@ -39,8 +40,8 @@ export class Service {
       if (seriesIndex !== -1) {
         const seriesCache = new SeriesCache(sectionId, seriesId);
         const series = await seriesCache.loadAsync();
-        const seriesUpdate = this.rebuildSeries(series, seriesPatch);
-        section[seriesIndex] = new app.api.models.SeriesListItem(seriesUpdate);
+        const seriesUpdate = this.patchSeries(series, seriesPatch);
+        section[seriesIndex] = new app.api.models.SeriesEntry(seriesUpdate);
         await Promise.all(series.episodes.map(x => x instanceof app.api.models.Episode && EpisodeInfo.saveAsync(x.path, x)));
         await Promise.all([sectionCache.saveAsync(section), seriesCache.saveAsync(seriesUpdate)]);
         return true;
@@ -50,33 +51,33 @@ export class Service {
     });
   }
 
-  private async *buildAsync(rootPath: string) {
+  private async *inspectRootAsync(rootPath: string) {
     const context = await this.contextService.contextAsync(rootPath);
     for (const {fullPath} of Object.values(context.directories)) {
       const context = await this.contextService.contextAsync(fullPath);
       const seriesInfo = context.info['tvshow.nfo'];
       if (seriesInfo) {
         const series = await this
-          .buildSeriesAsync(context, seriesInfo.fullPath)
+          .inspectSeriesAsync(context, seriesInfo.fullPath)
           .catch(() => logger.error(`Invalid series: ${seriesInfo.fullPath}`));
         if (series) yield series;
       }
     }
   }
 
-  private async buildSeriesAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, seriesPath: string) {
+  private async inspectSeriesAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, seriesPath: string) {
     const seriesInfo = await SeriesInfo
       .loadAsync(seriesPath);
     const rootEpisodes = await app.sequenceAsync(
       Object.entries(context.info).filter(([x]) => x !== 'tvshow.nfo'),
-      ([_, x]) => this.buildEpisodeAsync(context, x.fullPath).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
+      ([_, x]) => this.inspectEpisodeAsync(context, x.fullPath).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
     const subdirContexts = await app.sequenceAsync(
       Object.values(context.directories),
       x => this.contextService.contextAsync(x.fullPath));
     const subdirEpisodes = await app.sequenceAsync(
       subdirContexts.flatMap(context => Object.values(context.info).map(({fullPath}) => ({context, fullPath}))),
-      x => this.buildEpisodeAsync(x.context, x.fullPath).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
-    const episodes = ensure(rootEpisodes
+      x => this.inspectEpisodeAsync(x.context, x.fullPath).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
+    const episodes = fun.ensure(rootEpisodes
       .concat(subdirEpisodes))
       .sort((a, b) => a.season !== b.season ? a.season - b.season : a.episode - b.episode);
     const images = Object.entries(context.images)
@@ -87,13 +88,13 @@ export class Service {
       id: app.id(seriesPath),
       path: seriesPath,
       images, episodes,
-      dateEpisodeAdded: fetchEpisodeAdded(episodes),
-      lastPlayed: fetchLastPlayed(episodes),
-      unwatchedCount: fetchUnwatchedCount(episodes)
+      dateEpisodeAdded: fun.fetchEpisodeAdded(episodes),
+      lastPlayed: fun.fetchLastPlayed(episodes),
+      unwatchedCount: fun.fetchUnwatchedCount(episodes)
     });
   }
   
-  private async buildEpisodeAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, episodePath: string) {
+  private async inspectEpisodeAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, episodePath: string) {
     const {name} = path.parse(episodePath);
     const episodeInfo = await EpisodeInfo
       .loadAsync(episodePath);
@@ -114,44 +115,25 @@ export class Service {
     });
   }
 
-  private rebuildSeries(series: app.api.models.Series, seriesPatch: app.api.bodies.SeriesPatch) {
+  private patchSeries(series: app.api.models.Series, seriesPatch: app.api.models.SeriesPatch) {
     seriesPatch.episodes
       .map(x => ({i: series.episodes.findIndex(y => y.id === x.id), x}))
       .filter(({i}) => i !== -1)
-      .forEach(({x, i}) => series.episodes[i] = this.rebuildEpisode(series.episodes[i], x));
+      .forEach(({x, i}) => series.episodes[i] = this.patchEpisode(series.episodes[i], x));
     return new app.api.models.Series({
       ...series,
-      dateEpisodeAdded: fetchEpisodeAdded(series.episodes),
-      lastPlayed: fetchLastPlayed(series.episodes),
-      unwatchedCount: fetchUnwatchedCount(series.episodes)
+      dateEpisodeAdded: fun.fetchEpisodeAdded(series.episodes),
+      lastPlayed: fun.fetchLastPlayed(series.episodes),
+      unwatchedCount: fun.fetchUnwatchedCount(series.episodes)
     });
   }
 
-  private rebuildEpisode(episode: app.api.models.Episode, episodePatch: app.api.bodies.EpisodePatch) {
-    const lastPlayed = episodePatch.watched ? DateTime.now().toISO() : episode.lastPlayed;
-    const playCount = episodePatch.watched ? (episode.playCount ?? 0) + 1 : episode.playCount;
-    return new app.api.models.Episode({...episode, ...episodePatch, lastPlayed, playCount});
+  private patchEpisode(episode: app.api.models.Episode, episodePatch: app.api.models.EpisodePatch) {
+    return new app.api.models.Episode({
+      ...episode,
+      ...episodePatch,
+      lastPlayed: episodePatch.watched ? DateTime.now().toISO() : episode.lastPlayed,
+      playCount: episodePatch.watched ? (episode.playCount ?? 0) + 1 : episode.playCount
+    });
   }
-}
-
-function ensure<T>(items: Array<T | undefined | void>): Array<T> {
-  return items.filter(Boolean) as Array<T>;
-}
-
-function fetchEpisodeAdded(episodes: Array<app.api.models.Episode>) {
-  const datesAdded = ensure(episodes.map(x => x.dateAdded));
-  datesAdded.sort((a, b) => b.localeCompare(a));
-  return datesAdded.length ? datesAdded[0] : undefined;
-}
-
-function fetchLastPlayed(episodes: Array<app.api.models.Episode>) {
-  const lastPlayed = ensure(episodes.map(x => x.lastPlayed));
-  lastPlayed.sort((a, b) => b.localeCompare(a));
-  return lastPlayed.length ? lastPlayed[0] : undefined;
-}
-
-function fetchUnwatchedCount(episodes: Array<app.api.models.Episode>) {
-  let unwatchedCount = 0;
-  for (const episode of episodes) if (!episode.watched) unwatchedCount++;
-  return unwatchedCount;
 }

@@ -5,7 +5,7 @@ import path from 'path';
 
 export class SeriesCache {
   constructor(sectionId: string, seriesId: string) {
-    this.fullPath = path.join(app.settings.paths.cache, `series.${sectionId}.${seriesId}.json`);
+    this.fullPath = path.join(app.settings.cache, `series.${sectionId}.${seriesId}.json`);
   }
 
   async loadAsync() {

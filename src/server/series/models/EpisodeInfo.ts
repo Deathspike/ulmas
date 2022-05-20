@@ -28,7 +28,7 @@ export class EpisodeInfo {
   static async saveAsync(fullPath: string, episodeInfo: EpisodeInfo) {
     await clv.validateOrReject(episodeInfo);
     const episodeInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(EpisodeInfoXml.parseAsync);
-    app.mergeSetters(episodeInfo, episodeInfoXml);
+    merge(episodeInfo, episodeInfoXml);
     await fs.promises.mkdir(path.dirname(fullPath), {recursive: true});
     await fs.promises.writeFile(`${fullPath}.tmp`, episodeInfoXml.toString());
     await fs.promises.rename(`${fullPath}.tmp`, fullPath);
@@ -72,4 +72,11 @@ export class EpisodeInfo {
   @clv.IsOptional()
   @clv.IsBoolean()
   readonly watched?: boolean;
+}
+
+function merge(episodeInfo: EpisodeInfo, episodeInfoXml: EpisodeInfoXml) {
+  episodeInfoXml.lastPlayed = episodeInfo.lastPlayed;
+  episodeInfoXml.playCount = episodeInfo.playCount;
+  episodeInfoXml.resume = episodeInfo.resume;
+  episodeInfoXml.watched = episodeInfo.watched;
 }

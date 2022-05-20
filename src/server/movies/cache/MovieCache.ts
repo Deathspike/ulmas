@@ -5,7 +5,7 @@ import path from 'path';
 
 export class MovieCache {
   constructor(sectionId: string, movieId: string) {
-    this.fullPath = path.join(app.settings.paths.cache, `movies.${sectionId}.${movieId}.json`);
+    this.fullPath = path.join(app.settings.cache, `movies.${sectionId}.${movieId}.json`);
   }
 
   async loadAsync() {

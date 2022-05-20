@@ -5,6 +5,7 @@ import {NestFactory} from '@nestjs/core';
 import compression from 'compression';
 import express from 'express';
 import path from 'path';
+const packageData = require('../../package');
 
 export class Server {
   private constructor(
@@ -43,7 +44,7 @@ export class Server {
 
 function getDocumentBuilder() {
   return new swg.DocumentBuilder()
-    .setDescription(app.settings.app.description)
-    .setTitle(app.settings.app.name)
-    .setVersion(app.settings.app.version);
+    .setDescription(packageData.description)
+    .setTitle(packageData.name)
+    .setVersion(packageData.version);
 }

@@ -3,7 +3,7 @@ import * as mobx from 'mobx';
 
 export class SectionSeriesViewModel {
   constructor(
-    private readonly series: app.api.models.SeriesListItem) {
+    private readonly series: app.api.models.SeriesEntry) {
     mobx.makeObservable(this);
   }
 

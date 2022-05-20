@@ -4,15 +4,15 @@ export class Movies {
   constructor(
     private readonly baseUrl: string) {}
 
-  async checkAsync(sectionId: string) {
+  async entriesAsync(sectionId: string) {
+    const url = new URL(`${sectionId}`, this.baseUrl).toString();
+    return await api.ServerResponse.jsonAsync<Array<api.models.MovieEntry>>(url);
+  }
+
+  async inspectAsync(sectionId: string) {
     const method = 'PUT';
     const url = new URL(`${sectionId}`, this.baseUrl).toString();
     return await api.ServerResponse.emptyAsync(url, {method});
-  }
-
-  async entriesAsync(sectionId: string) {
-    const url = new URL(`${sectionId}`, this.baseUrl).toString();
-    return await api.ServerResponse.jsonAsync<Array<api.models.MovieListItem>>(url);
   }
 
   async itemAsync(sectionId: string, resourceId: string) {
@@ -20,7 +20,7 @@ export class Movies {
     return await api.ServerResponse.jsonAsync<api.models.Movie>(url);
   }
 
-  async patchAsync(sectionId: string, resourceId: string, model: api.bodies.MoviePatch) {
+  async patchAsync(sectionId: string, resourceId: string, model: api.models.MoviePatch) {
     const body = JSON.stringify(model);
     const headers = {'Content-Type': 'application/json'};
     const method = 'PATCH';

@@ -14,15 +14,15 @@ export class Service {
     private readonly contextService: app.core.ContextService,
     private readonly lockService: app.core.LockService) {}
 
-  async checkAsync(sectionId: string, rootPaths: Array<string>) {
+  async inspectAsync(sectionId: string, rootPaths: Array<string>) {
     await this.lockService.lockAsync(sectionId, async () => {
       const purgeAsync = this.cacheService.createPurgeable(`movies.${sectionId}`);
-      const section: Array<app.api.models.MovieListItem> = [];
+      const section: Array<app.api.models.MovieEntry> = [];
       const sectionCache = new SectionCache(sectionId);
       await Promise.all(rootPaths.map(async (rootPath) => {
-        for await (const movie of this.buildAsync(rootPath)) {
+        for await (const movie of this.inspectRootAsync(rootPath)) {
           await new MovieCache(sectionId, movie.id).saveAsync(movie);
-          section.push(new app.api.models.MovieListItem({...movie, images: movie.media.images}));
+          section.push(new app.api.models.MovieEntry({...movie, images: movie.media.images}));
         }
       }));
       await sectionCache.saveAsync(section);
@@ -30,7 +30,7 @@ export class Service {
     });
   }
 
-  async patchAsync(sectionId: string, movieId: string, moviePatch: app.api.bodies.MoviePatch) {
+  async patchAsync(sectionId: string, movieId: string, moviePatch: app.api.models.MoviePatch) {
     return await this.lockService.lockAsync(sectionId, async () => {
       const sectionCache = new SectionCache(sectionId);
       const section = await sectionCache.loadAsync();
@@ -38,8 +38,8 @@ export class Service {
       if (movieIndex !== -1) {
         const movieCache = new MovieCache(sectionId, movieId);
         const movie = await movieCache.loadAsync();
-        const movieUpdate = this.rebuildMovie(movie, moviePatch);
-        section[movieIndex] = new app.api.models.MovieListItem(movieUpdate);
+        const movieUpdate = this.patchMovie(movie, moviePatch);
+        section[movieIndex] = new app.api.models.MovieEntry(movieUpdate);
         await MovieInfo.saveAsync(movie.path, movieUpdate);
         await Promise.all([sectionCache.saveAsync(section), movieCache.saveAsync(movieUpdate)]);
         return true;
@@ -49,7 +49,7 @@ export class Service {
     });
   }
 
-  private async *buildAsync(rootPath: string) {
+  private async *inspectRootAsync(rootPath: string) {
     const context = await this.contextService
       .contextAsync(rootPath);
     const contextMovies = Object.values(context.info)
@@ -61,13 +61,13 @@ export class Service {
       .flatMap(context => Object.values(context.info).map(({fullPath}) => ({context, fullPath})));
     for (const {context, fullPath} of contextMovies.concat(subdirMovies)) {
       const movie = await this
-        .buildMovieAsync(context, fullPath)
+        .inspectMovieAsync(context, fullPath)
         .catch(() => logger.error(`Invalid movie: ${fullPath}`));
       if (movie) yield movie;
     }
   }
 
-  private async buildMovieAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, moviePath: string) {
+  private async inspectMovieAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, moviePath: string) {
     const {name} = path.parse(moviePath);
     const movieInfo = await MovieInfo
       .loadAsync(moviePath);
@@ -88,9 +88,12 @@ export class Service {
     });
   }
 
-  private rebuildMovie(movie: app.api.models.Movie, moviePatch: app.api.bodies.MoviePatch) {
-    const lastPlayed = moviePatch.watched ? DateTime.now().toISO() : movie.lastPlayed;
-    const playCount = moviePatch.watched ? (movie.playCount ?? 0) + 1 : movie.playCount;
-    return new app.api.models.Movie({...movie, ...moviePatch, lastPlayed, playCount});
+  private patchMovie(movie: app.api.models.Movie, moviePatch: app.api.models.MoviePatch) {
+    return new app.api.models.Movie({
+      ...movie,
+      ...moviePatch,
+      lastPlayed: moviePatch.watched ? DateTime.now().toISO() : movie.lastPlayed,
+      playCount: moviePatch.watched ? (movie.playCount ?? 0) + 1 : movie.playCount
+    });
   }
 }

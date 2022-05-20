@@ -19,7 +19,7 @@ export class Router {
   @nst.Post()
   @swg.ApiResponse({status: 201})
   async createAsync(
-    @nst.Body() model: app.api.bodies.SectionCreate) {
+    @nst.Body() model: app.api.models.SectionCreate) {
     await this.sectionsService.createAsync(model.paths, model.title, model.type);
   }
 
@@ -41,7 +41,7 @@ export class Router {
   @swg.ApiResponse({status: 404})
   async updateAsync(
     @nst.Param() params: app.api.params.Section,
-    @nst.Body() model: app.api.bodies.SectionUpdate) {
+    @nst.Body() model: app.api.models.SectionUpdate) {
     const sectionList = await this.sectionsService.readAsync();
     const section = sectionList.find(x => x.id === params.sectionId);
     if (!section) throw new nst.NotFoundException();

@@ -3,15 +3,14 @@ import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
 import {MediaFile} from '../MediaFile';
 
-export class SeriesListItem {
-  constructor(source?: SeriesListItem) {
+export class MovieEntry {
+  constructor(source?: MovieEntry) {
     this.id = source?.id ?? '';
     this.images = source?.images;
-    this.dateEpisodeAdded = source?.dateEpisodeAdded;
-    this.lastPlayed = source?.lastPlayed;
-    this.unwatchedCount = source?.unwatchedCount;
     this.title = source?.title ?? '';
     this.dateAdded = source?.dateAdded;
+    this.lastPlayed = source?.lastPlayed;
+    this.watched = source?.watched;
   }
   
   @clv.IsString()
@@ -27,22 +26,6 @@ export class SeriesListItem {
   @swg.ApiPropertyOptional({type: [MediaFile]})
   readonly images?: Array<MediaFile>;
   
-  @clv.IsOptional()
-  @clv.IsDateString()
-  @swg.ApiPropertyOptional()
-  readonly dateEpisodeAdded?: string;
-
-  @clv.IsOptional()
-  @clv.IsDateString()
-  @swg.ApiPropertyOptional()
-  readonly lastPlayed?: string;
-
-  @clv.IsOptional()
-  @clv.IsNumber()
-  @clv.Min(1)
-  @swg.ApiPropertyOptional()
-  readonly unwatchedCount?: number;
-
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()
@@ -52,4 +35,14 @@ export class SeriesListItem {
   @clv.IsDateString()
   @swg.ApiPropertyOptional()
   readonly dateAdded?: string;
+  
+  @clv.IsOptional()
+  @clv.IsDateString()
+  @swg.ApiPropertyOptional()
+  readonly lastPlayed?: string;
+
+  @clv.IsOptional()
+  @clv.IsBoolean()
+  @swg.ApiPropertyOptional()
+  readonly watched?: boolean;
 }

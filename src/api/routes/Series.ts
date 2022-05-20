@@ -3,16 +3,16 @@ import * as api from '..';
 export class Series {
   constructor(
     private readonly baseUrl: string) {}
-
-  async checkAsync(sectionId: string) {
-    const method = 'PUT';
-    const url = new URL(`${sectionId}`, this.baseUrl).toString();
-    return await api.ServerResponse.emptyAsync(url, {method});
-  }
   
   async entriesAsync(sectionId: string) {
     const url = new URL(`${sectionId}`, this.baseUrl).toString();
-    return await api.ServerResponse.jsonAsync<Array<api.models.SeriesListItem>>(url);
+    return await api.ServerResponse.jsonAsync<Array<api.models.SeriesEntry>>(url);
+  }
+
+  async inspectAsync(sectionId: string) {
+    const method = 'PUT';
+    const url = new URL(`${sectionId}`, this.baseUrl).toString();
+    return await api.ServerResponse.emptyAsync(url, {method});
   }
 
   async itemAsync(sectionId: string, resourceId: string) {
@@ -20,7 +20,7 @@ export class Series {
     return await api.ServerResponse.jsonAsync<api.models.Series>(url);
   }
 
-  async patchAsync(sectionId: string, resourceId: string, model: api.bodies.SeriesPatch) {
+  async patchAsync(sectionId: string, resourceId: string, model: api.models.SeriesPatch) {
     const body = JSON.stringify(model);
     const headers = {'Content-Type': 'application/json'};
     const method = 'PATCH';

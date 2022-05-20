@@ -23,10 +23,10 @@ export class MovieInfo {
     return movieInfo;
   }
 
-  static async saveAsync(fullPath: string, movie: MovieInfo) {
-    await clv.validateOrReject(movie);
+  static async saveAsync(fullPath: string, movieInfo: MovieInfo) {
+    await clv.validateOrReject(movieInfo);
     const movieInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(MovieInfoXml.parseAsync);
-    app.mergeSetters(movie, movieInfoXml);
+    merge(movieInfo, movieInfoXml);
     await fs.promises.mkdir(path.dirname(fullPath), {recursive: true});
     await fs.promises.writeFile(`${fullPath}.tmp`, movieInfoXml.toString());
     await fs.promises.rename(`${fullPath}.tmp`, fullPath);
@@ -62,4 +62,11 @@ export class MovieInfo {
   @clv.IsOptional()
   @clv.IsBoolean()
   readonly watched?: boolean;
+}
+
+function merge(movieInfo: MovieInfo, movieInfoXml: MovieInfoXml) {
+  movieInfoXml.lastPlayed = movieInfo.lastPlayed;
+  movieInfoXml.playCount = movieInfo.playCount;
+  movieInfoXml.resume = movieInfo.resume;
+  movieInfoXml.watched = movieInfo.watched;
 }

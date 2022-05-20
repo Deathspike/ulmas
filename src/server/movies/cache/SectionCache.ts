@@ -5,17 +5,17 @@ import path from 'path';
 
 export class SectionCache {
   constructor(sectionId: string) {
-    this.fullPath = path.join(app.settings.paths.cache, `movies.${sectionId}.json`);
+    this.fullPath = path.join(app.settings.cache, `movies.${sectionId}.json`);
   }
 
   async loadAsync() {
     const sectionJson = await fs.promises.readFile(this.fullPath, 'utf-8');
-    const section = (JSON.parse(sectionJson) as Array<any>).map(x => new app.api.models.MovieListItem(x));
+    const section = (JSON.parse(sectionJson) as Array<any>).map(x => new app.api.models.MovieEntry(x));
     await clv.validateOrReject(section);
     return section;
   }
 
-  async saveAsync(section: Array<app.api.models.MovieListItem>) {
+  async saveAsync(section: Array<app.api.models.MovieEntry>) {
     await clv.validateOrReject(section);
     await fs.promises.mkdir(path.dirname(this.fullPath), {recursive: true});
     await fs.promises.writeFile(`${this.fullPath}.tmp`, JSON.stringify(section));

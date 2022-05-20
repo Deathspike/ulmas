@@ -14,29 +14,29 @@ export class Router {
     private readonly moviesService: Service,
     private readonly sectionsService: app.sections.Service) {}
  
-  @nst.Put(':sectionId')
-  @nst.HttpCode(204)
-  @swg.ApiResponse({status: 204})
-  @swg.ApiResponse({status: 404})
-  async checkAsync(
-    @nst.Param() params: app.api.params.Section) {
-    const sectionList = await this.sectionsService.readAsync('movies');
-    const section = sectionList.find(x => x.id === params.sectionId);
-    if (!section) throw new nst.NotFoundException();
-    await this.moviesService.checkAsync(section.id, section.paths);
-  }
-  
   @nst.Get(':sectionId')
-  @swg.ApiResponse({status: 200, type: [app.api.models.MovieListItem]})
+  @swg.ApiResponse({status: 200, type: [app.api.models.MovieEntry]})
   @swg.ApiResponse({status: 404})
   async entriesAsync(
     @nst.Param() params: app.api.params.Section,
     @nst.Response() response: express.Response) {
     const cache = new SectionCache(params.sectionId);
     const stats = await fs.promises.stat(cache.fullPath).catch(() => {});
-    if (!stats) await this.checkAsync(params);
+    if (!stats) await this.inspectAsync(params);
     response.type('json');
     response.sendFile(cache.fullPath, () => response.status(404).end());
+  }
+
+  @nst.Put(':sectionId')
+  @nst.HttpCode(204)
+  @swg.ApiResponse({status: 204})
+  @swg.ApiResponse({status: 404})
+  async inspectAsync(
+    @nst.Param() params: app.api.params.Section) {
+    const sectionList = await this.sectionsService.readAsync('movies');
+    const section = sectionList.find(x => x.id === params.sectionId);
+    if (!section) throw new nst.NotFoundException();
+    await this.moviesService.inspectAsync(section.id, section.paths);
   }
 
   @nst.Get(':sectionId/:resourceId')
@@ -56,10 +56,10 @@ export class Router {
   @swg.ApiResponse({status: 404})
   async patchAsync(
     @nst.Param() params: app.api.params.Resource,
-    @nst.Body() body: app.api.bodies.MoviePatch) {
+    @nst.Body() body: app.api.models.MoviePatch) {
     const cache = new SectionCache(params.sectionId);
     const stats = await fs.promises.stat(cache.fullPath).catch(() => {});
-    if (!stats) await this.checkAsync(params);
+    if (!stats) await this.inspectAsync(params);
     if (!await this.moviesService.patchAsync(params.sectionId, params.resourceId, body)) throw new nst.NotFoundException();
   }
   
