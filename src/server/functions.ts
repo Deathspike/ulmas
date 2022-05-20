@@ -3,7 +3,7 @@ import crypto from 'crypto'
 export function id(fullPath: string) {
   const hash = crypto.createHash('sha1');
   hash.update(fullPath, 'binary');
-  return hash.digest('hex'); 
+  return hash.digest('base64url'); 
 }
 
 export async function sequenceAsync<T, R>(items: Array<T>, fn: (item: T) => Promise<R>) {
