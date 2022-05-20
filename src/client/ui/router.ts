@@ -1,13 +1,14 @@
+import * as core from 'client/core';
 import * as React from 'react';
 import * as ReactLocation from '@tanstack/react-location';
-import * as app from '.';
+import {Container} from 'typedi';
 
 export const router = {
   all(path: string, children: Array<ReactLocation.Route>) {
     return {children, path};
   },
 
-  one(path: string, factoryAsync: (params: app.RouteParams) => Promise<JSX.Element> | JSX.Element) {
+  one(path: string, createAsync: () => Promise<JSX.Element> | JSX.Element) {
     return {
       element: React.createElement(() => {
         const match = ReactLocation.useMatch();
@@ -15,8 +16,8 @@ export const router = {
         return element;
       }),
       loader: async (route: ReactLocation.RouteMatch) => {
-        const params = new app.RouteParams(route.params);
-        const element = await factoryAsync(params);
+        Container.get(core.RouteService).set(route.params);
+        const element = await createAsync();
         return {element};
       },
       path

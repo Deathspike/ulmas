@@ -1,13 +1,13 @@
-export function ArrayNotEmpty() {}
-export function IsArray() {}
-export function IsBoolean() {}
-export function IsDateString() {}
-export function IsIn() {}
-export function IsNotEmpty() {}
-export function IsNumber() {}
-export function IsObject() {}
-export function IsOptional() {}
-export function IsString() {}
-export function IsUrl() {}
-export function Min() {}
-export function ValidateNested() {}
+export const ArrayNotEmpty = () => () => {};
+export const IsArray = () => () => {};
+export const IsBoolean = () => () => {};
+export const IsDateString = () => () => {};
+export const IsIn = () => () => {};
+export const IsNotEmpty = () => () => {};
+export const IsNumber = () => () => {};
+export const IsObject = () => () => {};
+export const IsOptional = () => () => {};
+export const IsString = () => () => {};
+export const IsUrl = () => () => {};
+export const Min = () => () => {};
+export const ValidateNested = () => () => {};

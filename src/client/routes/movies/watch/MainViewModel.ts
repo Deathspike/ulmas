@@ -1,26 +1,31 @@
 import * as api from 'api';
+import * as core from 'client/core';
 import * as mobx from 'mobx';
-import {core} from 'client/core';
+import {Service} from 'typedi';
 
 // TODO: Handle cancellation. If we navigate away, mpv should stop (trying to) play.
+@Service({transient: true})
 export class MainViewModel {
+  private readonly sectionId = this.routeService.get('sectionId');
+  private readonly movieId = this.routeService.get('movieId');
+
   constructor(
-    private readonly sectionId: string,
-    private readonly movieId: string) {
+    private readonly apiService: core.ApiService,
+    private readonly routeService: core.RouteService) {
     mobx.makeObservable(this);
   }
 
   @mobx.action
   componentDidMount() {
     const subtitleUrls = this.source?.media.subtitles
-      ?.map(x => core.api.movies.mediaUrl(this.sectionId, this.movieId, x.id)) ?? [];
+      ?.map(x => this.apiService.movies.mediaUrl(this.sectionId, this.movieId, x.id)) ?? [];
     const videoUrl = this.source?.media.videos
-      ?.map(x => core.api.movies.mediaUrl(this.sectionId, this.movieId, x.id))
+      ?.map(x => this.apiService.movies.mediaUrl(this.sectionId, this.movieId, x.id))
       ?.find(Boolean);
     if (videoUrl) {
       // TODO: Handle finished.
       const position = this.source?.resume?.position ?? 0;
-      core.api.media.mpvAsync(new api.models.MediaRequest({position, subtitleUrls, videoUrl}));
+      this.apiService.media.mpvAsync(new api.models.MediaRequest({position, subtitleUrls, videoUrl}));
     } else {
       // TODO: Handle no video.
     }
@@ -28,7 +33,7 @@ export class MainViewModel {
   
   @mobx.action
   async refreshAsync() {
-    const movie = await core.api.movies.itemAsync(this.sectionId, this.movieId);
+    const movie = await this.apiService.movies.itemAsync(this.sectionId, this.movieId);
     if (movie.value) {
       this.source = movie.value;
     } else {

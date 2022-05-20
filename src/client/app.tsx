@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import * as mobx from 'mobx';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';

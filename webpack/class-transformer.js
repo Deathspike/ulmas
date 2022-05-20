@@ -1,1 +1,1 @@
-export function Type() {}
+export const Type = () => () => {};

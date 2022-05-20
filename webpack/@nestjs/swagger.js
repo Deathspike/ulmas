@@ -1,2 +1,2 @@
-export function ApiProperty() {}
-export function ApiPropertyOptional() {}
+export const ApiProperty = () => () => {};
+export const ApiPropertyOptional = () => () => {};

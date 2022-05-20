@@ -1,17 +1,22 @@
 import * as api from 'api'
+import * as core from 'client/core';
 import * as mobx from 'mobx';
-import {core} from 'client/core';
+import {Service} from 'typedi';
 
+@Service({transient: true})
 export class MainViewModel {
+  private readonly sectionId = this.routeService.get('sectionId');
+  private readonly movieId = this.routeService.get('movieId');
+
   constructor(
-    private readonly sectionId: string,
-    private readonly movieId: string) {
+    private readonly apiService: core.ApiService,
+    private readonly routeService: core.RouteService) {
     mobx.makeObservable(this);
   }
 
   @mobx.action
   async refreshAsync() {
-    const movies = await core.api.movies.itemAsync(this.sectionId, this.movieId);
+    const movies = await this.apiService.movies.itemAsync(this.sectionId, this.movieId);
     if (movies.value) {
       this.source = movies.value;
     } else {
@@ -25,7 +30,7 @@ export class MainViewModel {
       ?.images
       ?.find(x => /[\\/-]poster\.[^\.]+$/i.test(x.path));
     return image
-      ? core.api.movies.mediaUrl(this.sectionId, this.movieId, image.id)
+      ? this.apiService.movies.mediaUrl(this.sectionId, this.movieId, image.id)
       : undefined;
   }
 
