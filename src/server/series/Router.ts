@@ -54,7 +54,8 @@ export class Router implements nst.OnModuleInit {
     @nst.Request() request: express.Request,
     @nst.Response() response: express.Response) {
     const series = await this.valueAsync(params.sectionId, params.resourceId);
-    const media = series.media.find(x => x.id === params.mediaId);
+    const mediaList = series.media.concat(series.episodes.flatMap(x => x.media));
+    const media = mediaList.find(x => x.id === params.mediaId);
     if (!media) throw new nst.NotFoundException();
     const mtime = Date.parse(request.headers['if-modified-since'] ?? '');
     if (mtime >= media.mtime) throw new nst.HttpException(media.path, 304);
