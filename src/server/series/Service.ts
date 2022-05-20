@@ -1,7 +1,10 @@
 import * as app from '..';
 import * as nst from '@nestjs/common';
 import {Episode} from './models/Episode';
+import {EpisodeInfo} from './models/EpisodeInfo';
 import {Series} from './models/Series';
+import {SeriesInfo} from './models/SeriesInfo';
+import {Source} from './models/Source';
 import path from 'path';
 const logger = new nst.Logger('Series');
 
@@ -51,11 +54,11 @@ export class Service {
     return await this.cacheService.cacheAsync('series', seriesPath, forceUpdate, async () => {
       const context = await this.contextService
         .contextAsync(pathData.dir);
-      const seriesInfo = await Series
+      const seriesInfo = await SeriesInfo
         .loadAsync(seriesPath);
       const images = Object.entries(context.images)
         .filter(([x]) => !/-[a-z]+\./i.test(x))
-        .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'image'})));
+        .map(([_, x]) => new Source(app.create(x, {type: 'image'})));
       const rootEpisodes = await app.sequenceAsync(
         Object.entries(context.info).filter(([x]) => x !== 'tvshow.nfo'),
         ([_, x]) => this.loadEpisodeAsync(context, x).catch(() => logger.warn(`Invalid episode: ${x}`)));
@@ -68,7 +71,7 @@ export class Service {
       const episodes = ensure(rootEpisodes
         .concat(subdirEpisodes))
         .sort((a, b) => a.season !== b.season ? a.season - b.season : a.episode - b.episode);
-      return new app.api.models.Series(app.create(seriesPath, {
+      return new Series(app.create(seriesPath, {
         ...seriesInfo,
         episodes: episodes,
         media: images
@@ -78,18 +81,18 @@ export class Service {
   
   private async loadEpisodeAsync(context: app.core.Context, episodePath: string) {
     const {name} = path.parse(episodePath);
-    const episodeInfo = await Episode
+    const episodeInfo = await EpisodeInfo
       .loadAsync(episodePath);
     const images = Object.entries(context.images)
       .filter(([x]) => x.startsWith(`${name}-`))
-      .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'image'})));
+      .map(([_, x]) => new Source(app.create(x, {type: 'image'})));
     const subtitles = Object.entries(context.subtitles)
       .filter(([x]) => x.startsWith(`${name}.`))
-      .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'subtitle'})));
+      .map(([_, x]) => new Source(app.create(x, {type: 'subtitle'})));
     const videos = Object.entries(context.videos)
       .filter(([x]) => x.startsWith(`${name}.`))
-      .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'video'})));
-    return new app.api.models.Episode(app.create(episodePath, {
+      .map(([_, x]) => new Source(app.create(x, {type: 'video'})));
+    return new Episode(app.create(episodePath, {
       ...episodeInfo,
       media: images.concat(subtitles, videos)
     }));

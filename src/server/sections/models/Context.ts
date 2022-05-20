@@ -2,12 +2,13 @@ import * as app from '../..';
 import * as clv from 'class-validator';
 import * as clt from 'class-transformer';
 import {ContextXml} from './ContextXml';
+import {Section} from './Section';
 import fs from 'fs';
 import path from 'path';
 
 export class Context {
-  constructor(contextXml: ContextXml) {
-    this.sections = contextXml.sections.map(x => new app.api.models.Section(x));
+  constructor(contextXml?: Context) {
+    this.sections = contextXml?.sections.map(x => new Section(x)) ?? [];
   }
   
   static async loadAsync(filePath: string) {
@@ -27,8 +28,8 @@ export class Context {
 
   @clv.IsArray()
   @clv.ValidateNested({each: true})
-  @clt.Type(() => app.api.models.Section)
-  readonly sections: Array<app.api.models.Section>;
+  @clt.Type(() => Section)
+  readonly sections: Array<Section>;
 }
 
 async function getOrCreateAsync(filePath: string) {

@@ -13,15 +13,15 @@ export class Router {
   @nst.Get()
   @swg.ApiResponse({status: 200, type: [app.api.models.Section]})
   async readAsync() {
-    return await this.sectionsService.readAsync();
+    const sectionList = await this.sectionsService.readAsync();
+    return sectionList.map(x => new app.api.models.Section(x));
   }
 
   @nst.Post()
   @swg.ApiResponse({status: 201})
   async createAsync(
     @nst.Body() model: app.api.models.SectionPart) {
-    const id = Date.now().toString(16);
-    await this.sectionsService.createAsync(new app.api.models.Section({...model, id}));
+    await this.sectionsService.createAsync(model.paths, model.title, model.type);
   }
 
   @nst.Delete(':sectionId')

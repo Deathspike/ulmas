@@ -1,6 +1,6 @@
-import * as app from '..';
 import * as nst from '@nestjs/common';
 import {Context} from './models/Context';
+import {Section} from './models/Section';
 import path from 'path';
 import os from 'os';
 
@@ -8,13 +8,14 @@ import os from 'os';
 export class Service {
   private context?: Context;
 
-  async createAsync(section: app.api.models.Section) {
+  async createAsync(paths: Array<string>, title: string, type: string) {
+    const id = Date.now().toString(16);
     this.context ??= await Context.loadAsync(getContextPath());
-    this.context.sections.push(section);
+    this.context.sections.push(new Section({id, paths, title, type}));
     await Context.saveAsync(getContextPath(), this.context);
   }
 
-  async deleteAsync(section: app.api.models.Section) {
+  async deleteAsync(section: Section) {
     this.context ??= await Context.loadAsync(getContextPath());
     this.context.sections.splice(this.context.sections.findIndex(x => x.id === section.id), 1);
     await Context.saveAsync(getContextPath(), this.context);
@@ -26,7 +27,7 @@ export class Service {
     return sectionType ? this.context.sections.filter(x => x.type === sectionType) : this.context.sections;
   }
 
-  async updateAsync(section: app.api.models.Section) {
+  async updateAsync(section: Section) {
     this.context ??= await Context.loadAsync(getContextPath());
     this.context.sections.splice(this.context.sections.findIndex(x => x.id === section.id), 1, section);
     await Context.saveAsync(getContextPath(), this.context);

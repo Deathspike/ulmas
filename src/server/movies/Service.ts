@@ -1,6 +1,8 @@
 import * as app from '..';
 import * as nst from '@nestjs/common';
 import {Movie} from './models/Movie';
+import {MovieInfo} from './models/MovieInfo';
+import {Source} from './models/Source';
 import path from 'path';
 const logger = new nst.Logger('Movies');
 
@@ -53,18 +55,18 @@ export class Service {
     return await this.cacheService.cacheAsync('movies', moviePath, forceUpdate, async () => {
       const context = await this.contextService
         .contextAsync(pathData.dir);
-      const movieInfo = await Movie
+      const movieInfo = await MovieInfo
         .loadAsync(moviePath);
       const images = Object.entries(context.images)
         .filter(([x]) => x.startsWith(`${pathData.name}-`))
-        .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'image'})));
+        .map(([_, x]) => new Source(app.create(x, {type: 'image'})));
       const subtitles = Object.entries(context.subtitles)
         .filter(([x]) => x.startsWith(`${pathData.name}.`))
-        .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'subtitle'})));
+        .map(([_, x]) => new Source(app.create(x, {type: 'subtitle'})));
       const videos = Object.entries(context.videos)
         .filter(([x]) => x.startsWith(`${pathData.name}.`))
-        .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'video'})));
-      return new app.api.models.Movie(app.create(moviePath, {
+        .map(([_, x]) => new Source(app.create(x, {type: 'video'})));
+      return new Movie(app.create(moviePath, {
         ...movieInfo,
         media: images.concat(subtitles, videos),
       }));

@@ -1,12 +1,12 @@
 import xml2js from 'xml2js';
 
-export class EpisodeXml {
+export class EpisodeInfoXml {
   private constructor(
     private readonly source: ParsedXml = {}) {}
 
   static async parseAsync(xml: string) {
     const source = await xml2js.parseStringPromise(xml);
-    return new EpisodeXml(source);
+    return new EpisodeInfoXml(source);
   }
 
   get episode() {

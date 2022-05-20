@@ -1,29 +1,29 @@
 import xml2js from 'xml2js';
 
-export class MovieXml {
+export class SeriesInfoXml {
   private constructor(
     private readonly source: ParsedXml = {}) {}
 
   static async parseAsync(xml: string) {
     const source = await xml2js.parseStringPromise(xml);
-    return new MovieXml(source);
+    return new SeriesInfoXml(source);
   }
 
   get plot() {
-    return this.source.movie
+    return this.source.tvshow
       ?.plot
       ?.find(Boolean);
   }
 
   get title() {
-    return this.source.movie
+    return this.source.tvshow
       ?.title
       ?.find(Boolean) ?? '';
   }
 }
 
 type ParsedXml = {
-  movie?: {
+  tvshow?: {
     plot?: Array<string>;
     title?: Array<string>;
   }

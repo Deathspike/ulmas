@@ -47,7 +47,7 @@ export class Router implements nst.OnModuleInit {
     const movieList = await this.moviesService.listAsync(section.paths);
     const movie = movieList.find(x => x.id === params.resourceId);
     if (!movie) throw new nst.NotFoundException();
-    return movie;
+    return new app.api.models.Movie(movie);
   }
 
   @nst.Get(':sectionId/:resourceId/:mediaId')

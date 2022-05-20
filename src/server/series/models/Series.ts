@@ -1,26 +1,38 @@
 import * as clv from 'class-validator';
-import {SeriesXml} from './SeriesXml';
-import fs from 'fs';
+import * as clt from 'class-transformer';
+import * as swg from '@nestjs/swagger';
+import {Episode} from './Episode';
+import {SeriesInfo} from './SeriesInfo';
+import {Source} from './Source';
 
-export class Series {
-  constructor(seriesXml: SeriesXml) {
-    this.plot = seriesXml.plot;
-    this.title = seriesXml.title;
+export class Series extends SeriesInfo {
+  constructor(source?: Series) {
+    super(source);
+    this.id = source?.id ?? '';
+    this.path = source?.path ?? '';
+    this.media = source?.media ?? [];
+    this.episodes = source?.episodes ?? [];
   }
-
-  static async loadAsync(filePath: string) {
-    const seriesXml = await fs.promises.readFile(filePath, 'utf-8').then(SeriesXml.parseAsync);
-    const series = new Series(seriesXml);
-    await clv.validateOrReject(series);
-    return series;
-  }
-
-  @clv.IsOptional()
-  @clv.IsString()
-  @clv.IsNotEmpty()
-  readonly plot?: string;
   
   @clv.IsString()
   @clv.IsNotEmpty()
-  readonly title: string;
+  @swg.ApiProperty()
+  readonly id: string;
+
+  @clv.IsString()
+  @clv.IsNotEmpty()
+  @swg.ApiProperty()
+  readonly path: string;
+
+  @clv.IsArray()
+  @clv.ValidateNested({each: true})
+  @clt.Type(() => Episode)
+  @swg.ApiProperty({type: [Episode]})
+  readonly episodes: Array<Episode>;
+
+  @clv.IsArray()
+  @clv.ValidateNested({each: true})
+  @clt.Type(() => Source)
+  @swg.ApiProperty({type: [Source]})
+  readonly media: Array<Source>;
 }

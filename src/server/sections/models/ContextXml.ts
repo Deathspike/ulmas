@@ -10,7 +10,7 @@ export class ContextXml {
   }
 
   get sections() {
-    return this.source.sections?.item?.map(x => ({
+    return this.source.sections?.section?.map(x => ({
       id: x.id?.find(Boolean) ?? '',
       paths: x.path ?? [],
       title: x.title?.find(Boolean) ?? '',
@@ -20,7 +20,7 @@ export class ContextXml {
 
   set sections(sections) {
     this.source.sections ??= {};
-    this.source.sections.item = sections?.map(x => ({id: [x.id], path: x.paths, title: [x.title], type: [x.type]}));
+    this.source.sections.section = sections?.map(x => ({id: [x.id], path: x.paths, title: [x.title], type: [x.type]}));
   }
 
   toString() {
@@ -30,7 +30,7 @@ export class ContextXml {
 
 type ParsedXml = {
   sections?: {
-    item?: Array<{
+    section?: Array<{
       id?: Array<string>,
       path?: Array<string>,
       title?: Array<string>,

@@ -3,7 +3,6 @@ import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
 import {Mpv} from './classes/Mpv';
 import express from 'express';
-const logger = new nst.Logger('Media');
 
 @nst.Controller('api/media')
 @swg.ApiTags('media')
@@ -17,6 +16,8 @@ export class Router {
     @nst.Body() media: app.api.models.MediaRequest,
     @nst.Request() request: express.Request) {
     if (!/127.0.0.1|::1/.test(request.ip)) throw new nst.ForbiddenException();
-    return await new Mpv().openAsync(media).catch(x => logger.error(x));
+    const player = new Mpv();
+    const status = await player.openAsync(media.position, media.subtitleUrls, media.videoUrl);
+    return new app.api.models.MediaStatus(status);
   }
 }

@@ -1,26 +1,30 @@
 import * as clv from 'class-validator';
-import {MovieXml} from './MovieXml';
-import fs from 'fs';
+import * as clt from 'class-transformer';
+import * as swg from '@nestjs/swagger';
+import {MovieInfo} from './MovieInfo';
+import {Source} from './Source';
 
-export class Movie {
-  constructor(movieXml: MovieXml) {
-    this.plot = movieXml.plot;
-    this.title = movieXml.title;
+export class Movie extends MovieInfo {
+  constructor(source?: Movie) {
+    super(source);
+    this.id = source?.id ?? '';
+    this.path = source?.path ?? '';
+    this.media = source?.media ?? [];
   }
-
-  static async loadAsync(filePath: string) {
-    const movieXml = await fs.promises.readFile(filePath, 'utf8').then(MovieXml.parseAsync);
-    const movie = new Movie(movieXml);
-    await clv.validateOrReject(movie);
-    return movie;
-  }
-
-  @clv.IsOptional()
-  @clv.IsString()
-  @clv.IsNotEmpty()
-  readonly plot?: string;
   
   @clv.IsString()
   @clv.IsNotEmpty()
-  readonly title: string;
+  @swg.ApiProperty()
+  readonly id: string;
+
+  @clv.IsString()
+  @clv.IsNotEmpty()
+  @swg.ApiProperty()
+  readonly path: string;
+
+  @clv.IsArray()
+  @clv.ValidateNested({each: true})
+  @clt.Type(() => Source)
+  @swg.ApiProperty({type: [Source]})
+  readonly media: Array<Source>;
 }

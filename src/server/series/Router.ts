@@ -44,7 +44,7 @@ export class Router implements nst.OnModuleInit {
     const seriesList = await this.seriesService.listAsync(section.paths);
     const series = seriesList.find(x => x.id === params.resourceId);
     if (!series) throw new nst.NotFoundException();
-    return series;
+    return new app.api.models.Series(series);
   }
   
   @nst.Get(':sectionId/:resourceId/:mediaId')
