@@ -15,17 +15,18 @@ export class Service {
     private readonly contextService: app.core.ContextService) {}
 
   async checkAsync(sectionId: string, rootPaths: Array<string>) {
-    const purgeAsync = this.cacheService.createPurgeable(`movies.${sectionId}`);
-    const result: Array<app.api.models.MovieListItem> = [];
-    await Promise.all(rootPaths.map(async (rootPath) => {
-      for await (const {movie, streamMap} of this.rebuildAsync(rootPath)) {
-        await new MovieCache(sectionId, movie.id).saveAsync(movie);
-        await new StreamCache(sectionId, movie.id).saveAsync(streamMap);
-        result.push(new app.api.models.MovieListItem({...movie, images: movie.media.images}));
-      }
-    }));
-    await new SectionCache(sectionId).saveAsync(result);
-    await purgeAsync();
+    await this.cacheService.forAsync(`movies.${sectionId}`, async () => {
+      const section: Array<app.api.models.MovieListItem> = [];
+      const sectionCache = new SectionCache(sectionId);
+      await Promise.all(rootPaths.map(async (rootPath) => {
+        for await (const {movie, streamMap} of this.rebuildAsync(rootPath)) {
+          await new MovieCache(sectionId, movie.id).saveAsync(movie);
+          await new StreamCache(sectionId, movie.id).saveAsync(streamMap);
+          section.push(new app.api.models.MovieListItem({...movie, images: movie.media.images}));
+        }
+      }));
+      await sectionCache.saveAsync(section);
+    });
   }
 
   private async *rebuildAsync(rootPath: string) {

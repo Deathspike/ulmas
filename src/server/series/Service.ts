@@ -16,17 +16,18 @@ export class Service {
     private readonly contextService: app.core.ContextService) {}
   
   async checkAsync(sectionId: string, rootPaths: Array<string>) {
-    const purgeAsync = this.cacheService.createPurgeable(`series.${sectionId}`);
-    const result: Array<app.api.models.SeriesListItem> = [];
-    await Promise.all(rootPaths.map(async (rootPath) => {
-      for await (const {series, streamMap} of this.rebuildAsync(rootPath)) {
-        await new SeriesCache(sectionId, series.id).saveAsync(series);
-        await new StreamCache(sectionId, series.id).saveAsync(streamMap);
-        result.push(new app.api.models.SeriesListItem(series));
-      }
-    }));
-    await new SectionCache(sectionId).saveAsync(result);
-    await purgeAsync();
+    await this.cacheService.forAsync(`series.${sectionId}`, async () => {
+      const section: Array<app.api.models.SeriesListItem> = [];
+      const sectionCache = new SectionCache(sectionId);
+      await Promise.all(rootPaths.map(async (rootPath) => {
+        for await (const {series, streamMap} of this.rebuildAsync(rootPath)) {
+          await new SeriesCache(sectionId, series.id).saveAsync(series);
+          await new StreamCache(sectionId, series.id).saveAsync(streamMap);
+          section.push(new app.api.models.SeriesListItem(series));
+        }
+      }));
+      await sectionCache.saveAsync(section);
+    });
   }
 
   private async *rebuildAsync(rootPath: string) {
