@@ -4,6 +4,11 @@ export class Movies {
   constructor(
     private readonly baseUrl: string) {}
 
+  async checkAsync() {
+    const method = 'PUT';
+    return await api.ServerResponse.emptyAsync(this.baseUrl, {method});
+  }
+
   async listAsync(params: api.params.Section) {
     const url = new URL(`${params.sectionId}`, this.baseUrl).toString();
     return await api.ServerResponse.jsonAsync<Array<api.models.ItemOfMovies>>(url);

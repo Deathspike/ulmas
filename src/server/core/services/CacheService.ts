@@ -4,58 +4,65 @@ import * as nst from '@nestjs/common';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+const logger = new nst.Logger('Cache');
 
 @nst.Injectable()
 export class CacheService implements nst.OnModuleInit {
-  private readonly current: Record<string, Promise<Object> | mod.Cache>;
-  private readonly previous: Record<string, mod.Cache>;
-  private readonly path: string;
+  private readonly current: Record<string, mod.Cache>;
+  private readonly invalid: Record<string, string>;
+  private readonly pending: Record<string, Promise<Object>>;
+  private readonly rootPath: string;
 
   constructor() {
     const packageData = require('../../../../package');
     this.current = {};
-    this.previous = {};
-    this.path = path.join(os.homedir(), packageData.name, packageData.version);
+    this.invalid = {};
+    this.pending = {};
+    this.rootPath = path.join(os.homedir(), packageData.name, packageData.version);
   }
 
   async cacheAsync<T>(type: string, resourcePath: string, forceUpdate: boolean, createAsync: () => Promise<T>) {
-    const cachePath = path.join(this.path, `${type}-${app.createId(resourcePath)}`);
-    const cache = this.previous[cachePath] ?? this.current[cachePath];
-    if (!cache || forceUpdate) {
-      return this.current[cachePath] = (async () => {
-        const value = await createAsync();
-        const cache = new mod.Cache(type, value);
-        await fs.promises.writeFile(cachePath, JSON.stringify(cache));
-        this.current[cachePath] = cache;
-        return value;
-      })();
-    } else if (cache instanceof Promise) {
-      return await cache as T;
-    } else {
-      return cache.value as T;
-    }
+    const cachePath = path.join(this.rootPath, `${type}-${app.createId(resourcePath)}`);
+    const cache = this.current[cachePath];
+    if (cache && !forceUpdate) return cache.value as T;
+    this.pending[cachePath] ??= this.runAsync(type, cachePath, createAsync);
+    return await this.pending[cachePath] as T;
+  }
+
+  invalidate(type: string) {
+    Object.entries(this.current)
+      .filter(([_, x]) => x.type === type)
+      .forEach(([k, v]) => this.invalid[k] = v.type);
+    return async () => {
+      const cachePaths = Object.entries(this.invalid)
+        .filter(([_, x]) => x === type)
+        .map(([x]) => x);
+      for (const cachePath of cachePaths) {
+        delete this.invalid[cachePath];
+        if (this.current[cachePath]) continue;
+        await fs.promises.unlink(cachePath);
+      }
+    };
   }
 
   async onModuleInit() {
-    await fs.promises.mkdir(this.path, {recursive: true});
-    const cacheNames = await fs.promises.readdir(this.path);
-    const cachePaths = cacheNames.map(x => path.join(this.path, x));
+    const cacheNames = await fs.promises.readdir(this.rootPath).catch(() => []);
+    const cachePaths = cacheNames.map(x => path.join(this.rootPath, x));
     await app.sequenceAsync(cachePaths, async (cachePath) => {
       const cache = await fs.promises.readFile(cachePath, 'utf-8')
         .then(x => JSON.parse(x) as mod.Cache)
-        .catch(() => {});
-      if (cache) this.previous[cachePath] = cache;
+        .catch(() => logger.warn(`Invalid cache: ${cachePath}`));
+      if (cache) this.current[cachePath] = cache;
     });
   }
 
-  async pruneAsync(type: string) {
-    const cachePaths = Object.entries(this.previous)
-      .filter(([_, x]) => x.type === type)
-      .map(([x]) => x);
-    for (const cachePath of cachePaths) {
-      delete this.previous[cachePath];
-      if (this.current[cachePath]) continue;
-      await fs.promises.unlink(cachePath);
-    }
+  private async runAsync<T>(type: string, cachePath: string, createAsync: () => Promise<T>) {
+    const cache = new mod.Cache(type, await createAsync());
+    await fs.promises.mkdir(this.rootPath, {recursive: true});
+    await fs.promises.writeFile(cachePath, JSON.stringify(cache));
+    this.current[cachePath] = cache;
+    delete this.invalid[cachePath];
+    delete this.pending[cachePath];
+    return cache.value;
   }
 }

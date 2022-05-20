@@ -10,15 +10,24 @@ export class Service {
     private readonly cacheService: app.core.CacheService,
     private readonly contextService: app.core.ContextService) {}
 
-  async listAsync(rootPaths: Array<string>, forceUpdate = false) {
+  async listAsync(rootPaths: Array<string>) {
     const moviePaths = await app.sequenceAsync(
       rootPaths,
-      x => this.fetchAsync(x, forceUpdate));
+      x => this.fetchAsync(x, false));
     const movies = await app.sequenceAsync(
       moviePaths.flatMap(x => x),
       x => this.loadAsync(x, false));
     movies.sort((a, b) => a.title.localeCompare(b.title));
     return movies;
+  }
+  
+  async refreshAsync(rootPaths: Array<string>) {
+    await app.sequenceAsync(rootPaths, async (x) => {
+      const startTime = Date.now();
+      logger.verbose(`Checking ${x}`);
+      await this.fetchAsync(x, true);
+      logger.verbose(`Finished ${x} in ${Date.now() - startTime}ms`);
+    });
   }
 
   private async fetchAsync(rootPath: string, forceUpdate: boolean) {

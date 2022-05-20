@@ -13,8 +13,7 @@ export class Sections {
     const body = JSON.stringify(model);
     const headers = {'Content-Type': 'application/json'};
     const method = 'POST';
-    const url = this.baseUrl;
-    return await api.ServerResponse.emptyAsync(url, {body, method, headers});
+    return await api.ServerResponse.emptyAsync(this.baseUrl, {body, method, headers});
   }
 
   async deleteAsync(params: api.params.Section) {

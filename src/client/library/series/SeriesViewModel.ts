@@ -12,8 +12,7 @@ export class SeriesViewModel {
   async refreshAsync() {
     const series = await app.server.series.detailAsync({sectionId: this.sectionId, resourceId: this.resourceId});
     if (series.value) {
-      this.episodes = series.value.episodes.map(x => new app.SeriesEpisodeViewModel(this.sectionId, this.resourceId, x));
-      this.title = series.value.title;
+      this.source = series.value;
     } else if (series.statusCode === 404) {
       // Handle not found.
     } else {
@@ -21,9 +20,23 @@ export class SeriesViewModel {
     }
   }
 
-  @mobx.observable
-  episodes = new Array<app.SeriesEpisodeViewModel>();
+  @mobx.computed
+  get episodes() {
+    return this.source?.episodes.map(x => new app.SeriesEpisodeViewModel(this.sectionId, this.resourceId, x)) ?? [];
+  }
+
+  @mobx.computed
+  get posterUrl() {
+    // Media selection is really bad, but sufficient before the rework of the media access mechanism.
+    const media = this.source?.media.find(x => x.path.includes('poster'));
+    return media && app.server.series.mediaUrl({sectionId: this.sectionId, resourceId: this.resourceId, mediaId: media.id});
+  }
+
+  @mobx.computed
+  get title() {
+    return this.source?.title;
+  }
 
   @mobx.observable
-  title = '';
+  private source?: app.api.models.Series = undefined;
 }

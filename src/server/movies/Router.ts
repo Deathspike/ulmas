@@ -3,14 +3,26 @@ import * as mod from '.';
 import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
 import express from 'express';
+const logger = new nst.Logger('Movies');
 
 @nst.Controller('api/movies')
 @swg.ApiTags('movies')
-export class Router {
+export class Router implements nst.OnModuleInit {
   constructor(
+    private readonly cacheService: app.core.CacheService,
     private readonly moviesService: mod.Service,
     private readonly sectionsService: app.sections.Service) {}
 
+  @nst.Put()
+  @nst.HttpCode(204)
+  @swg.ApiResponse({status: 204})
+  async checkAsync() {
+    const invalidator = this.cacheService.invalidate('movies');
+    const sectionList = await this.sectionsService.readAsync('movies');
+    await this.moviesService.refreshAsync(Array.from(new Set(sectionList.flatMap(x => x.paths))));
+    await invalidator();
+  }
+  
   @app.Validator([app.api.models.ItemOfMovies])
   @nst.Get(':sectionId')
   @swg.ApiResponse({status: 200, type: [app.api.models.ItemOfMovies]})
@@ -50,8 +62,12 @@ export class Router {
     response.sendFile(media.path, () => response.status(404).end());
   }
 
+  onModuleInit() {
+    this.checkAsync().catch(x => logger.error(x));
+  }
+  
   private async sectionAsync(sectionId: string) {
-    const sectionList = await this.sectionsService.readAsync();
+    const sectionList = await this.sectionsService.readAsync('movies');
     const section = sectionList.find(x => x.id === sectionId);
     if (!section) throw new nst.NotFoundException();
     return section;

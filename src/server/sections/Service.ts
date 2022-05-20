@@ -20,10 +20,10 @@ export class Service {
     await Context.saveAsync(getContextPath(), this.context);
   }
 
-  async readAsync() {
+  async readAsync(sectionType?: string) {
     this.context ??= await Context.loadAsync(getContextPath());
     this.context.sections.sort((a, b) => a.title.localeCompare(b.title));
-    return this.context.sections;
+    return sectionType ? this.context.sections.filter(x => x.type === sectionType) : this.context.sections;
   }
 
   async updateAsync(section: app.api.models.Section) {
