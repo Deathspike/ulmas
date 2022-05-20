@@ -6,7 +6,6 @@ export class SeriesInfo {
   constructor(seriesInfo?: SeriesInfo) {
     this.title = seriesInfo?.title ?? '';
     this.dateAdded = seriesInfo?.dateAdded;
-    this.lastPlayed = seriesInfo?.lastPlayed;
     this.plot = seriesInfo?.plot;
   }
 
@@ -24,10 +23,6 @@ export class SeriesInfo {
   @clv.IsOptional()
   @clv.IsDateString()
   readonly dateAdded?: string;
-
-  @clv.IsOptional()
-  @clv.IsDateString()
-  readonly lastPlayed?: string;
 
   @clv.IsOptional()
   @clv.IsString()

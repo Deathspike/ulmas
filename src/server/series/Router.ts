@@ -49,6 +49,19 @@ export class Router {
     response.type('json');
     response.sendFile(cache.fullPath, () => response.status(404).end());
   }
+
+  @nst.Patch(':sectionId/:resourceId')
+  @nst.HttpCode(204)
+  @swg.ApiResponse({status: 204})
+  @swg.ApiResponse({status: 404})
+  async patchAsync(
+    @nst.Param() params: app.api.params.Resource,
+    @nst.Body() body: app.api.bodies.Series) {
+    const cache = new SectionCache(params.sectionId);
+    const stats = await fs.promises.stat(cache.fullPath).catch(() => {});
+    if (!stats) await this.checkAsync(params);
+    await this.seriesService.patchAsync(params.sectionId, params.resourceId, body);
+  }
   
   @nst.Get(':sectionId/:resourceId/:mediaId')
   @swg.ApiResponse({status: 200})

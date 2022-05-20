@@ -1,17 +1,17 @@
 import * as cheerio from 'cheerio';
+import {DateTime} from 'luxon';
 
 export class SeriesInfoXml {
   private constructor(
-    private readonly root: cheerio.Cheerio<cheerio.Element>) {}
+    private readonly $: cheerio.CheerioAPI) {}
 
   static async parseAsync(xml: string) {
     const $ = cheerio.load(xml, {xml: true});
-    const root = $('tvshow');
-    return new SeriesInfoXml(root);
+    return new SeriesInfoXml($);
   }
 
   get title() {
-    const value = this.root.find('> title')
+    const value = this.$('tvshow > title')
       .first()
       .text();
     return value.length
@@ -20,25 +20,16 @@ export class SeriesInfoXml {
   }
 
   get dateAdded() {
-    const value = this.root.find('> dateadded')
+    const value = this.$('tvshow > dateadded')
       .first()
       .text();
     return value.length
-      ? new Date(value).toISOString()
+      ? DateTime.fromSQL(value).toISO()
       : undefined;
   }
 
-  get lastPlayed() {
-    const value = this.root.find('> lastPlayed')
-      .first()
-      .text();
-    return value.length
-      ? new Date(value).toISOString()
-      : undefined;
-  }
-  
   get plot() {
-    const value = this.root.find('> plot')
+    const value = this.$('tvshow > plot')
       .first()
       .text();
     return value.length

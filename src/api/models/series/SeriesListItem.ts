@@ -7,11 +7,11 @@ export class SeriesListItem {
   constructor(source?: SeriesListItem) {
     this.id = source?.id ?? '';
     this.images = source?.images;
-    this.title = source?.title ?? '';
-    this.dateAdded = source?.dateAdded;
     this.dateEpisodeAdded = source?.dateEpisodeAdded;
     this.lastPlayed = source?.lastPlayed;
     this.unwatchedCount = source?.unwatchedCount;
+    this.title = source?.title ?? '';
+    this.dateAdded = source?.dateAdded;
   }
   
   @clv.IsString()
@@ -27,16 +27,6 @@ export class SeriesListItem {
   @swg.ApiPropertyOptional({type: [MediaFile]})
   readonly images?: Array<MediaFile>;
   
-  @clv.IsString()
-  @clv.IsNotEmpty()
-  @swg.ApiProperty()
-  readonly title: string;
-  
-  @clv.IsOptional()
-  @clv.IsDateString()
-  @swg.ApiPropertyOptional()
-  readonly dateAdded?: string;
-
   @clv.IsOptional()
   @clv.IsDateString()
   @swg.ApiPropertyOptional()
@@ -52,4 +42,14 @@ export class SeriesListItem {
   @clv.Min(1)
   @swg.ApiPropertyOptional()
   readonly unwatchedCount?: number;
+
+  @clv.IsString()
+  @clv.IsNotEmpty()
+  @swg.ApiProperty()
+  readonly title: string;
+  
+  @clv.IsOptional()
+  @clv.IsDateString()
+  @swg.ApiPropertyOptional()
+  readonly dateAdded?: string;
 }

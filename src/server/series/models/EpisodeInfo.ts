@@ -3,6 +3,7 @@ import * as clt from 'class-transformer';
 import * as clv from 'class-validator';
 import {EpisodeInfoXml} from './EpisodeInfoXml';
 import fs from 'fs';
+import path from 'path';
 
 export class EpisodeInfo {
   constructor(episodeInfo?: EpisodeInfo) {
@@ -22,6 +23,15 @@ export class EpisodeInfo {
     const episodeInfo = new EpisodeInfo(episodeInfoXml);
     await clv.validateOrReject(episodeInfo);
     return episodeInfo;
+  }
+
+  static async saveAsync(fullPath: string, episodeInfo: EpisodeInfo) {
+    await clv.validateOrReject(episodeInfo);
+    const episodeInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(EpisodeInfoXml.parseAsync);
+    app.mergeSetters(episodeInfo, episodeInfoXml);
+    await fs.promises.mkdir(path.dirname(fullPath), {recursive: true});
+    await fs.promises.writeFile(`${fullPath}.tmp`, episodeInfoXml.toString());
+    await fs.promises.rename(`${fullPath}.tmp`, fullPath);
   }
 
   @clv.IsNumber()
