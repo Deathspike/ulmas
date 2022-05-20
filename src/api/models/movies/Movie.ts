@@ -10,7 +10,7 @@ export class Movie {
     this.path = source?.path ?? '';
     this.media = source?.media ?? new Media();
     this.title = source?.title ?? '';
-    this.dateAdded = source?.dateAdded;
+    this.dateAdded = source?.dateAdded ?? '';
     this.lastPlayed = source?.lastPlayed;
     this.playCount = source?.playCount;
     this.plot = source?.plot;
@@ -38,10 +38,9 @@ export class Movie {
   @swg.ApiProperty()
   readonly title: string;
 
-  @clv.IsOptional()
   @clv.IsDateString()
-  @swg.ApiPropertyOptional()
-  readonly dateAdded?: string;
+  @swg.ApiProperty()
+  readonly dateAdded: string;
 
   @clv.IsOptional()
   @clv.IsDateString()

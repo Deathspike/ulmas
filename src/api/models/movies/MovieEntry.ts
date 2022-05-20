@@ -8,7 +8,7 @@ export class MovieEntry {
     this.id = source?.id ?? '';
     this.images = source?.images;
     this.title = source?.title ?? '';
-    this.dateAdded = source?.dateAdded;
+    this.dateAdded = source?.dateAdded ?? '';
     this.lastPlayed = source?.lastPlayed;
     this.watched = source?.watched;
   }
@@ -31,10 +31,9 @@ export class MovieEntry {
   @swg.ApiProperty()
   readonly title: string;
   
-  @clv.IsOptional()
   @clv.IsDateString()
-  @swg.ApiPropertyOptional()
-  readonly dateAdded?: string;
+  @swg.ApiProperty()
+  readonly dateAdded: string;
   
   @clv.IsOptional()
   @clv.IsDateString()

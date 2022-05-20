@@ -11,7 +11,7 @@ export class SeriesEntry {
     this.lastPlayed = source?.lastPlayed;
     this.unwatchedCount = source?.unwatchedCount;
     this.title = source?.title ?? '';
-    this.dateAdded = source?.dateAdded;
+    this.dateAdded = source?.dateAdded ?? '';
   }
   
   @clv.IsString()
@@ -48,8 +48,7 @@ export class SeriesEntry {
   @swg.ApiProperty()
   readonly title: string;
   
-  @clv.IsOptional()
   @clv.IsDateString()
-  @swg.ApiPropertyOptional()
-  readonly dateAdded?: string;
+  @swg.ApiProperty()
+  readonly dateAdded: string;
 }

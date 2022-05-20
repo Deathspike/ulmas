@@ -12,7 +12,7 @@ export class Episode {
     this.episode = source?.episode ?? NaN;
     this.season = source?.season ?? NaN;
     this.title = source?.title ?? '';
-    this.dateAdded = source?.dateAdded;
+    this.dateAdded = source?.dateAdded ?? '';
     this.lastPlayed = source?.lastPlayed;
     this.playCount = source?.playCount;
     this.plot = source?.plot;
@@ -50,10 +50,9 @@ export class Episode {
   @swg.ApiProperty()
   readonly title: string;
 
-  @clv.IsOptional()
   @clv.IsDateString()
-  @swg.ApiPropertyOptional()
-  readonly dateAdded?: string;
+  @swg.ApiProperty()
+  readonly dateAdded: string;
 
   @clv.IsOptional()
   @clv.IsDateString()
