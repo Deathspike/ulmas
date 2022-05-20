@@ -3,8 +3,8 @@ import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
 import {MediaStatus} from '../../models/MediaStatus';
 
-export class Episode {
-  constructor(source?: Episode) {
+export class EpisodePatch {
+  constructor(source?: EpisodePatch) {
     this.id = source?.id ?? '';
     this.resume = source?.resume;
     this.watched = source?.watched;

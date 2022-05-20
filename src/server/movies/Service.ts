@@ -1,5 +1,6 @@
 import * as app from '..';
 import * as nst from '@nestjs/common';
+import {DateTime} from 'luxon';
 import {MovieCache} from './cache/MovieCache';
 import {SectionCache} from './cache/SectionCache';
 import {MovieInfo} from './models/MovieInfo';
@@ -10,10 +11,12 @@ const logger = new nst.Logger('Movies');
 export class Service {
   constructor(
     private readonly cacheService: app.core.CacheService,
-    private readonly contextService: app.core.ContextService) {}
+    private readonly contextService: app.core.ContextService,
+    private readonly lockService: app.core.LockService) {}
 
   async checkAsync(sectionId: string, rootPaths: Array<string>) {
-    await this.cacheService.forAsync(`movies.${sectionId}`, async () => {
+    await this.lockService.lockAsync(sectionId, async () => {
+      const purgeAsync = this.cacheService.createPurgeable(`movies.${sectionId}`);
       const section: Array<app.api.models.MovieListItem> = [];
       const sectionCache = new SectionCache(sectionId);
       await Promise.all(rootPaths.map(async (rootPath) => {
@@ -23,6 +26,26 @@ export class Service {
         }
       }));
       await sectionCache.saveAsync(section);
+      await purgeAsync();
+    });
+  }
+
+  async patchAsync(sectionId: string, movieId: string, moviePatch: app.api.bodies.MoviePatch) {
+    return await this.lockService.lockAsync(sectionId, async () => {
+      const sectionCache = new SectionCache(sectionId);
+      const section = await sectionCache.loadAsync();
+      const movieIndex = section.findIndex(x => x.id === movieId);
+      if (movieIndex !== -1) {
+        const movieCache = new MovieCache(sectionId, movieId);
+        const movie = await movieCache.loadAsync();
+        const movieUpdate = this.rebuildMovie(movie, moviePatch);
+        section[movieIndex] = new app.api.models.MovieListItem(movieUpdate);
+        await MovieInfo.saveAsync(movie.path, movieUpdate);
+        await Promise.all([sectionCache.saveAsync(section), movieCache.saveAsync(movieUpdate)]);
+        return true;
+      } else {
+        return false;
+      }
     });
   }
 
@@ -63,5 +86,11 @@ export class Service {
       path: moviePath,
       media: new app.api.models.Media({images, subtitles, videos})
     });
+  }
+
+  private rebuildMovie(movie: app.api.models.Movie, moviePatch: app.api.bodies.MoviePatch) {
+    const lastPlayed = moviePatch.watched ? DateTime.now().toISO() : movie.lastPlayed;
+    const playCount = moviePatch.watched ? (movie.playCount ?? 0) + 1 : movie.playCount;
+    return new app.api.models.Movie({...movie, ...moviePatch, lastPlayed, playCount});
   }
 }

@@ -29,7 +29,7 @@ export class Router {
   @nst.Get(':sectionId')
   @swg.ApiResponse({status: 200, type: [app.api.models.SeriesListItem]})
   @swg.ApiResponse({status: 404})
-  async everyAsync(
+  async entriesAsync(
     @nst.Param() params: app.api.params.Section,
     @nst.Response() response: express.Response) {
     const cache = new SectionCache(params.sectionId);
@@ -56,11 +56,11 @@ export class Router {
   @swg.ApiResponse({status: 404})
   async patchAsync(
     @nst.Param() params: app.api.params.Resource,
-    @nst.Body() body: app.api.bodies.Series) {
+    @nst.Body() body: app.api.bodies.SeriesPatch) {
     const cache = new SectionCache(params.sectionId);
     const stats = await fs.promises.stat(cache.fullPath).catch(() => {});
     if (!stats) await this.checkAsync(params);
-    await this.seriesService.patchAsync(params.sectionId, params.resourceId, body);
+    if (!await this.seriesService.patchAsync(params.sectionId, params.resourceId, body)) throw new nst.NotFoundException();
   }
   
   @nst.Get(':sectionId/:resourceId/:mediaId')

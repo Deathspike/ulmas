@@ -12,10 +12,12 @@ const logger = new nst.Logger('Series');
 export class Service {
   constructor(
     private readonly cacheService: app.core.CacheService,
-    private readonly contextService: app.core.ContextService) {}
+    private readonly contextService: app.core.ContextService,
+    private readonly lockService: app.core.LockService) {}
   
   async checkAsync(sectionId: string, rootPaths: Array<string>) {
-    await this.cacheService.forAsync(`series.${sectionId}`, async () => {
+    await this.lockService.lockAsync(sectionId, async () => {
+      const purgeAsync = this.cacheService.createPurgeable(`series.${sectionId}`);
       const section: Array<app.api.models.SeriesListItem> = [];
       const sectionCache = new SectionCache(sectionId);
       await Promise.all(rootPaths.map(async (rootPath) => {
@@ -25,31 +27,27 @@ export class Service {
         }
       }));
       await sectionCache.saveAsync(section);
+      await purgeAsync();
     });
   }
 
-  async patchAsync(sectionId: string, seriesId: string, seriesPatch: app.api.bodies.Series) {
-    const sectionCache = new SectionCache(sectionId);
-    const section = await sectionCache.loadAsync();
-    const seriesIndex = section.findIndex(x => x.id === seriesId);
-    if (seriesIndex !== -1) {
-      const seriesCache = new SeriesCache(sectionId, seriesId);
-      const series = await seriesCache.loadAsync();
-      for (const episodePatch of seriesPatch.episodes) {
-        const episodeIndex = series.episodes.findIndex(x => x.id === episodePatch.id);
-        const episode = episodeIndex !== -1 && series.episodes[episodeIndex];
-        if (episode) series.episodes[episodeIndex] = this.rebuildEpisode(episode, episodePatch);
+  async patchAsync(sectionId: string, seriesId: string, seriesPatch: app.api.bodies.SeriesPatch) {
+    return await this.lockService.lockAsync(sectionId, async () => {
+      const sectionCache = new SectionCache(sectionId);
+      const section = await sectionCache.loadAsync();
+      const seriesIndex = section.findIndex(x => x.id === seriesId);
+      if (seriesIndex !== -1) {
+        const seriesCache = new SeriesCache(sectionId, seriesId);
+        const series = await seriesCache.loadAsync();
+        const seriesUpdate = this.rebuildSeries(series, seriesPatch);
+        section[seriesIndex] = new app.api.models.SeriesListItem(seriesUpdate);
+        await Promise.all(series.episodes.map(x => x instanceof app.api.models.Episode && EpisodeInfo.saveAsync(x.path, x)));
+        await Promise.all([sectionCache.saveAsync(section), seriesCache.saveAsync(seriesUpdate)]);
+        return true;
+      } else {
+        return false;
       }
-      if (seriesPatch.episodes) {
-        const newSeries = section[seriesIndex] = this.rebuildSeries(series);
-        await Promise.all(series.episodes
-          .filter(x => x instanceof app.api.models.Episode)
-          .map(x => EpisodeInfo.saveAsync(x.path, x)));
-        await Promise.all([
-          sectionCache.saveAsync(section),
-          seriesCache.saveAsync(newSeries)]);
-      }
-    }
+    });
   }
 
   private async *buildAsync(rootPath: string) {
@@ -89,9 +87,9 @@ export class Service {
       id: app.id(seriesPath),
       path: seriesPath,
       images, episodes,
-      dateEpisodeAdded: this.recalculateDateEpisodeAdded(episodes),
-      lastPlayed: this.recalculateLastPlayed(episodes),
-      unwatchedCount: this.recalculateUnwatchedCount(episodes)
+      dateEpisodeAdded: this.refreshEpisodeAdded(episodes),
+      lastPlayed: this.refreshLastPlayed(episodes),
+      unwatchedCount: this.refreshUnwatchedCount(episodes)
     });
   }
   
@@ -115,33 +113,39 @@ export class Service {
       media: new app.api.models.Media({images, subtitles, videos})
     });
   }
-  
-  private rebuildSeries(series: app.api.models.Series) {
-    const dateEpisodeAdded = this.recalculateDateEpisodeAdded(series.episodes);
-    const lastPlayed = this.recalculateLastPlayed(series.episodes);
-    const unwatchedCount = this.recalculateUnwatchedCount(series.episodes);
-    return new app.api.models.Series({...series, dateEpisodeAdded, lastPlayed, unwatchedCount});
+
+  private rebuildSeries(series: app.api.models.Series, seriesPatch: app.api.bodies.SeriesPatch) {
+    seriesPatch.episodes
+      .map(x => ({i: series.episodes.findIndex(y => y.id === x.id), x}))
+      .filter(({i}) => i !== -1)
+      .forEach(({x, i}) => series.episodes[i] = this.rebuildEpisode(series.episodes[i], x));
+    return new app.api.models.Series({
+      ...series,
+      dateEpisodeAdded: this.refreshEpisodeAdded(series.episodes),
+      lastPlayed: this.refreshLastPlayed(series.episodes),
+      unwatchedCount: this.refreshUnwatchedCount(series.episodes)
+    });
   }
 
-  private rebuildEpisode(episode: app.api.models.Episode, episodePatch: app.api.bodies.Episode) {
+  private rebuildEpisode(episode: app.api.models.Episode, episodePatch: app.api.bodies.EpisodePatch) {
     const lastPlayed = episodePatch.watched ? DateTime.now().toISO() : episode.lastPlayed;
     const playCount = episodePatch.watched ? (episode.playCount ?? 0) + 1 : episode.playCount;
     return new app.api.models.Episode({...episode, ...episodePatch, lastPlayed, playCount});
   }
 
-  private recalculateDateEpisodeAdded(episodes: Array<app.api.models.Episode>) {
+  private refreshEpisodeAdded(episodes: Array<app.api.models.Episode>) {
     const datesAdded = ensure(episodes.map(x => x.dateAdded));
     datesAdded.sort((a, b) => b.localeCompare(a));
     return datesAdded.length ? datesAdded[0] : undefined;
   }
 
-  private recalculateLastPlayed(episodes: Array<app.api.models.Episode>) {
+  private refreshLastPlayed(episodes: Array<app.api.models.Episode>) {
     const lastPlayed = ensure(episodes.map(x => x.lastPlayed));
     lastPlayed.sort((a, b) => b.localeCompare(a));
     return lastPlayed.length ? lastPlayed[0] : undefined;
   }
 
-  private recalculateUnwatchedCount(episodes: Array<app.api.models.Episode>) {
+  private refreshUnwatchedCount(episodes: Array<app.api.models.Episode>) {
     let unwatchedEpisodes = 0;
     for (const episode of episodes) if (!episode.watched) unwatchedEpisodes++;
     return unwatchedEpisodes;

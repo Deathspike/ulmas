@@ -1,16 +1,16 @@
 import * as clt from 'class-transformer';
 import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
-import {Episode} from './Episode';
+import {EpisodePatch} from './EpisodePatch';
 
-export class Series {
-  constructor(source?: Series) {
+export class SeriesPatch {
+  constructor(source?: SeriesPatch) {
     this.episodes = source?.episodes ?? [];
   }
   
   @clv.IsArray()
   @clv.ValidateNested({each: true})
-  @clt.Type(() => Episode)
-  @swg.ApiProperty({type: [Episode]})
-  readonly episodes: Array<Episode>;
+  @clt.Type(() => EpisodePatch)
+  @swg.ApiProperty({type: [EpisodePatch]})
+  readonly episodes: Array<EpisodePatch>;
 }

@@ -3,6 +3,7 @@ import * as clt from 'class-transformer';
 import * as clv from 'class-validator';
 import {MovieInfoXml} from './MovieInfoXml';
 import fs from 'fs';
+import path from 'path';
 
 export class MovieInfo {
   constructor(movieInfo?: MovieInfo) {
@@ -20,6 +21,15 @@ export class MovieInfo {
     const movieInfo = new MovieInfo(movieInfoXml);
     await clv.validateOrReject(movieInfo);
     return movieInfo;
+  }
+
+  static async saveAsync(fullPath: string, movie: MovieInfo) {
+    await clv.validateOrReject(movie);
+    const movieInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(MovieInfoXml.parseAsync);
+    app.mergeSetters(movie, movieInfoXml);
+    await fs.promises.mkdir(path.dirname(fullPath), {recursive: true});
+    await fs.promises.writeFile(`${fullPath}.tmp`, movieInfoXml.toString());
+    await fs.promises.rename(`${fullPath}.tmp`, fullPath);
   }
 
   @clv.IsString()

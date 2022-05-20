@@ -9,7 +9,7 @@ export class Sections {
     return await api.ServerResponse.jsonAsync<Array<api.models.Section>>(url);
   }
   
-  async createAsync(model: api.models.SectionCreate) {
+  async createAsync(model: api.bodies.SectionCreate) {
     const body = JSON.stringify(model);
     const headers = {'Content-Type': 'application/json'};
     const method = 'POST';
@@ -22,7 +22,7 @@ export class Sections {
     return await api.ServerResponse.emptyAsync(url, {method});
   }
   
-  async updateAsync(sectionId: string, model: api.models.SectionUpdate) {
+  async updateAsync(sectionId: string, model: api.bodies.SectionUpdate) {
     const body = JSON.stringify(model);
     const headers = {'Content-Type': 'application/json'};
     const method = 'PUT';
