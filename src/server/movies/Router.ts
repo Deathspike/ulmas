@@ -2,8 +2,8 @@ import * as app from '..';
 import * as mod from '.';
 import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
-import {mapItem} from './maps/mapItem';
-import {mapMovie} from './maps/mapMovie';
+import {remapEntry} from './remaps/remapEntry';
+import {remapMovie} from './remaps/remapMovie';
 import express from 'express';
 const logger = new nst.Logger('Movies');
 
@@ -21,7 +21,8 @@ export class Router implements nst.OnModuleInit {
   async checkAsync() {
     const invalidator = this.cacheService.invalidate('movies');
     const sectionList = await this.sectionsService.readAsync('movies');
-    await this.moviesService.refreshAsync(Array.from(new Set(sectionList.flatMap(x => x.paths))));
+    const paths = new Set(sectionList.flatMap(x => x.paths));
+    await this.moviesService.refreshAsync(Array.from(paths));
     await invalidator();
   }
   
@@ -33,7 +34,7 @@ export class Router implements nst.OnModuleInit {
     @nst.Param() params: app.api.params.Section) {
     const section = await this.sectionAsync(params.sectionId);
     const movieList = await this.moviesService.listAsync(section.paths);
-    return movieList.map(mapItem);
+    return movieList.map(remapEntry);
   }
 
   @app.Validator(app.api.models.Movie)
@@ -43,7 +44,7 @@ export class Router implements nst.OnModuleInit {
   async detailAsync(
     @nst.Param() params: app.api.params.Resource) {
     const movie = await this.valueAsync(params.sectionId, params.resourceId);
-    return mapMovie(movie);
+    return remapMovie(movie);
   }
 
   @nst.Get(':sectionId/:resourceId/:mediaId')

@@ -2,8 +2,8 @@ import * as app from '..';
 import * as mod from '.';
 import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
-import {mapItem} from './maps/mapItem';
-import {mapSeries} from './maps/mapSeries';
+import {remapEntry} from './remaps/remapEntry';
+import {remapSeries} from './remaps/remapSeries';
 import express from 'express';
 const logger = new nst.Logger('Series');
 
@@ -21,7 +21,8 @@ export class Router implements nst.OnModuleInit {
   async checkAsync() {
     const invalidator = this.cacheService.invalidate('series');
     const sectionList = await this.sectionsService.readAsync('series');
-    await this.seriesService.refreshAsync(Array.from(new Set(sectionList.flatMap(x => x.paths))));
+    const paths = new Set(sectionList.flatMap(x => x.paths));
+    await this.seriesService.refreshAsync(Array.from(paths));
     await invalidator();
   }
   
@@ -33,7 +34,7 @@ export class Router implements nst.OnModuleInit {
     @nst.Param() params: app.api.params.Section) {
     const section = await this.sectionAsync(params.sectionId);
     const seriesList = await this.seriesService.listAsync(section.paths);
-    return seriesList.map(mapItem);
+    return seriesList.map(remapEntry);
   }
 
   @app.Validator(app.api.models.Series)
@@ -43,7 +44,7 @@ export class Router implements nst.OnModuleInit {
   async detailAsync(
     @nst.Param() params: app.api.params.Resource) {
     const series = await this.valueAsync(params.sectionId, params.resourceId);
-    return mapSeries(series);
+    return remapSeries(series);
   }
   
   @nst.Get(':sectionId/:resourceId/:mediaId')

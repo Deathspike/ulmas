@@ -55,9 +55,6 @@ export class Service {
         .contextAsync(pathData.dir);
       const seriesInfo = await SeriesInfo
         .loadAsync(seriesPath);
-      const images = Object.entries(context.images)
-        .filter(([x]) => Object.keys(context.info).every(y => !x.startsWith(`${y.replace(/\.[^\.]*$/, '')}-`)))
-        .map(([_, x]) => new Source({id: app.id(x.fullPath), path: x.fullPath, mtime: x.mtimeMs, type: 'image'}));
       const rootEpisodes = await app.sequenceAsync(
         Object.entries(context.info).filter(([x]) => x !== 'tvshow.nfo'),
         ([_, x]) => this.loadEpisodeAsync(context, x.fullPath).catch(() => logger.warn(`Invalid episode: ${x}`)));
@@ -70,6 +67,9 @@ export class Service {
       const episodes = ensure(rootEpisodes
         .concat(subdirEpisodes))
         .sort((a, b) => a.season !== b.season ? a.season - b.season : a.episode - b.episode);
+      const images = Object.values(context.images)
+        .filter(x => episodes.every(y => y.sources.every(z => z.path !== x.fullPath)))
+        .map(x => new Source({id: app.id(x.fullPath), path: x.fullPath, mtime: x.mtimeMs, type: 'image'}));
       return new Series({
         ...seriesInfo,
         id: app.id(seriesPath),
