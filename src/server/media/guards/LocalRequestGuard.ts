@@ -3,7 +3,7 @@ import express from 'express';
 import ipaddr from 'ipaddr.js';
 
 @nst.Injectable()
-export class LocalRequestFilter implements nst.CanActivate {
+export class LocalRequestGuard implements nst.CanActivate {
   canActivate(context: nst.ExecutionContext) {
     const request = context.switchToHttp().getRequest() as express.Request;
     const ip = ipaddr.parse(request.ip);
