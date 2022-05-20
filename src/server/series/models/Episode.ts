@@ -11,7 +11,7 @@ export class Episode {
   }
 
   static async loadAsync(filePath: string) {
-    const episodeXml = await fs.promises.readFile(filePath).then(EpisodeXml.parseAsync);
+    const episodeXml = await fs.promises.readFile(filePath, 'utf-8').then(EpisodeXml.parseAsync);
     const episode = new Episode(episodeXml);
     await clv.validateOrReject(episode);
     return episode;

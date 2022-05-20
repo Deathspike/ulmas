@@ -9,7 +9,7 @@ export class Series {
   }
 
   static async loadAsync(filePath: string) {
-    const seriesXml = await fs.promises.readFile(filePath).then(SeriesXml.parseAsync);
+    const seriesXml = await fs.promises.readFile(filePath, 'utf-8').then(SeriesXml.parseAsync);
     const series = new Series(seriesXml);
     await clv.validateOrReject(series);
     return series;

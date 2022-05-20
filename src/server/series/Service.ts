@@ -27,6 +27,7 @@ export class Service {
     return series;
   }
 
+  // [CACHE] When introducing cache, use episodeDetailAsync to prime that cache, too.
   async seriesDetailAsync(seriesPath: string) {
     const episodes: Array<app.api.models.SeriesEpisode> = [];
     const seriesInfo = await Series.loadAsync(path.join(seriesPath, 'tvshow.nfo'));

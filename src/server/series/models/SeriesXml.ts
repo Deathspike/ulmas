@@ -2,10 +2,10 @@ import xml2js from 'xml2js';
 
 export class SeriesXml {
   private constructor(
-    private readonly source: Xml = {}) {}
+    private readonly source: ParsedXml = {}) {}
 
-  static async parseAsync(buffer: Buffer) {
-    const source = await xml2js.parseStringPromise(buffer);
+  static async parseAsync(xml: string) {
+    const source = await xml2js.parseStringPromise(xml);
     return new SeriesXml(source);
   }
 
@@ -22,7 +22,7 @@ export class SeriesXml {
   }
 }
 
-type Xml = {
+type ParsedXml = {
   tvshow?: {
     plot?: Array<string>;
     title?: Array<string>;

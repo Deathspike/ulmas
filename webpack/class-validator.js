@@ -1,6 +1,4 @@
-export function ArrayNotEmpty() {}
 export function IsArray() {}
-export function IsBoolean() {}
 export function IsIn() {}
 export function IsNotEmpty() {}
 export function IsNumber() {}
