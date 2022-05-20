@@ -5,7 +5,7 @@ import * as ui from 'client/ui';
 
 export function PageView(props: {vm: app.PageViewModel}) {
   return (
-    <LazyLoad style={styles.pageContainer} once resize>
+    <LazyLoad style={styles.pageContainer} once resize unmountIfInvisible>
       <ui.material.Grid sx={styles.page}>
         {props.vm.movies.map(x => <app.MovieView key={x.id} vm={x} />)}
       </ui.material.Grid>
