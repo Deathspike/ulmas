@@ -31,9 +31,16 @@ function createWindow() {
 }
 
 function onWebBeforeInputEvent(event: electron.Event, input: electron.Input) {
-  if (input.key !== 'F12') return;
-  mainWindow.webContents.toggleDevTools();
-  event.preventDefault();
+  switch (input.key) {
+    case 'F11':
+      mainWindow.setFullScreen(!mainWindow.isFullScreen());
+      event.preventDefault();
+      break;
+    case 'F12':
+      mainWindow.webContents.toggleDevTools();
+      event.preventDefault();
+      break;
+  }
 }
 
 function onWindowClose() {
