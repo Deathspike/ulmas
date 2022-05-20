@@ -1,7 +1,6 @@
 import * as app from '.';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
-import * as ReactLocation from '@tanstack/react-location';
 import * as ui from 'client/ui';
 import {Container} from 'typedi';
 
@@ -16,14 +15,16 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
   render() {
     return (
       <ui.HeaderView title={this.props.vm.title}>
-        {this.props.vm.movies?.map(x =>
-          <ui.material.Grid key={x.id}>
-            <ReactLocation.Link to={x.id}>
-              {x.title}
-            </ReactLocation.Link>
-          </ui.material.Grid>
-        )}
+        <ui.material.Paper sx={styles.movieContainer} square>
+          {this.props.vm.pages?.map((x, i) => <app.PageView key={i} vm={x} />)}
+        </ui.material.Paper>
       </ui.HeaderView>
     );
   }
 }
+
+const styles = {
+  movieContainer: {
+    padding: '1vw 2vw'
+  }
+};

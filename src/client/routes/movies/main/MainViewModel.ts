@@ -10,6 +10,7 @@ export class MainViewModel {
 
   constructor(
     private readonly apiService: core.ApiService,
+    private readonly mediaService: core.MediaService,
     private readonly routeService: core.RouteService) {
     mobx.makeObservable(this);
   }
@@ -29,11 +30,14 @@ export class MainViewModel {
   }
 
   @mobx.computed
-  get movies() {
-    return this.moviesSource
+  get pages() {
+    const movies = this.moviesSource
       ?.slice()
       ?.sort((a, b) => b.dateAdded.localeCompare(a.dateAdded))
-      ?.map(x => new app.MovieViewModel(x.id, x.title));
+      ?.map(x => new app.MovieViewModel(x.id, this.mediaService.movieImageUrl(x, 'poster'), x.title));
+    return movies
+      ? Array.from(createPages(movies))
+      : undefined;
   }
   
   @mobx.computed
@@ -48,4 +52,11 @@ export class MainViewModel {
   
   @mobx.observable
   private moviesSource?: Array<api.models.MovieEntry>;
+}
+
+function *createPages(movies: Array<app.MovieViewModel>) {
+  while (movies.length) {
+    const result = movies.splice(0, 24);
+    yield new app.PageViewModel(result);
+  }
 }

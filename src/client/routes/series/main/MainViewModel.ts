@@ -56,7 +56,7 @@ export class MainViewModel {
 
 function *createPages(series: Array<app.SeriesViewModel>) {
   while (series.length) {
-    const spliced = series.splice(0, 24);
-    yield new app.PageViewModel(spliced);
+    const result = series.splice(0, 24);
+    yield new app.PageViewModel(result);
   }
 }
