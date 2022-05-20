@@ -5,7 +5,7 @@ import {Service} from './Service';
 import {mapMovie} from './maps/mapMovie';
 import {mapMovieListItem} from './maps/mapMovieListItem';
 import express from 'express';
-import inspector from 'node:inspector';
+import inspector from 'inspector';
 const logger = new nst.Logger('Movies');
 
 @nst.Controller('api/movies')

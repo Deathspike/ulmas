@@ -5,7 +5,7 @@ import {Service} from './Service';
 import {mapSeriesListItem} from './maps/mapSeriesListItem';
 import {mapSeries} from './maps/mapSeries';
 import express from 'express';
-import inspector from 'node:inspector';
+import inspector from 'inspector';
 const logger = new nst.Logger('Series');
 
 @nst.Controller('api/series')
