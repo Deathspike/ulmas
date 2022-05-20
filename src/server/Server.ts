@@ -3,6 +3,7 @@ import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
 import {NestFactory} from '@nestjs/core';
 import express from 'express';
+import path from 'path';
 
 export class Server {
   private constructor(
@@ -27,7 +28,8 @@ export class Server {
   }
 
   private attachStaticFiles() {
-    this.server.use(express.static('public'));
+    const publicPath = path.join(__dirname, '../../public');
+    this.server.use(express.static(publicPath));
   }
 
   private attachSwagger() {

@@ -1,24 +1,43 @@
 {
   "version": "0.2.0",
   "compounds": [{
-    "name": "Client & Server",
-    "configurations": ["Server", "Client"]
+    "name": "Electron",
+    "configurations": ["Electron Main", "Electron Renderer"],
+    "preLaunchTask": "Webpack",
+    "presentation": {"order": 1}
   }],
   "configurations": [{
+    "args" : ["dist/electron/app.js"],
+    "name": "Electron Main",
+    "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+    "outputCapture": "std",
+    "presentation": {"hidden": true},
+    "request": "launch",
+    "runtimeArgs": ["--remote-debugging-port=9000"],
+    "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+    "type": "node",
+    "windows": {"runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"}
+  }, {
+    "name": "Electron Renderer",
+    "outFiles": ["${workspaceFolder}/dist/**/*"],
+    "presentation": {"hidden": true},
+    "request": "attach",
+    "port": 9000,
+    "type": "pwa-chrome"
+  }, {
+    "name": "Standalone Client",
+    "outFiles": ["${workspaceFolder}/dist/**/*"],
+    "preLaunchTask": "Webpack",
+    "request": "launch",
+    "type": "pwa-chrome",
+    "url": "http://localhost:8080/"
+  }, {
     "args": ["bin/dms"],
-    "name": "Server",
+    "name": "Standalone Server",
     "outFiles": ["${workspaceFolder}/dist/**/*"],
     "outputCapture": "std",
     "preLaunchTask": "TypeScript",
     "request": "launch",
     "type": "node"
-  }, {
-    "name": "Client",
-    "outFiles": ["${workspaceFolder}/dist/**/*"],
-    "outputCapture": "std",
-    "preLaunchTask": "Webpack",
-    "request": "launch",
-    "type": "pwa-chrome",
-    "url": "http://localhost:8080/"
   }]
 }

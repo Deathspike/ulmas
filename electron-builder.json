@@ -1,0 +1,22 @@
+{
+  "appId": "com.dms.app",
+  "directories": {
+    "output": "build"
+  },
+  "extraMetadata": {
+    "main": "dist/electron/app.js"
+  },
+  "files": [
+    {"from": "", "to": "", "filter": ["dist/**/*"]},
+    {"from": "", "to": "", "filter": ["public/**/*"]}
+  ],
+  "linux": {
+    "icon": "electron-icon.png"
+  },
+  "mac": {
+    "icon": "electron-icon.png"
+  },
+  "win": {
+    "icon": "electron-icon.png"
+  }
+}
