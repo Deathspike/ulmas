@@ -30,12 +30,15 @@ export class Service {
 
   private async *rebuildAsync(rootPath: string) {
     const context = await this.contextService.contextAsync(rootPath);
-    for (const {fullPath} of Object.values(context.info)) {
-      const streamMap = new StreamMap();
-      const movie = await this
-        .rebuildMovieAsync(context, fullPath, streamMap)
-        .catch(() => logger.error(`Invalid movie: ${fullPath}`));
-      if (movie) yield {movie, streamMap};
+    for (const {fullPath} of Object.values(context.directories)) {
+      const context = await this.contextService.contextAsync(fullPath);
+      for (const {fullPath} of Object.values(context.info)) {
+        const streamMap = new StreamMap();
+        const movie = await this
+          .rebuildMovieAsync(context, fullPath, streamMap)
+          .catch(() => logger.error(`Invalid movie: ${fullPath}`));
+        if (movie) yield {movie, streamMap};
+      }
     }
   }
 
