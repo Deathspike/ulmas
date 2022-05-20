@@ -9,7 +9,7 @@ export class Episode {
     this.path = source?.path ?? '';
     this.media = source?.media ?? [];
     this.episode = source?.episode ?? NaN;
-    this.plot = source?.plot ?? '';
+    this.plot = source?.plot ?? undefined;
     this.season = source?.season ?? NaN;
     this.title = source?.title ?? '';
   }

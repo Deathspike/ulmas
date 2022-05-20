@@ -9,7 +9,7 @@ export class Series {
     this.path = source?.path ?? '';
     this.media = source?.media ?? [];
     this.episodes = source?.episodes ?? [];
-    this.plot = source?.plot ?? '';
+    this.plot = source?.plot ?? undefined;
     this.title = source?.title ?? '';
   }
   
