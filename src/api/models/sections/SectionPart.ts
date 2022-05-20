@@ -1,12 +1,11 @@
-import * as api from '../..';
 import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
 
 export class SectionPart {
-  constructor(source?: SectionPart, sourcePatch?: Partial<SectionPart>) {
-    this.paths = api.property('paths', source, sourcePatch, []);
-    this.title = api.property('title', source, sourcePatch, '');
-    this.type = api.property('type', source, sourcePatch, '');
+  constructor(source?: SectionPart) {
+    this.paths = source?.paths ?? [];
+    this.title = source?.title ?? '';
+    this.type = source?.type ?? '';
   }
 
   @clv.IsArray()

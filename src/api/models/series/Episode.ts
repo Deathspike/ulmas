@@ -1,18 +1,17 @@
-import * as api from '../..';
 import * as clv from 'class-validator';
 import * as clt from 'class-transformer';
 import * as mod from '..';
 import * as swg from '@nestjs/swagger';
 
 export class Episode {
-  constructor(source?: Episode, sourcePatch?: Partial<Episode>) {
-    this.id = api.property('id', source, sourcePatch, '');
-    this.path = api.property('path', source, sourcePatch, '');
-    this.media = api.property('media', source, sourcePatch, []);
-    this.episode = api.property('episode', source, sourcePatch, NaN);
-    this.plot = api.property('plot', source, sourcePatch, '');
-    this.season = api.property('season', source, sourcePatch, NaN);
-    this.title = api.property('title', source, sourcePatch, '');
+  constructor(source?: Episode) {
+    this.id = source?.id ?? '';
+    this.path = source?.path ?? '';
+    this.media = source?.media ?? [];
+    this.episode = source?.episode ?? NaN;
+    this.plot = source?.plot ?? '';
+    this.season = source?.season ?? NaN;
+    this.title = source?.title ?? '';
   }
   
   @clv.IsString()

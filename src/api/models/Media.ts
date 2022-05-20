@@ -1,12 +1,11 @@
-import * as api from '..';
 import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
 
 export class Media {
-  constructor(source?: Media, sourcePatch?: Partial<Media>) {
-    this.id = api.property('id', source, sourcePatch, '');
-    this.path = api.property('path', source, sourcePatch, '');
-    this.type = api.property('type', source, sourcePatch, '');
+  constructor(source?: Media) {
+    this.id = source?.id ?? '';
+    this.path = source?.path ?? '';
+    this.type = source?.type ?? '';
   }
   
   @clv.IsString()

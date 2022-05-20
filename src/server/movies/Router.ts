@@ -31,7 +31,8 @@ export class Router implements nst.OnModuleInit {
     @nst.Param() params: app.api.params.Section) {
     const section = await this.sectionAsync(params.sectionId);
     const movieList = await this.moviesService.listAsync(section.paths);
-    return movieList.map(x => new app.api.models.ItemOfMovies(x, {
+    return movieList.map(x => new app.api.models.ItemOfMovies({
+      ...x,
       media: x.media.filter(x => x.type === 'image')
     }));
   }

@@ -1,12 +1,11 @@
-import * as api from '../..';
 import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
 
 export class MediaRequest {
-  constructor(source?: MediaRequest, sourcePatch?: Partial<MediaRequest>) {
-    this.position = api.property('position', source, sourcePatch, NaN);
-    this.subtitleUrls = api.property('subtitleUrls', source, sourcePatch, []);
-    this.videoUrl = api.property('videoUrl', source, sourcePatch, '');
+  constructor(source?: MediaRequest) {
+    this.position = source?.position ?? NaN;
+    this.subtitleUrls = source?.subtitleUrls ?? [];
+    this.videoUrl = source?.videoUrl ?? '';
   }
   
   @clv.IsNumber()
