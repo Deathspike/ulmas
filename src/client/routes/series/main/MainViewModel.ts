@@ -1,7 +1,7 @@
 import * as api from 'api';
 import * as app from '.';
 import * as mobx from 'mobx';
-import {core} from '@/core';
+import {core} from 'client/core';
 
 export class MainViewModel {
   constructor(

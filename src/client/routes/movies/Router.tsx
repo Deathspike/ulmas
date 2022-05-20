@@ -1,7 +1,7 @@
 import * as app from '.';
 import * as React from 'react';
 import * as ReactLocation from '@tanstack/react-location';
-import * as ui from '@/ui';
+import * as ui from 'client/ui';
 
 export function Router() {
   return [

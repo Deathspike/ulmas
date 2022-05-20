@@ -1,6 +1,6 @@
 import * as api from 'api';
 import * as mobx from 'mobx';
-import {core} from '@/core';
+import {core} from 'client/core';
 
 // TODO: Handle cancellation. If we navigate away, mpv should stop (trying to) play.
 export class MainViewModel {

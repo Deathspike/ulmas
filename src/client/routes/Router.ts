@@ -1,5 +1,5 @@
 import * as app from '.';
-import * as ui from '@/ui';
+import * as ui from 'client/ui';
 
 export function Router() {
   return [
