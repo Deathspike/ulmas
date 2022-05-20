@@ -1,24 +1,20 @@
 export class ServerResponse<T> {
   private constructor(
-    private readonly response: Response,
-    private readonly result?: T) {}
+    readonly status = 0,
+    readonly value?: T) {}
 
   static async emptyAsync(url: string, options?: RequestInit) {
-    const response = await fetch(url, options);
-    return new ServerResponse<void>(response);
+    return await this.jsonAsync<void>(url, options);
   }
 
   static async jsonAsync<T>(url: string, options?: RequestInit) {
-    const response = await fetch(url, options);
-    const result = await response.json();
-    return new ServerResponse<T>(response, response.status >= 200 && response.status < 300 ? result : undefined);
-  }
-
-  get statusCode() {
-    return this.response.status;
-  }
-
-  get value() {
-    return this.result;
+    const response = await fetch(url, options)
+      .catch(() => {});
+    const value = response && response.status >= 200 && response.status < 300
+      ? await response.json().catch(() => {})
+      : undefined;
+    return response
+      ? new ServerResponse<T>(response.status, value)
+      : new ServerResponse<T>();
   }
 }
