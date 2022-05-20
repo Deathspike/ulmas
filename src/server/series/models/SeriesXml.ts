@@ -9,15 +9,7 @@ export class SeriesXml {
     return new SeriesXml(source);
   }
 
-  get seasons() {
-    return this.source.tvshow
-      ?.namedseason
-      ?.map(x => typeof x !== 'string' ? x : {$: {number: []}, _: x})
-      ?.sort((a, b) => Number(a.$.number?.[0]) - Number(b.$.number?.[0]))
-      ?.map(x => x._);
-  }
-
-  get synopsis() {
+  get plot() {
     return this.source.tvshow
       ?.plot
       ?.find(Boolean);
@@ -32,7 +24,6 @@ export class SeriesXml {
 
 type Xml = {
   tvshow?: {
-    namedseason?: Array<string | {$: {number: Array<string>}, _: string}>;
     plot?: Array<string>;
     title?: Array<string>;
   }

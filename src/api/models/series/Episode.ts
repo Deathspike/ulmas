@@ -6,8 +6,9 @@ export class Episode {
   constructor(source?: Episode, sourcePatch?: Partial<Episode>) {
     this.id = api.property('id', source, sourcePatch, '');
     this.path = api.property('path', source, sourcePatch, '');
-    this.number = api.property('number', source, sourcePatch, 0);
-    this.synopsis = api.property('synopsis', source, sourcePatch, '');
+    this.episode = api.property('episode', source, sourcePatch, NaN);
+    this.plot = api.property('plot', source, sourcePatch, '');
+    this.season = api.property('season', source, sourcePatch, NaN);
     this.title = api.property('title', source, sourcePatch, '');
   }
   
@@ -24,16 +25,21 @@ export class Episode {
   @clv.IsNumber()
   @clv.Min(1)
   @swg.ApiProperty()
-  readonly number: number;
+  readonly episode: number;
 
   @clv.IsOptional()
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiPropertyOptional()
-  readonly synopsis?: string;
+  readonly plot?: string;
 
-  @clv.IsOptional()
+  @clv.IsNumber()
+  @clv.Min(0)
+  @swg.ApiProperty()
+  readonly season: number;
+
   @clv.IsString()
-  @swg.ApiPropertyOptional()
-  readonly title?: string;
+  @clv.IsNotEmpty()
+  @swg.ApiProperty()
+  readonly title: string;
 }

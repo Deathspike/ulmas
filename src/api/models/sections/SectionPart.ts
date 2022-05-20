@@ -6,7 +6,7 @@ export class SectionPart {
   constructor(source?: SectionPart, sourcePatch?: Partial<SectionPart>) {
     this.paths = api.property('paths', source, sourcePatch, []);
     this.title = api.property('title', source, sourcePatch, '');
-    this.type = api.property('type', source, sourcePatch, 'series');
+    this.type = api.property('type', source, sourcePatch, '');
   }
 
   @clv.IsArray()

@@ -58,7 +58,7 @@ export class Router {
   async episodeDetailAsync(
     @nst.Param() params: app.api.params.Episode) {
     const series = await this.seriesDetailAsync(params);
-    const episode = series.seasons.flatMap(x => x.episodes).find(x => x.id === params.episodeId);
+    const episode = series.episodes.find(x => x.id === params.episodeId);
     if (!episode) throw new nst.NotFoundException();
     return await this.seriesService.episodeDetailAsync(episode.path);
   }
@@ -71,7 +71,7 @@ export class Router {
     @nst.Query() query: app.api.queries.Image,
     @nst.Response() response: express.Response) {
     const episode = await this.episodeDetailAsync(params);
-    const filePath = await this.mediaService.imageAsync(`${episode.path}-${query.imageName}`);
+    const filePath = await this.mediaService.imageAsync(episode.path.replace(/\..*$/, `-${query.imageName}`));
     if (!filePath) throw new nst.NotFoundException();
     response.attachment(filePath);
     response.sendFile(filePath, () => response.status(404).end());
@@ -84,9 +84,7 @@ export class Router {
     @nst.Param() params: app.api.params.Episode,
     @nst.Response() response: express.Response) {
     const episode = await this.episodeDetailAsync(params);
-    const filePath = await this.mediaService.videoAsync(episode.path);
-    if (!filePath) throw new nst.NotFoundException();
-    response.attachment(filePath);
-    response.sendFile(filePath, () => response.status(404).end());
+    response.attachment(episode.path);
+    response.sendFile(episode.path, () => response.status(404).end());
   }
 }

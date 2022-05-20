@@ -9,7 +9,7 @@ export class MovieXml {
     return new MovieXml(source);
   }
 
-  get synopsis() {
+  get plot() {
     return this.source.movie
       ?.plot
       ?.find(Boolean);

@@ -14,7 +14,7 @@ export class SeriesViewModel {
     const seriesId = this.seriesId;
     const series = await app.server.series.seriesDetailAsync({sectionId, seriesId});
     if (series.value) {
-      this.seasons = series.value.seasons.map(x => new app.SeriesSeasonViewModel(this.sectionId, this.seriesId, x));
+      this.episodes = series.value.episodes.map(x => new app.SeriesEpisodeViewModel(this.sectionId, this.seriesId, x));
       this.title = series.value.title;
     } else if (series.statusCode === 404) {
       // Handle not found.
@@ -24,7 +24,7 @@ export class SeriesViewModel {
   }
 
   @mobx.observable
-  seasons = new Array<app.SeriesSeasonViewModel>();
+  episodes = new Array<app.SeriesEpisodeViewModel>();
 
   @mobx.observable
   title = '';

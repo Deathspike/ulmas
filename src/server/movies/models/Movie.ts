@@ -4,12 +4,12 @@ import fs from 'fs';
 
 export class Movie {
   constructor(movieXml: MovieXml) {
-    this.synopsis = movieXml.synopsis;
+    this.plot = movieXml.plot;
     this.title = movieXml.title;
   }
 
-  static async loadAsync(moviePath: string) {
-    const movieXml = await fs.promises.readFile(`${moviePath}.nfo`).then(MovieXml.parseAsync);
+  static async loadAsync(filePath: string) {
+    const movieXml = await fs.promises.readFile(filePath).then(MovieXml.parseAsync);
     const movie = new Movie(movieXml);
     await clv.validateOrReject(movie);
     return movie;
@@ -18,7 +18,7 @@ export class Movie {
   @clv.IsOptional()
   @clv.IsString()
   @clv.IsNotEmpty()
-  readonly synopsis?: string;
+  readonly plot?: string;
   
   @clv.IsString()
   @clv.IsNotEmpty()

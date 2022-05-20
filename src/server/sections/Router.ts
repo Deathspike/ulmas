@@ -30,13 +30,9 @@ export class Router {
 
   @nst.Post()
   @swg.ApiResponse({status: 201})
-  @swg.ApiResponse({status: 409})
   async createAsync(
     @nst.Body() model: app.api.models.SectionPart) {
-    const id = app.createId(model.title);
-    const sectionList = await this.sectionListAsync();
-    const section = sectionList.find(x => x.id === id);
-    if (section) throw new nst.ConflictException();
+    const id = Date.now().toString(16);
     await this.sectionsService.createAsync(new app.api.models.Section({...model, id}));
   }
 

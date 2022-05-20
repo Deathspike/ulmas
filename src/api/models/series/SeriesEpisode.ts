@@ -1,15 +1,14 @@
 import * as api from '../..';
 import * as clv from 'class-validator';
-import * as clt from 'class-transformer';
-import * as mod from '..';
 import * as swg from '@nestjs/swagger';
 
-export class SeriesSeason {
-  constructor(source?: SeriesSeason, sourcePatch?: Partial<SeriesSeason>) {
+export class SeriesEpisode {
+  constructor(source?: SeriesEpisode, sourcePatch?: Partial<SeriesEpisode>) {
     this.id = api.property('id', source, sourcePatch, '');
     this.path = api.property('path', source, sourcePatch, '');
-    this.episodes = api.property('episodes', source, sourcePatch, []);
-    this.number = api.property('number', source, sourcePatch, 0);
+    this.episode = api.property('episode', source, sourcePatch, NaN);
+    this.plot = api.property('plot', source, sourcePatch, '');
+    this.season = api.property('season', source, sourcePatch, NaN);
     this.title = api.property('title', source, sourcePatch, '');
   }
   
@@ -23,16 +22,21 @@ export class SeriesSeason {
   @swg.ApiProperty()
   readonly path: string;
 
-  @clv.IsArray()
-  @clv.ValidateNested({each: true})
-  @clt.Type(() => mod.SeriesSeasonEpisode)
-  @swg.ApiProperty({type: [mod.SeriesSeasonEpisode]})
-  readonly episodes: Array<mod.SeriesSeasonEpisode>;
+  @clv.IsNumber()
+  @clv.Min(1)
+  @swg.ApiProperty()
+  readonly episode: number;
+
+  @clv.IsOptional()
+  @clv.IsString()
+  @clv.IsNotEmpty()
+  @swg.ApiPropertyOptional()
+  readonly plot?: string;
 
   @clv.IsNumber()
   @clv.Min(0)
   @swg.ApiProperty()
-  readonly number: number;
+  readonly season: number;
 
   @clv.IsString()
   @clv.IsNotEmpty()

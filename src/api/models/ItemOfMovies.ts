@@ -6,7 +6,7 @@ export class ItemOfMovies {
   constructor(source?: ItemOfMovies, sourcePatch?: Partial<ItemOfMovies>) {
     this.id = api.property('id', source, sourcePatch, '');
     this.path = api.property('path', source, sourcePatch, '');
-    this.synopsis = api.property('synopsis', source, sourcePatch, '');
+    this.plot = api.property('plot', source, sourcePatch, undefined);
     this.title = api.property('title', source, sourcePatch, '');
   }
   
@@ -24,7 +24,7 @@ export class ItemOfMovies {
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiPropertyOptional()
-  readonly synopsis?: string;
+  readonly plot?: string;
   
   @clv.IsString()
   @clv.IsNotEmpty()

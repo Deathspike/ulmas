@@ -9,23 +9,30 @@ export class EpisodeXml {
     return new EpisodeXml(source);
   }
 
-  get number() {
+  get episode() {
     return this.source.episodedetails
       ?.episode
       ?.map(Number)
       ?.find(Boolean) ?? 0;
   }
 
-  get synopsis() {
+  get plot() {
     return this.source.episodedetails
       ?.plot
       ?.find(Boolean);
+  }
+
+  get season() {
+    return this.source.episodedetails
+      ?.season
+      ?.map(Number)
+      ?.find(Boolean) ?? 0;
   }
   
   get title() {
     return this.source.episodedetails
       ?.title
-      ?.find(Boolean);
+      ?.find(Boolean) ?? '';
   }
 }
 
@@ -33,6 +40,7 @@ type Xml = {
   episodedetails?: {
     episode?: Array<string>;
     plot?: Array<string>;
+    season?: Array<string>;
     title?: Array<string>;
   }
 };

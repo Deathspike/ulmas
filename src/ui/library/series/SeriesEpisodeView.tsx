@@ -3,7 +3,7 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 
 @mobxReact.observer
-export class SeriesSeasonEpisodeView extends React.Component<{vm: app.SeriesSeasonEpisodeViewModel}> {
+export class SeriesEpisodeView extends React.Component<{vm: app.SeriesEpisodeViewModel}> {
   render() {
     return (
       <div>

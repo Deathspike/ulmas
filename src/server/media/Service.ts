@@ -1,24 +1,26 @@
 import * as nst from '@nestjs/common';
 import fs from 'fs';
+import path from 'path';
 
 @nst.Injectable()
 export class Service {
-  async imageAsync(imagePath: string) {
+  async imageAsync(filePath: string) {
     const extensions = ['.gif', '.jpg', '.png', '.webp'];
-    const filePaths = await fileAsync(imagePath, extensions);
-    return filePaths.find(Boolean);
+    const imagePaths = await fileAsync(filePath, extensions);
+    return imagePaths.find(Boolean);
   }
 
-  async videoAsync(videoPath: string) {
+  async videoAsync(filePath: string) {
     const extensions = ['.avi', '.mp4', '.mkv', '.ogm', '.webm'];
-    const filePaths = await fileAsync(videoPath, extensions);
-    return filePaths.find(Boolean);
+    const videoPaths = await fileAsync(filePath, extensions);
+    return videoPaths.find(Boolean);
   }
 }
 
-async function fileAsync(itemPath: string, extensions: Array<string>) {
+async function fileAsync(resourcePath: string, extensions: Array<string>) {
+  const resource = path.parse(resourcePath);
   return await Promise.all(extensions.map(async (extension) => {
-    const filePath = itemPath + extension;
+    const filePath = path.join(resource.dir, resource.name + extension);
     const stat = await fs.promises.stat(filePath).catch(() => undefined);
     return stat && filePath;
   }));

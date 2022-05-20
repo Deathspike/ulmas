@@ -7,7 +7,7 @@ export class Section {
     this.id = api.property('id', source, sourcePatch, '');
     this.paths = api.property('paths', source, sourcePatch, []);
     this.title = api.property('title', source, sourcePatch, '');
-    this.type = api.property('type', source, sourcePatch, 'series');
+    this.type = api.property('type', source, sourcePatch, '');
   }
 
   @clv.IsString()

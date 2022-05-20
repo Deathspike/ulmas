@@ -44,7 +44,7 @@ export class Router {
     @nst.Query() query: app.api.queries.Image,
     @nst.Response() response: express.Response) {
     const movie = await this.movieDetailAsync(params);
-    const filePath = await this.mediaService.imageAsync(`${movie.path}-${query.imageName}`);
+    const filePath = await this.mediaService.imageAsync(movie.path.replace(/\..*$/, `-${query.imageName}`));
     if (!filePath) throw new nst.NotFoundException();
     response.attachment(filePath);
     response.sendFile(filePath, () => response.status(404).end());
@@ -57,9 +57,7 @@ export class Router {
     @nst.Param() params: app.api.params.Movie,
     @nst.Response() response: express.Response) {
     const movie = await this.movieDetailAsync(params);
-    const filePath = await this.mediaService.videoAsync(movie.path);
-    if (!filePath) throw new nst.NotFoundException();
-    response.attachment(filePath);
-    response.sendFile(filePath, () => response.status(404).end());
+    response.attachment(movie.path);
+    response.sendFile(movie.path, () => response.status(404).end());
   }
 }

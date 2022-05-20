@@ -1,11 +1,11 @@
 import * as app from '.';
 import * as mobx from 'mobx';
 
-export class SeriesSeasonEpisodeViewModel {
+export class SeriesEpisodeViewModel {
   constructor(
     private readonly sectionId: string,
     private readonly seriesId: string,
-    private readonly episode: app.api.models.SeriesSeasonEpisode) {
+    private readonly episode: app.api.models.SeriesEpisode) {
     mobx.makeObservable(this);
   }
 
@@ -16,9 +16,9 @@ export class SeriesSeasonEpisodeViewModel {
 
   @mobx.computed
   get title() {
-    const number = String(this.episode.number).padStart(2, '0');
-    const suffix = this.episode.title && ` - ${this.episode.title}`;
-    return number + suffix;
+    const episode = String(this.episode.episode).padStart(2, '0');
+    const season = String(this.episode.season).padStart(2, '0');
+    return `${season}x${episode} ${this.episode.title}`;
   }
 
   @mobx.computed
