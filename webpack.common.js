@@ -1,7 +1,7 @@
 module.exports = {
-  entry: './dist/ui/app',
+  entry: './dist/client/app',
   output: {
-    filename: 'ui.min.js',
+    filename: 'client.min.js',
     path: `${__dirname}/public`
   },
   resolve: {
