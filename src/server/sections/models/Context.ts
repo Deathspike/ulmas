@@ -26,6 +26,7 @@ export class Context {
   }
 
   @clv.IsArray()
+  @clv.ArrayNotEmpty()
   @clv.ValidateNested({each: true})
   @clt.Type(() => Section)
   readonly sections: Array<Section>;

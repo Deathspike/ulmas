@@ -11,6 +11,7 @@ export class SectionPart {
   @clv.IsArray()
   @clv.IsString({each: true})
   @clv.IsNotEmpty({each: true})
+  @clv.ArrayNotEmpty()
   @swg.ApiProperty()
   readonly paths: Array<string>;
   
@@ -18,7 +19,7 @@ export class SectionPart {
   @clv.IsNotEmpty()
   @swg.ApiProperty()
   readonly title: string;
-
+  
   @clv.IsString()
   @clv.IsIn(['movies', 'series'])
   @swg.ApiProperty({enum: ['movies', 'series']})

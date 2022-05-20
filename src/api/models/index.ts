@@ -1,4 +1,5 @@
 export * from './Media';
+export * from './MediaFile';
 export * from './media/MediaRequest';
 export * from './media/MediaStatus';
 export * from './sections/Section';

@@ -17,6 +17,7 @@ export class Section {
   @clv.IsArray()
   @clv.IsString({each: true})
   @clv.IsNotEmpty({each: true})
+  @clv.ArrayNotEmpty()
   @swg.ApiProperty()
   readonly paths: Array<string>;
   

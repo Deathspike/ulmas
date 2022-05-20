@@ -75,7 +75,7 @@ export class Service {
         id: app.id(seriesPath),
         path: seriesPath,
         episodes: episodes,
-        media: images
+        sources: images
       });
     });
   }
@@ -97,7 +97,7 @@ export class Service {
       ...episodeInfo,
       id: app.id(episodePath),
       path: episodePath,
-      media: images.concat(subtitles, videos)
+      sources: images.concat(subtitles, videos)
     });
   }
 }

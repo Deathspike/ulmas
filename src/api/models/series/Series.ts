@@ -6,9 +6,9 @@ import * as swg from '@nestjs/swagger';
 export class Series {
   constructor(source?: Series) {
     this.id = source?.id ?? '';
-    this.media = source?.media ?? [];
     this.episodes = source?.episodes ?? [];
-    this.plot = source?.plot ?? undefined;
+    this.images = source?.images ?? [];
+    this.plot = source?.plot;
     this.title = source?.title ?? '';
   }
   
@@ -25,9 +25,9 @@ export class Series {
 
   @clv.IsArray()
   @clv.ValidateNested({each: true})
-  @clt.Type(() => mod.Media)
-  @swg.ApiProperty({type: [mod.Media]})
-  readonly media: Array<mod.Media>;
+  @clt.Type(() => mod.MediaFile)
+  @swg.ApiProperty({type: [mod.MediaFile]})
+  readonly images: Array<mod.MediaFile>;
 
   @clv.IsOptional()
   @clv.IsString()

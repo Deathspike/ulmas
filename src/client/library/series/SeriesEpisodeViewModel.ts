@@ -11,18 +11,15 @@ export class SeriesEpisodeViewModel {
 
   @mobx.action
   async openAsync() {
-    const subtitleUrls = this.episode.media
-      .filter(x => x.type === 'subtitle')
+    const subtitleUrls = this.episode.media.subtitles
       .map(x => app.server.series.mediaUrl({sectionId: this.sectionId, resourceId: this.resourceId, mediaId: x.id}));
-    const videoUrl = this.episode.media
-      .filter(x => x.type === 'video')
+    const videoUrl = this.episode.media.videos
       .map(x => app.server.series.mediaUrl({sectionId: this.sectionId, resourceId: this.resourceId, mediaId: x.id}))
-      .find(Boolean) ?? '';
-    await app.server.media.mpvAsync(new app.api.models.MediaRequest({
-      position: 0,
-      subtitleUrls,
-      videoUrl
-    }));
+      .find(Boolean);
+    if (videoUrl) {
+      const position = 0;
+      await app.server.media.mpvAsync(new app.api.models.MediaRequest({position, subtitleUrls, videoUrl}));
+    }
   }
 
   @mobx.computed

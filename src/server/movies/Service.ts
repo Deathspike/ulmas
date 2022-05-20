@@ -69,7 +69,7 @@ export class Service {
         ...movieInfo,
         id: app.id(moviePath),
         path: moviePath,
-        media: images.concat(subtitles, videos)
+        sources: images.concat(subtitles, videos)
       });
     });
   }

@@ -1,25 +1,30 @@
 import * as clv from 'class-validator';
+import * as clt from 'class-transformer';
+import * as mod from '.';
 import * as swg from '@nestjs/swagger';
 
 export class Media {
   constructor(source?: Media) {
-    this.id = source?.id ?? '';
-    this.path = source?.path ?? '';
-    this.type = source?.type ?? '';
+    this.images = source?.images ?? [];
+    this.subtitles = source?.subtitles ?? [];
+    this.videos = source?.videos ?? [];
   }
-  
-  @clv.IsString()
-  @clv.IsNotEmpty()
-  @swg.ApiProperty()
-  readonly id: string;
 
-  @clv.IsString()
-  @clv.IsNotEmpty()
-  @swg.ApiProperty()
-  readonly path: string;
-
-  @clv.IsString()
-  @clv.IsIn(['image', 'subtitle', 'video'])
-  @swg.ApiProperty({enum: ['image', 'subtitle', 'video']})
-  readonly type: string;
+  @clv.IsArray()
+  @clv.ValidateNested({each: true})
+  @clt.Type(() => mod.MediaFile)
+  @swg.ApiProperty({type: [mod.MediaFile]})
+  readonly images: Array<mod.MediaFile>;
+    
+  @clv.IsArray()
+  @clv.ValidateNested({each: true})
+  @clt.Type(() => mod.MediaFile)
+  @swg.ApiProperty({type: [mod.MediaFile]})
+  readonly subtitles: Array<mod.MediaFile>;
+    
+  @clv.IsArray()
+  @clv.ValidateNested({each: true})
+  @clt.Type(() => mod.MediaFile)
+  @swg.ApiProperty({type: [mod.MediaFile]})
+  readonly videos: Array<mod.MediaFile>;
 }

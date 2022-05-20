@@ -2,15 +2,15 @@ import xml2js from 'xml2js';
 
 export class ContextXml {
   constructor(
-    private readonly source: ParsedXml = {}) {}
+    private readonly value: ParsedXml = {}) {}
 
   static async parseAsync(buffer: Buffer) {
-    const source = await xml2js.parseStringPromise(buffer);
-    return new ContextXml(source);
+    const value = await xml2js.parseStringPromise(buffer);
+    return new ContextXml(value);
   }
 
   get sections() {
-    return this.source.sections?.section?.map(x => ({
+    return this.value.sections?.section?.map(x => ({
       id: x.id?.find(Boolean) ?? '',
       paths: x.path ?? [],
       title: x.title?.find(Boolean) ?? '',
@@ -19,12 +19,12 @@ export class ContextXml {
   }
 
   set sections(sections) {
-    this.source.sections ??= {};
-    this.source.sections.section = sections?.map(x => ({id: [x.id], path: x.paths, title: [x.title], type: [x.type]}));
+    this.value.sections ??= {};
+    this.value.sections.section = sections?.map(x => ({id: [x.id], path: x.paths, title: [x.title], type: [x.type]}));
   }
 
   toString() {
-    return new xml2js.Builder().buildObject(this.source);
+    return new xml2js.Builder().buildObject(this.value);
   }
 }
 

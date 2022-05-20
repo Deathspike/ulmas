@@ -2,21 +2,21 @@ import xml2js from 'xml2js';
 
 export class SeriesInfoXml {
   private constructor(
-    private readonly source: ParsedXml = {}) {}
+    private readonly value: ParsedXml = {}) {}
 
   static async parseAsync(xml: string) {
-    const source = await xml2js.parseStringPromise(xml);
-    return new SeriesInfoXml(source);
+    const value = await xml2js.parseStringPromise(xml);
+    return new SeriesInfoXml(value);
   }
 
   get plot() {
-    return this.source.tvshow
+    return this.value.tvshow
       ?.plot
       ?.find(Boolean);
   }
 
   get title() {
-    return this.source.tvshow
+    return this.value.tvshow
       ?.title
       ?.find(Boolean) ?? '';
   }

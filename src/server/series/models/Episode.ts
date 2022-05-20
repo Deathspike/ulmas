@@ -8,7 +8,7 @@ export class Episode extends EpisodeInfo {
     super(source);
     this.id = source?.id ?? '';
     this.path = source?.path ?? '';
-    this.media = source?.media ?? [];
+    this.sources = source?.sources ?? [];
   }
   
   @clv.IsString()
@@ -22,5 +22,5 @@ export class Episode extends EpisodeInfo {
   @clv.IsArray()
   @clv.ValidateNested({each: true})
   @clt.Type(() => Source)
-  readonly media: Array<Source>;
+  readonly sources: Array<Source>;
 }

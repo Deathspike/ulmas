@@ -2,7 +2,7 @@ import * as app from '..';
 import * as mod from '.';
 import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
-import {mapEntry} from './maps/mapEntry';
+import {mapItem} from './maps/mapItem';
 import {mapMovie} from './maps/mapMovie';
 import express from 'express';
 const logger = new nst.Logger('Movies');
@@ -33,7 +33,7 @@ export class Router implements nst.OnModuleInit {
     @nst.Param() params: app.api.params.Section) {
     const section = await this.sectionAsync(params.sectionId);
     const movieList = await this.moviesService.listAsync(section.paths);
-    return movieList.map(mapEntry);
+    return movieList.map(mapItem);
   }
 
   @app.Validator(app.api.models.Movie)
@@ -54,11 +54,11 @@ export class Router implements nst.OnModuleInit {
     @nst.Request() request: express.Request,
     @nst.Response() response: express.Response) {
     const movie = await this.valueAsync(params.sectionId, params.resourceId);
-    const media = movie.media.find(x => x.id === params.mediaId);
+    const media = movie.sources.find(x => x.id === params.mediaId);
     if (!media) throw new nst.NotFoundException();
     const mtime = Date.parse(request.headers['if-modified-since'] ?? '');
     if (mtime >= media.mtime) throw new nst.HttpException(media.path, 304);
-    response.sendFile(media.path);
+    response.sendFile(media.path, () => response.status(404).end());
   }
 
   onModuleInit() {

@@ -27,9 +27,8 @@ export class SeriesViewModel {
 
   @mobx.computed
   get posterUrl() {
-    // Media selection is really bad, but sufficient before the rework of the media access mechanism.
-    const media = this.source?.media.find(x => x.path.includes('poster'));
-    return media && app.server.series.mediaUrl({sectionId: this.sectionId, resourceId: this.resourceId, mediaId: media.id});
+    const poster = this.source?.images.find(x => /^poster\.[^\.]+$/i.test(x.name));
+    return poster && app.server.series.mediaUrl({sectionId: this.sectionId, resourceId: this.resourceId, mediaId: poster.id});
   }
 
   @mobx.computed
