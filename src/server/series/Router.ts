@@ -5,11 +5,10 @@ import * as swg from '@nestjs/swagger';
 import {remapEntry} from './remaps/remapEntry';
 import {remapSeries} from './remaps/remapSeries';
 import express from 'express';
-const logger = new nst.Logger('Series');
 
 @nst.Controller('api/series')
 @swg.ApiTags('series')
-export class Router implements nst.OnModuleInit {
+export class Router {
   constructor(
     private readonly cacheService: app.core.CacheService,
     private readonly sectionsService: app.sections.Service,
@@ -61,10 +60,6 @@ export class Router implements nst.OnModuleInit {
     const mtime = Date.parse(request.headers['if-modified-since'] ?? '');
     if (mtime >= media.mtime) throw new nst.HttpException(media.path, 304);
     response.sendFile(media.path, () => response.status(404).end());
-  }
-
-  onModuleInit() {
-    this.checkAsync().catch(x => logger.error(x));
   }
 
   private async sectionAsync(sectionId: string) {

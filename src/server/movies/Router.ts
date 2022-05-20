@@ -5,11 +5,10 @@ import * as swg from '@nestjs/swagger';
 import {remapEntry} from './remaps/remapEntry';
 import {remapMovie} from './remaps/remapMovie';
 import express from 'express';
-const logger = new nst.Logger('Movies');
 
 @nst.Controller('api/movies')
 @swg.ApiTags('movies')
-export class Router implements nst.OnModuleInit {
+export class Router {
   constructor(
     private readonly cacheService: app.core.CacheService,
     private readonly moviesService: mod.Service,
@@ -62,10 +61,6 @@ export class Router implements nst.OnModuleInit {
     response.sendFile(media.path, () => response.status(404).end());
   }
 
-  onModuleInit() {
-    this.checkAsync().catch(x => logger.error(x));
-  }
-  
   private async sectionAsync(sectionId: string) {
     const sectionList = await this.sectionsService.readAsync('movies');
     const section = sectionList.find(x => x.id === sectionId);

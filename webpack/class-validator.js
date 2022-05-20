@@ -3,6 +3,7 @@ export function IsArray() {}
 export function IsIn() {}
 export function IsNotEmpty() {}
 export function IsNumber() {}
+export function IsObject() {}
 export function IsOptional() {}
 export function IsString() {}
 export function IsUrl() {}
