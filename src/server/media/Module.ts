@@ -1,6 +1,6 @@
-import * as mod from '.';
 import * as nst from '@nestjs/common';
+import {Router} from './Router';
 
 @nst.Module({
-  controllers: [mod.Router]})
+  controllers: [Router]})
 export class Module {}

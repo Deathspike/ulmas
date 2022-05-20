@@ -35,8 +35,15 @@ export class Server {
   }
 
   private attachSwagger() {
-    const packageData = require('../../package');
-    const builder = new swg.DocumentBuilder().setDescription(packageData.description).setTitle(packageData.name).setVersion(packageData.version);
-    swg.SwaggerModule.setup('api', this.server, swg.SwaggerModule.createDocument(this.server, builder.build()));
+    const documentBuilder = getDocumentBuilder();
+    const document = swg.SwaggerModule.createDocument(this.server, documentBuilder.build());
+    swg.SwaggerModule.setup('api', this.server, document);
   }
+}
+
+function getDocumentBuilder() {
+  return new swg.DocumentBuilder()
+    .setDescription(app.settings.app.description)
+    .setTitle(app.settings.app.name)
+    .setVersion(app.settings.app.version);
 }

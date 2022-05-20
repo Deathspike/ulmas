@@ -1,17 +1,19 @@
 import * as app from '..';
-import * as mod from '.';
 import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
-import {remapEntry} from './remaps/remapEntry';
-import {remapMovie} from './remaps/remapMovie';
+import {Service} from './Service';
+import {mapMovie} from './maps/mapMovie';
+import {mapMovieListItem} from './maps/mapMovieListItem';
 import express from 'express';
+import inspector from 'node:inspector';
+const logger = new nst.Logger('Movies');
 
 @nst.Controller('api/movies')
 @swg.ApiTags('movies')
 export class Router {
   constructor(
     private readonly cacheService: app.core.CacheService,
-    private readonly moviesService: mod.Service,
+    private readonly moviesService: Service,
     private readonly sectionsService: app.sections.Service) {}
 
   @nst.Put()
@@ -25,15 +27,15 @@ export class Router {
     await invalidator();
   }
   
-  @app.Validator([app.api.models.ItemOfMovies])
+  @app.Validator([app.api.models.MovieListItem])
   @nst.Get(':sectionId')
-  @swg.ApiResponse({status: 200, type: [app.api.models.ItemOfMovies]})
+  @swg.ApiResponse({status: 200, type: [app.api.models.MovieListItem]})
   @swg.ApiResponse({status: 404})
   async listAsync(
     @nst.Param() params: app.api.params.Section) {
     const section = await this.sectionAsync(params.sectionId);
     const movieList = await this.moviesService.listAsync(section.paths);
-    return movieList.map(remapEntry);
+    return movieList.map(mapMovieListItem);
   }
 
   @app.Validator(app.api.models.Movie)
@@ -43,7 +45,7 @@ export class Router {
   async detailAsync(
     @nst.Param() params: app.api.params.Resource) {
     const movie = await this.valueAsync(params.sectionId, params.resourceId);
-    return remapMovie(movie);
+    return mapMovie(movie);
   }
 
   @nst.Get(':sectionId/:resourceId/:mediaId')
@@ -59,6 +61,11 @@ export class Router {
     const mtime = Date.parse(request.headers['if-modified-since'] ?? '');
     if (mtime >= media.mtime) throw new nst.HttpException(media.path, 304);
     response.sendFile(media.path, () => response.status(404).end());
+  }
+
+  onModuleInit() {
+    if (inspector.url()) return;
+    this.checkAsync().catch(x => logger.error(x));
   }
 
   private async sectionAsync(sectionId: string) {

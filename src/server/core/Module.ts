@@ -1,7 +1,8 @@
-import * as mod from '.';
 import * as nst from '@nestjs/common';
+import {CacheService} from './services/CacheService';
+import {ContextService} from './services/ContextService';
 
 @nst.Module({
-  providers: [mod.CacheService, mod.ContextService],
-  exports: [mod.CacheService, mod.ContextService]})
+  providers: [CacheService, ContextService],
+  exports: [CacheService, ContextService]})
 export class Module {}

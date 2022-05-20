@@ -8,8 +8,8 @@ export class SeriesInfo {
     this.title = seriesXml?.title ?? '';
   }
 
-  static async loadAsync(filePath: string) {
-    const seriesXml = await fs.promises.readFile(filePath, 'utf-8').then(SeriesInfoXml.parseAsync);
+  static async loadAsync(fullPath: string) {
+    const seriesXml = await fs.promises.readFile(fullPath, 'utf-8').then(SeriesInfoXml.parseAsync);
     const series = new SeriesInfo(seriesXml);
     await clv.validateOrReject(series);
     return series;

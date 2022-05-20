@@ -10,8 +10,8 @@ export class EpisodeInfo {
     this.title = episodeXml?.title ?? '';
   }
 
-  static async loadAsync(filePath: string) {
-    const episodeXml = await fs.promises.readFile(filePath, 'utf-8').then(EpisodeInfoXml.parseAsync);
+  static async loadAsync(fullPath: string) {
+    const episodeXml = await fs.promises.readFile(fullPath, 'utf-8').then(EpisodeInfoXml.parseAsync);
     const episode = new EpisodeInfo(episodeXml);
     await clv.validateOrReject(episode);
     return episode;

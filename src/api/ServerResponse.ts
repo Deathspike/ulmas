@@ -11,7 +11,7 @@ export class ServerResponse<T> {
   static async jsonAsync<T>(url: string, options?: RequestInit) {
     const response = await fetch(url, options);
     const result = await response.json();
-    return new ServerResponse<T>(response, result);
+    return new ServerResponse<T>(response, response.status >= 200 && response.status < 300 ? result : undefined);
   }
 
   get statusCode() {

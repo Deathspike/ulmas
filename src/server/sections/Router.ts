@@ -1,13 +1,13 @@
 import * as app from '..';
-import * as mod from '.';
 import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
+import {Service} from './Service';
 
 @nst.Controller('api/sections')
 @swg.ApiTags('sections')
 export class Router {
   constructor(
-    private readonly sectionsService: mod.Service) {}
+    private readonly sectionsService: Service) {}
 
   @app.Validator([app.api.models.Section])
   @nst.Get()

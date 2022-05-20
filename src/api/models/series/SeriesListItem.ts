@@ -1,10 +1,10 @@
 import * as clv from 'class-validator';
 import * as clt from 'class-transformer';
-import * as mod from '.';
 import * as swg from '@nestjs/swagger';
+import {MediaFile} from '../MediaFile';
 
-export class ItemOfSeries {
-  constructor(source?: ItemOfSeries) {
+export class SeriesListItem {
+  constructor(source?: SeriesListItem) {
     this.id = source?.id ?? '';
     this.images = source?.images ?? [];
     this.plot = source?.plot;
@@ -18,9 +18,9 @@ export class ItemOfSeries {
 
   @clv.IsArray()
   @clv.ValidateNested({each: true})
-  @clt.Type(() => mod.MediaFile)
-  @swg.ApiProperty({type: [mod.MediaFile]})
-  readonly images: Array<mod.MediaFile>;
+  @clt.Type(() => MediaFile)
+  @swg.ApiProperty({type: [MediaFile]})
+  readonly images: Array<MediaFile>;
 
   @clv.IsOptional()
   @clv.IsString()

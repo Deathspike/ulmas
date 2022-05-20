@@ -8,8 +8,8 @@ export class MovieInfo {
     this.title = movieXml?.title ?? '';
   }
 
-  static async loadAsync(filePath: string) {
-    const movieXml = await fs.promises.readFile(filePath, 'utf8').then(MovieInfoXml.parseAsync);
+  static async loadAsync(fullPath: string) {
+    const movieXml = await fs.promises.readFile(fullPath, 'utf8').then(MovieInfoXml.parseAsync);
     const movie = new MovieInfo(movieXml);
     await clv.validateOrReject(movie);
     return movie;

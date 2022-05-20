@@ -1,8 +1,9 @@
-import * as mod from '.';
 import * as nst from '@nestjs/common';
+import {Router} from './Router';
+import {Service} from './Service';
 
 @nst.Module({
-  controllers: [mod.Router],
-  providers: [mod.Service],
-  exports: [mod.Service]})
+  controllers: [Router],
+  providers: [Service],
+  exports: [Service]})
 export class Module {}

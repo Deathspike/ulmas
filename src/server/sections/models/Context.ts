@@ -10,19 +10,19 @@ export class Context {
     this.sections = contextXml?.sections.map(x => new Section(x)) ?? [];
   }
   
-  static async loadAsync(filePath: string) {
-    const contextXml = await getOrCreateAsync(filePath);
+  static async loadAsync(fullPath: string) {
+    const contextXml = await getOrCreateAsync(fullPath);
     const context = new Context(contextXml);
     await clv.validateOrReject(context);
     return context;
   }
 
-  static async saveAsync(filePath: string, context: Context) {
+  static async saveAsync(fullPath: string, context: Context) {
     await clv.validateOrReject(context);  
-    const contextXml = await getOrCreateAsync(filePath);
+    const contextXml = await getOrCreateAsync(fullPath);
     contextXml.sections = context.sections;
-    await fs.promises.mkdir(path.dirname(filePath), {recursive: true});
-    await fs.promises.writeFile(filePath, contextXml.toString());
+    await fs.promises.mkdir(path.dirname(fullPath), {recursive: true});
+    await fs.promises.writeFile(fullPath, contextXml.toString());
   }
 
   @clv.IsArray()
@@ -32,8 +32,8 @@ export class Context {
   readonly sections: Array<Section>;
 }
 
-async function getOrCreateAsync(filePath: string) {
-  return await fs.promises.readFile(filePath)
+async function getOrCreateAsync(fullPath: string) {
+  return await fs.promises.readFile(fullPath)
     .then(ContextXml.parseAsync)
     .catch(() => new ContextXml());
 }

@@ -1,12 +1,12 @@
 import * as clv from 'class-validator';
 import * as clt from 'class-transformer';
-import * as mod from '..';
 import * as swg from '@nestjs/swagger';
+import {Media} from '../Media';
 
 export class Movie {
   constructor(source?: Movie) {
     this.id = source?.id ?? '';
-    this.media = source?.media ?? new mod.Media();
+    this.media = source?.media ?? new Media();
     this.plot = source?.plot;
     this.title = source?.title ?? '';
   }
@@ -17,9 +17,9 @@ export class Movie {
   readonly id: string;
 
   @clv.IsObject()
-  @clt.Type(() => mod.Media)
-  @swg.ApiProperty({type: [mod.Media]})
-  readonly media: mod.Media;
+  @clt.Type(() => Media)
+  @swg.ApiProperty({type: [Media]})
+  readonly media: Media;
 
   @clv.IsOptional()
   @clv.IsString()

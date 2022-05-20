@@ -5,7 +5,7 @@ export class SeriesEpisodeViewModel {
   constructor(
     private readonly sectionId: string,
     private readonly resourceId: string,
-    private readonly episode: app.api.models.Episode) {
+    private readonly episode: app.api.models.SeriesEpisode) {
     mobx.makeObservable(this);
   }
 

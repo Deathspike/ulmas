@@ -1,10 +1,12 @@
 import * as app from '..';
-import * as mod from '.';
 import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
-import {remapEntry} from './remaps/remapEntry';
-import {remapSeries} from './remaps/remapSeries';
+import {Service} from './Service';
+import {mapSeriesListItem} from './maps/mapSeriesListItem';
+import {mapSeries} from './maps/mapSeries';
 import express from 'express';
+import inspector from 'node:inspector';
+const logger = new nst.Logger('Series');
 
 @nst.Controller('api/series')
 @swg.ApiTags('series')
@@ -12,7 +14,7 @@ export class Router {
   constructor(
     private readonly cacheService: app.core.CacheService,
     private readonly sectionsService: app.sections.Service,
-    private readonly seriesService: mod.Service) {}
+    private readonly seriesService: Service) {}
  
   @nst.Put()
   @nst.HttpCode(204)
@@ -25,15 +27,15 @@ export class Router {
     await invalidator();
   }
   
-  @app.Validator([app.api.models.ItemOfSeries])
+  @app.Validator([app.api.models.SeriesListItem])
   @nst.Get(':sectionId')
-  @swg.ApiResponse({status: 200, type: [app.api.models.ItemOfSeries]})
+  @swg.ApiResponse({status: 200, type: [app.api.models.SeriesListItem]})
   @swg.ApiResponse({status: 404})
   async listAsync(
     @nst.Param() params: app.api.params.Section) {
     const section = await this.sectionAsync(params.sectionId);
     const seriesList = await this.seriesService.listAsync(section.paths);
-    return seriesList.map(remapEntry);
+    return seriesList.map(mapSeriesListItem);
   }
 
   @app.Validator(app.api.models.Series)
@@ -43,7 +45,7 @@ export class Router {
   async detailAsync(
     @nst.Param() params: app.api.params.Resource) {
     const series = await this.valueAsync(params.sectionId, params.resourceId);
-    return remapSeries(series);
+    return mapSeries(series);
   }
   
   @nst.Get(':sectionId/:resourceId/:mediaId')
@@ -60,6 +62,11 @@ export class Router {
     const mtime = Date.parse(request.headers['if-modified-since'] ?? '');
     if (mtime >= media.mtime) throw new nst.HttpException(media.path, 304);
     response.sendFile(media.path, () => response.status(404).end());
+  }
+
+  onModuleInit() {
+    if (inspector.url()) return;
+    this.checkAsync().catch(x => logger.error(x));
   }
 
   private async sectionAsync(sectionId: string) {

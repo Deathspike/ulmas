@@ -1,7 +1,7 @@
 import * as clv from 'class-validator';
 import * as clt from 'class-transformer';
-import * as mod from '.';
 import * as swg from '@nestjs/swagger';
+import {MediaFile} from './MediaFile';
 
 export class Media {
   constructor(source?: Media) {
@@ -12,19 +12,19 @@ export class Media {
 
   @clv.IsArray()
   @clv.ValidateNested({each: true})
-  @clt.Type(() => mod.MediaFile)
-  @swg.ApiProperty({type: [mod.MediaFile]})
-  readonly images: Array<mod.MediaFile>;
+  @clt.Type(() => MediaFile)
+  @swg.ApiProperty({type: [MediaFile]})
+  readonly images: Array<MediaFile>;
     
   @clv.IsArray()
   @clv.ValidateNested({each: true})
-  @clt.Type(() => mod.MediaFile)
-  @swg.ApiProperty({type: [mod.MediaFile]})
-  readonly subtitles: Array<mod.MediaFile>;
+  @clt.Type(() => MediaFile)
+  @swg.ApiProperty({type: [MediaFile]})
+  readonly subtitles: Array<MediaFile>;
     
   @clv.IsArray()
   @clv.ValidateNested({each: true})
-  @clt.Type(() => mod.MediaFile)
-  @swg.ApiProperty({type: [mod.MediaFile]})
-  readonly videos: Array<mod.MediaFile>;
+  @clt.Type(() => MediaFile)
+  @swg.ApiProperty({type: [MediaFile]})
+  readonly videos: Array<MediaFile>;
 }

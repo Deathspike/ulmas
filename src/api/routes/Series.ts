@@ -11,7 +11,7 @@ export class Series {
   
   async listAsync(params: api.params.Section) {
     const url = new URL(`${params.sectionId}`, this.baseUrl).toString();
-    return await api.ServerResponse.jsonAsync<Array<api.models.ItemOfSeries>>(url);
+    return await api.ServerResponse.jsonAsync<Array<api.models.SeriesListItem>>(url);
   }
 
   async detailAsync(params: api.params.Resource) {
