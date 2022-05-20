@@ -32,7 +32,7 @@ export class Router {
     const seriesList = await this.seriesService.listAsync(section.paths);
     const series = seriesList.find(x => x.id === params.resourceId);
     if (!series) throw new nst.NotFoundException();
-    return await this.seriesService.detailAsync(series);
+    return series;
   }
   
   @nst.Get(':sectionId/:resourceId/:mediaId')

@@ -3,7 +3,7 @@ import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
 import {Mpv} from './classes/Mpv';
 import express from 'express';
-const logger = new nst.Logger('Media.Router');
+const logger = new nst.Logger('Media');
 
 @nst.Controller('api/media')
 @swg.ApiTags('media')

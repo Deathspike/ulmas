@@ -6,32 +6,30 @@ import os from 'os';
 
 @nst.Injectable()
 export class Service {
+  private context?: Context;
+
   async createAsync(section: app.api.models.Section) {
-    const context = await Context.loadAsync(getContextPath());
-    context.sections.push(section);
-    await Context.saveAsync(getContextPath(), context);
+    this.context ??= await Context.loadAsync(getContextPath());
+    this.context.sections.push(section);
+    await Context.saveAsync(getContextPath(), this.context);
   }
 
   async deleteAsync(section: app.api.models.Section) {
-    const context = await Context.loadAsync(getContextPath());
-    const index = context.sections.findIndex(x => x.id === section.id);
-    if (index < 0) return;
-    context.sections.splice(index, 1);
-    await Context.saveAsync(getContextPath(), context);
+    this.context ??= await Context.loadAsync(getContextPath());
+    this.context.sections.splice(this.context.sections.findIndex(x => x.id === section.id), 1);
+    await Context.saveAsync(getContextPath(), this.context);
   }
 
   async readAsync() {
-    const context = await Context.loadAsync(getContextPath());
-    context.sections.sort((a, b) => a.title.localeCompare(b.title));
-    return context.sections;
+    this.context ??= await Context.loadAsync(getContextPath());
+    this.context.sections.sort((a, b) => a.title.localeCompare(b.title));
+    return this.context.sections;
   }
 
   async updateAsync(section: app.api.models.Section) {
-    const context = await Context.loadAsync(getContextPath());
-    const index = context.sections.findIndex(x => x.id === section.id);
-    if (index < 0) return;
-    context.sections.splice(index, 1, section);
-    await Context.saveAsync(getContextPath(), context);
+    this.context ??= await Context.loadAsync(getContextPath());
+    this.context.sections.splice(this.context.sections.findIndex(x => x.id === section.id), 1, section);
+    await Context.saveAsync(getContextPath(), this.context);
   }
 }
 
