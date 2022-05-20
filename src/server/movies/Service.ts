@@ -1,34 +1,60 @@
 import * as app from '..';
 import * as nst from '@nestjs/common';
 import {Movie} from './models/Movie';
-import readdirp from 'readdirp';
-const logger = new nst.Logger('Movies');
+import path from 'path';
+const logger = new nst.Logger('Movies.Service');
 
 @nst.Injectable()
 export class Service {
   constructor(
-    private readonly mediaService: app.media.Service) {}
+    private readonly coreService: app.core.Service) {}
 
-  // [CACHE] When introducing cache, use movieDetailAsync to prime that cache, too.
-  async movieListAsync(rootPaths: Array<string>) {
-    const movies: Array<app.api.models.ItemOfMovies> = [];
+  async listAsync(rootPaths: Array<string>) {
+    const result: Array<app.api.models.Movie> = [];
     await Promise.all(rootPaths.map(async (rootPath) => {
-      const fileStream = readdirp(rootPath, {depth: 1, fileFilter: '!(movie|tvshow).nfo'});
-      for await (const {fullPath} of fileStream) {
-        const movieInfo = await Movie.loadAsync(fullPath).catch(() => undefined);
-        const moviePath = await this.mediaService.videoAsync(fullPath);
-        if (!movieInfo) logger.warn(`Invalid movie: ${fullPath} (NFO)`);
-        else if (!moviePath) logger.warn(`Invalid movie: ${fullPath} (Orphan)`);
-        else movies.push(new app.api.models.Movie(app.createValue(moviePath, movieInfo)));
-      }
+      const context = await this.coreService
+        .contextAsync(rootPath);
+      const rootMovies = await Promise.all(Object
+        .entries(context.info)
+        .filter(([x]) => x !== 'movie.nfo')
+        .map(([_, x]) => this.tryAsync(context, x)));
+      const subdirContexts = await Promise.all(Object
+        .values(context.directories)
+        .map(x => this.coreService.contextAsync(x)));
+      const subdirMovies = await Promise.all(subdirContexts.flatMap(context => Object
+        .values(context.info)
+        .filter(x => x !== 'movie.nfo')
+        .map(x => this.tryAsync(context, x))));
+      result.push(...ensure(rootMovies.concat(subdirMovies)));
     }));
-    movies.sort((a, b) => a.title.localeCompare(b.title));
-    return movies;
+    result.sort((a, b) => a.title.localeCompare(b.title));
+    return result;
   }
 
-  async movieDetailAsync(moviePath: string) {
-    const movieInfo = await Movie.loadAsync(moviePath.replace(/\..*$/, '.nfo'));
-    const movieValue = app.createValue(moviePath, movieInfo);
-    return new app.api.models.Movie(movieValue);
+  private async tryAsync(context: app.core.Context, moviePath: string) {
+    return await Movie.loadAsync(moviePath)
+      .then(x => this.create(context, x, moviePath))
+      .catch(() => logger.warn(`Invalid movie: ${moviePath}`));
   }
+
+  private create(context: app.core.Context, movieInfo: Movie, moviePath: string) {
+    const {name} = path.parse(moviePath);
+    const images = Object.entries(context.images)
+      .filter(([x]) => x.startsWith(`${name}-`))
+      .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'image'})));
+    const subtitles = Object.entries(context.subtitles)
+      .filter(([x]) => x.startsWith(`${name}.`))
+      .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'subtitle'})));
+    const videos = Object.entries(context.videos)
+      .filter(([x]) => x.startsWith(`${name}.`))
+      .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'video'})));
+    return new app.api.models.Movie(app.create(moviePath, {
+      ...movieInfo,
+      media: images.concat(subtitles, videos),
+    }));
+  }
+}
+
+function ensure<T>(items: Array<T | void>): Array<T> {
+  return items.filter(Boolean) as Array<T>;
 }

@@ -2,7 +2,7 @@ import xml2js from 'xml2js';
 
 export class ContextXml {
   constructor(
-    private readonly source: Xml = {}) {}
+    private readonly source: ParsedXml = {}) {}
 
   static async parseAsync(buffer: Buffer) {
     const source = await xml2js.parseStringPromise(buffer);
@@ -28,7 +28,7 @@ export class ContextXml {
   }
 }
 
-type Xml = {
+type ParsedXml = {
   sections?: {
     item?: Array<{
       id?: Array<string>,

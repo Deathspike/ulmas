@@ -12,20 +12,8 @@ export class Router {
   @app.Validator([app.api.models.Section])
   @nst.Get()
   @swg.ApiResponse({status: 200, type: [app.api.models.Section]})
-  async sectionListAsync() {
-    return await this.sectionsService.sectionListAsync();
-  }
-
-  @app.Validator(app.api.models.Section)
-  @nst.Get(':sectionId')
-  @swg.ApiResponse({status: 200, type: app.api.models.Section})
-  @swg.ApiResponse({status: 404})
-  async sectionDetailAsync(
-    @nst.Param() params: app.api.params.Section) {
-    const sectionList = await this.sectionListAsync();
-    const section = sectionList.find(x => x.id === params.sectionId);
-    if (!section) throw new nst.NotFoundException();
-    return section;
+  async readAsync() {
+    return await this.sectionsService.readAsync();
   }
 
   @nst.Post()
@@ -42,7 +30,9 @@ export class Router {
   @swg.ApiResponse({status: 404})
   async deleteAsync(
     @nst.Param() params: app.api.params.Section) {
-    const section = await this.sectionDetailAsync(params);
+    const sectionList = await this.readAsync();
+    const section = sectionList.find(x => x.id === params.sectionId);
+    if (!section) throw new nst.NotFoundException();
     await this.sectionsService.deleteAsync(section);
   }
   
@@ -53,7 +43,9 @@ export class Router {
   async updateAsync(
     @nst.Param() params: app.api.params.Section,
     @nst.Body() model: app.api.models.SectionPart) {
-    const section = await this.sectionDetailAsync(params);
+    const sectionList = await this.readAsync();
+    const section = sectionList.find(x => x.id === params.sectionId);
+    if (!section) throw new nst.NotFoundException();
     app.mergeProperties(model, section);
     await this.sectionsService.updateAsync(section);
   }

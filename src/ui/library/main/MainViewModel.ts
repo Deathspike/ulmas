@@ -8,9 +8,9 @@ export class MainViewModel {
 
   @mobx.action
   async refreshAsync() {
-    const sections = await app.server.sections.sectionListAsync();
-    if (sections.value) {
-      this.sections = sections.value.map(x => new app.MainSectionViewModel(x));
+    const sectionList = await app.server.sections.readAsync();
+    if (sectionList.value) {
+      this.sections = sectionList.value.map(x => new app.MainSectionViewModel(x));
     } else {
       // Handle error.
     }

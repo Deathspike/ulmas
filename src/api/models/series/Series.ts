@@ -8,6 +8,7 @@ export class Series {
   constructor(source?: Series, sourcePatch?: Partial<Series>) {
     this.id = api.property('id', source, sourcePatch, '');
     this.path = api.property('path', source, sourcePatch, '');
+    this.media = api.property('media', source, sourcePatch, []);
     this.episodes = api.property('episodes', source, sourcePatch, []);
     this.plot = api.property('plot', source, sourcePatch, '');
     this.title = api.property('title', source, sourcePatch, '');
@@ -25,9 +26,15 @@ export class Series {
 
   @clv.IsArray()
   @clv.ValidateNested({each: true})
-  @clt.Type(() => mod.SeriesEpisode)
-  @swg.ApiProperty({type: [mod.SeriesEpisode]})
-  readonly episodes: Array<mod.SeriesEpisode>;
+  @clt.Type(() => mod.Episode)
+  @swg.ApiProperty({type: [mod.Episode]})
+  readonly episodes: Array<mod.Episode>;
+
+  @clv.IsArray()
+  @clv.ValidateNested({each: true})
+  @clt.Type(() => mod.Media)
+  @swg.ApiProperty({type: [mod.Media]})
+  readonly media: Array<mod.Media>;
 
   @clv.IsOptional()
   @clv.IsString()

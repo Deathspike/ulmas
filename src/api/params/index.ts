@@ -1,4 +1,3 @@
-export * from './movies/Movie';
-export * from './sections/Section';
-export * from './series/Episode';
-export * from './series/Series';
+export * from './Media';
+export * from './Resource';
+export * from './Section';

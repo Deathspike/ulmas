@@ -3,13 +3,11 @@ import * as mod from '.';
 import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
 import express from 'express';
-import path from 'path';
 
 @nst.Controller('api/series')
 @swg.ApiTags('series')
 export class Router {
   constructor(
-    private readonly mediaService: app.media.Service,
     private readonly sectionsService: app.sections.Service,
     private readonly seriesService: mod.Service) {}
 
@@ -17,74 +15,44 @@ export class Router {
   @nst.Get(':sectionId')
   @swg.ApiResponse({status: 200, type: [app.api.models.ItemOfSeries]})
   @swg.ApiResponse({status: 404})
-  async seriesListAsync(
+  async listAsync(
     @nst.Param() params: app.api.params.Section) {
-    const sectionList = await this.sectionsService.sectionListAsync();
-    const section = sectionList.find(x => x.id === params.sectionId);
-    if (!section) throw new nst.NotFoundException();
-    return await this.seriesService.seriesListAsync(section.paths);
+    const section = await this.sectionAsync(params.sectionId);
+    const seriesList = await this.seriesService.listAsync(section.paths);
+    return seriesList.map(x => new app.api.models.ItemOfSeries(x));
   }
 
   @app.Validator(app.api.models.Series)
-  @nst.Get(':sectionId/:seriesId')
+  @nst.Get(':sectionId/:resourceId')
   @swg.ApiResponse({status: 200, type: app.api.models.Series})
   @swg.ApiResponse({status: 404})
-  async seriesDetailAsync(
-    @nst.Param() params: app.api.params.Series) {
-    const seriesList = await this.seriesListAsync(params);
-    const series = seriesList.find(x => x.id === params.seriesId);
+  async detailAsync(
+    @nst.Param() params: app.api.params.Resource) {
+    const section = await this.sectionAsync(params.sectionId);
+    const seriesList = await this.seriesService.listAsync(section.paths);
+    const series = seriesList.find(x => x.id === params.resourceId);
     if (!series) throw new nst.NotFoundException();
-    return await this.seriesService.seriesDetailAsync(series.path);
+    return await this.seriesService.detailAsync(series);
   }
-
-  @nst.Get(':sectionId/:seriesId/image')
+  
+  @nst.Get(':sectionId/:resourceId/:mediaId')
   @swg.ApiResponse({status: 200})
   @swg.ApiResponse({status: 404})
-  async seriesImageAsync(
-    @nst.Param() params: app.api.params.Series,
-    @nst.Query() query: app.api.queries.Image,
+  async mediaAsync(
+    @nst.Param() params: app.api.params.Media,
     @nst.Response() response: express.Response) {
-    const series = await this.seriesDetailAsync(params);
-    const filePath = await this.mediaService.imageAsync(path.join(series.path, query.imageName));
-    if (!filePath) throw new nst.NotFoundException();
-    response.attachment(filePath);
-    response.sendFile(filePath, () => response.status(404).end());
+    const series = await this.detailAsync(params);
+    const mediaList = series.media.concat(series.episodes.flatMap(x => x.media));
+    const media = mediaList.find(x => x.id === params.mediaId);
+    if (!media) throw new nst.NotFoundException();
+    response.attachment(media.path);
+    response.sendFile(media.path, () => response.status(404).end());
   }
 
-  @app.Validator(app.api.models.Episode)
-  @nst.Get(':sectionId/:seriesId/:episodeId')
-  @swg.ApiResponse({status: 200, type: app.api.models.Episode})
-  @swg.ApiResponse({status: 404})
-  async episodeDetailAsync(
-    @nst.Param() params: app.api.params.Episode) {
-    const series = await this.seriesDetailAsync(params);
-    const episode = series.episodes.find(x => x.id === params.episodeId);
-    if (!episode) throw new nst.NotFoundException();
-    return await this.seriesService.episodeDetailAsync(episode.path);
-  }
-
-  @nst.Get(':sectionId/:seriesId/:episodeId/image')
-  @swg.ApiResponse({status: 200})
-  @swg.ApiResponse({status: 404})
-  async episodeImageAsync(
-    @nst.Param() params: app.api.params.Episode,
-    @nst.Query() query: app.api.queries.Image,
-    @nst.Response() response: express.Response) {
-    const episode = await this.episodeDetailAsync(params);
-    const filePath = await this.mediaService.imageAsync(episode.path.replace(/\..*$/, `-${query.imageName}`));
-    if (!filePath) throw new nst.NotFoundException();
-    response.attachment(filePath);
-    response.sendFile(filePath, () => response.status(404).end());
-  }
-   
-  @nst.Get(':sectionId/:seriesId/:episodeId/video')
-  @swg.ApiResponse({status: 200})
-  @swg.ApiResponse({status: 404})
-  async episodeVideoAsync(
-    @nst.Param() params: app.api.params.Episode,
-    @nst.Response() response: express.Response) {
-    const episode = await this.episodeDetailAsync(params);
-    response.attachment(episode.path);
-    response.sendFile(episode.path, () => response.status(404).end());
+  private async sectionAsync(sectionId: string) {
+    const sectionList = await this.sectionsService.readAsync();
+    const section = sectionList.find(x => x.id === sectionId);
+    if (!section) throw new nst.NotFoundException();
+    return section;
   }
 }

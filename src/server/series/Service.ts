@@ -3,50 +3,90 @@ import * as nst from '@nestjs/common';
 import {Episode} from './models/Episode';
 import {Series} from './models/Series';
 import path from 'path';
-import readdirp from 'readdirp';
-const logger = new nst.Logger('Series');
+const logger = new nst.Logger('Series.Service');
 
 @nst.Injectable()
 export class Service {
   constructor(
-    private readonly mediaService: app.media.Service) {}
+    private readonly coreService: app.core.Service) {}
 
-  // [CACHE] When introducing cache, use seriesDetailAsync to prime that cache, too.
-  async seriesListAsync(rootPaths: Array<string>) {
-    const series: Array<app.api.models.ItemOfSeries> = [];
+  async listAsync(rootPaths: Array<string>) {
+    const result: Array<app.api.models.Series> = [];
     await Promise.all(rootPaths.map(async (rootPath) => {
-      const fileStream = readdirp(rootPath, {depth: 1, fileFilter: 'tvshow.nfo'});
-      for await (const {fullPath} of fileStream) {
-        const seriesInfo = await Series.loadAsync(fullPath).catch(() => undefined);
-        const seriesPath = path.dirname(fullPath);
-        if (!seriesInfo) logger.warn(`Invalid series: ${fullPath} (NFO)`);
-        else series.push(new app.api.models.ItemOfSeries(app.createValue(seriesPath, seriesInfo)));
-      }
+      const context = await this.coreService
+        .contextAsync(rootPath);
+      const subdirContexts = await Promise.all(Object
+        .values(context.directories)
+        .map(x => this.coreService.contextAsync(x)));
+      const subdirSeries = await Promise.all(subdirContexts
+        .filter(x => x.info['tvshow.nfo'])
+        .map(x => this.trySeriesAsync(x, x.info['tvshow.nfo'])));
+      result.push(...ensure(subdirSeries));
     }));
-    series.sort((a, b) => a.title.localeCompare(b.title));
-    return series;
+    result.sort((a, b) => a.title.localeCompare(b.title));
+    return result;
   }
 
-  // [CACHE] When introducing cache, use episodeDetailAsync to prime that cache, too.
-  async seriesDetailAsync(seriesPath: string) {
-    const episodes: Array<app.api.models.SeriesEpisode> = [];
-    const seriesInfo = await Series.loadAsync(path.join(seriesPath, 'tvshow.nfo'));
-    const seriesValue = app.createValue(seriesPath, {...seriesInfo, episodes});
-    const fileStream = readdirp(seriesPath, {depth: 1, fileFilter: '!(movie|tvshow).nfo'});
-    for await (const {fullPath} of fileStream) {
-      const episodeInfo = await Episode.loadAsync(fullPath).catch(() => undefined);
-      const episodePath = await this.mediaService.videoAsync(fullPath);
-      if (!episodeInfo) logger.warn(`Invalid episode: ${fullPath} (NFO)`);
-      else if (!episodePath) logger.warn(`Invalid episode: ${fullPath} (Orphan)`);
-      else episodes.push(new app.api.models.SeriesEpisode(app.createValue(episodePath, episodeInfo)));
-    }
-    episodes.sort((a, b) => a.season !== b.season ? a.season - b.season : a.episode - b.episode);
-    return new app.api.models.Series(seriesValue);
+  async detailAsync(series: app.api.models.Series) {
+    const context = await this.coreService
+      .contextAsync(path.dirname(series.path));
+    const rootEpisodes = await Promise.all(Object
+      .entries(context.info)
+      .filter(([x]) => x !== 'tvshow.nfo')
+      .map(([_, x]) => this.tryEpisodeAsync(context, x)));
+    const subdirContexts = await Promise.all(Object
+      .values(context.directories)
+      .map(x => this.coreService.contextAsync(x)));
+    const subdirEpisodes = await Promise.all(subdirContexts.flatMap(context => Object
+      .values(context.info)
+      .map(x => this.tryEpisodeAsync(context, x))));
+    return new app.api.models.Series({
+      ...series,
+      episodes: ensure(rootEpisodes.concat(subdirEpisodes))
+    });
+  }
+  
+  private async trySeriesAsync(context: app.core.Context, seriesPath: string) {
+    return await Series.loadAsync(seriesPath)
+      .then(x => this.createSeries(context, x, seriesPath))
+      .catch(() => logger.warn(`Invalid series: ${seriesPath}`));
   }
 
-  async episodeDetailAsync(episodePath: string) {
-    const episodeInfo = await Episode.loadAsync(episodePath.replace(/\..*$/, '.nfo'));
-    const episodeValue = app.createValue(episodePath, episodeInfo);
-    return new app.api.models.Episode(episodeValue);
+  private async tryEpisodeAsync(context: app.core.Context, episodePath: string) {
+    return await Episode.loadAsync(episodePath)
+      .then(x => this.createEpisode(context, x, episodePath))
+      .catch(() => logger.warn(`Invalid episode: ${episodePath}`));
   }
+
+  private createSeries(context: app.core.Context, seriesInfo: Series, seriesPath: string) {
+    const images = Object.entries(context.images)
+      .filter(([x]) => !/-[a-z]+\./i.test(x))
+      .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'image'})));
+    return new app.api.models.Series(app.create(seriesPath, {
+      ...seriesInfo,
+      episodes: [],
+      media: images
+    }));
+  }
+
+  private createEpisode(context: app.core.Context, episodeInfo: Episode, episodePath: string) {
+    const {name} = path.parse(episodePath);
+    const images = Object.entries(context.images)
+      .filter(([x]) => x.startsWith(`${name}-`))
+      .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'image'})));
+    const subtitles = Object.entries(context.subtitles)
+      .filter(([x]) => x.startsWith(`${name}.`))
+      .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'subtitle'})));
+    const videos = Object.entries(context.videos)
+      .filter(([x]) => x.startsWith(`${name}.`))
+      .map(([_, x]) => new app.api.models.Media(app.create(x, {type: 'video'})));
+    return new app.api.models.Episode(app.create(episodePath, {
+      ...episodeInfo,
+      media: images.concat(subtitles, videos)
+    }));
+  }
+}
+
+function ensure<T>(items: Array<T | void>): Array<T> {
+  return items.filter(Boolean) as Array<T>;
 }

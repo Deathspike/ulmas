@@ -9,12 +9,12 @@ export class SectionViewModel {
 
   @mobx.action
   async refreshAsync() {
-    const sectionId = this.sectionId;
-    const section = await app.server.sections.sectionDetailAsync({sectionId});
-    const series = await app.server.series.seriesListAsync({sectionId});
-    if (section.value && series.value) {
+    const sectionList = await app.server.sections.readAsync();
+    const section = sectionList.value?.find(x => x.id === this.sectionId);
+    const series = await app.server.series.listAsync({sectionId: this.sectionId});
+    if (section && series.value) {
       this.series = series.value.map(x => new app.SectionSeriesViewModel(x));
-      this.title = section.value.title;
+      this.title = section.title;
     } else {
       // Handle error.
     }

@@ -7,7 +7,10 @@ export class SeriesEpisodeView extends React.Component<{vm: app.SeriesEpisodeVie
   render() {
     return (
       <div>
-        <a href={this.props.vm.url}>{this.props.vm.title}</a>
+        <a onClick={() => this.props.vm.openAsync()}
+          style={{color: 'blue', cursor: 'pointer'}}>
+          {this.props.vm.title}
+        </a>
       </div>
     );
   }

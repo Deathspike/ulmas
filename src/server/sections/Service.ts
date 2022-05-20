@@ -6,12 +6,6 @@ import os from 'os';
 
 @nst.Injectable()
 export class Service {
-  async sectionListAsync() {
-    const context = await Context.loadAsync(getContextPath());
-    context.sections.sort((a, b) => a.title.localeCompare(b.title));
-    return context.sections;
-  }
-  
   async createAsync(section: app.api.models.Section) {
     const context = await Context.loadAsync(getContextPath());
     context.sections.push(section);
@@ -24,6 +18,12 @@ export class Service {
     if (index < 0) return;
     context.sections.splice(index, 1);
     await Context.saveAsync(getContextPath(), context);
+  }
+
+  async readAsync() {
+    const context = await Context.loadAsync(getContextPath());
+    context.sections.sort((a, b) => a.title.localeCompare(b.title));
+    return context.sections;
   }
 
   async updateAsync(section: app.api.models.Section) {

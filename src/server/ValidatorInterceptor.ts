@@ -14,7 +14,9 @@ export class ValidatorInterceptor<T extends object> implements nst.NestIntercept
 
   intercept(_: nst.ExecutionContext, next: nst.CallHandler) {
     return next.handle().pipe(rxo.map(async (result: Array<T> | T) => {
-      if (this.isArray) {
+      if (typeof result !== 'object') {
+        throw new nst.InternalServerErrorException();
+      } else if (this.isArray) {
         const values = Array<T>().concat(result).map(x => this.convert(x));
         await clv.validateOrReject(values);
         return values;

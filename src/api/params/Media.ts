@@ -1,12 +1,12 @@
-import * as api from '../..';
+import * as api from '..';
 import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
 
-export class Episode {
-  constructor(source?: Episode, sourcePatch?: Partial<Episode>) {
+export class Media {
+  constructor(source?: Media, sourcePatch?: Partial<Media>) {
     this.sectionId = api.property('sectionId', source, sourcePatch, '');
-    this.seriesId = api.property('seriesId', source, sourcePatch, '');
-    this.episodeId = api.property('episodeId', source, sourcePatch, '');
+    this.resourceId = api.property('resourceId', source, sourcePatch, '');
+    this.mediaId = api.property('mediaId', source, sourcePatch, '');
   }
 
   @clv.IsString()
@@ -17,10 +17,10 @@ export class Episode {
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()
-  readonly seriesId: string;
-
+  readonly resourceId: string;
+  
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()
-  readonly episodeId: string;
+  readonly mediaId: string;
 }

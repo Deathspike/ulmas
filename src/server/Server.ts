@@ -2,6 +2,7 @@ import * as app from '.';
 import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
 import {NestFactory} from '@nestjs/core';
+import compression from 'compression';
 import express from 'express';
 import path from 'path';
 
@@ -16,20 +17,21 @@ export class Server {
   }
 
   async runAsync() {
+    this.attachMiddleware();
     this.attachRequestValidation();
-    this.attachStaticFiles();
     this.attachSwagger();
     await this.server.listen(process.env.PORT || 6877);
   }
   
+  private attachMiddleware() {
+    const publicPath = path.join(__dirname, '../../public');
+    this.server.use(compression());
+    this.server.use(express.static(publicPath));
+  }
+
   private attachRequestValidation() {
     const options = {forbidNonWhitelisted: true, forbidUnknownValues: true, transform: true};
     this.server.useGlobalPipes(new nst.ValidationPipe(options));
-  }
-
-  private attachStaticFiles() {
-    const publicPath = path.join(__dirname, '../../public');
-    this.server.use(express.static(publicPath));
   }
 
   private attachSwagger() {

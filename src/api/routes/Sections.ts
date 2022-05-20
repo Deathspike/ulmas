@@ -4,16 +4,11 @@ export class Sections {
   constructor(
     private readonly baseUrl: string) {}
 
-  async sectionListAsync() {
+  async readAsync() {
     const url = this.baseUrl;
     return await api.ServerResponse.jsonAsync<Array<api.models.Section>>(url);
   }
-
-  async sectionDetailAsync(params: api.params.Section) {
-    const url = new URL(`${params.sectionId}`, this.baseUrl).toString();
-    return await api.ServerResponse.jsonAsync<api.models.Section>(url);
-  }
-
+  
   async createAsync(model: api.models.SectionPart) {
     const body = JSON.stringify(model);
     const headers = {'Content-Type': 'application/json'};

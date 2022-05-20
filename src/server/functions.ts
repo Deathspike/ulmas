@@ -1,6 +1,6 @@
 import crypto from 'crypto'
 
-export function createValue<T>(resourcePath: string, value: T) {
+export function create<T>(resourcePath: string, value: T) {
   const id = createId(resourcePath);
   const path = resourcePath;
   return {...value, id, path};
