@@ -58,7 +58,7 @@
     "webpack-dev-server": "4.8.1"
   },
   "scripts": {
-    "electron:build": "electron-builder",
+    "electron:build": "electron-builder --publish always",
     "electron:serve": "electron dist/shell/app.js",
     "prepare": "npm run repository:prune && npm run repository:build && npm run webpack:build",
     "repository:build": "tsc",

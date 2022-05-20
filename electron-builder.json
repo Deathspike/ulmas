@@ -11,12 +11,29 @@
     {"from": "", "to": "", "filter": ["public/**/*"]}
   ],
   "linux": {
-    "icon": "electron-icon.png"
+    "category": "video",
+    "icon": "electron-icon.png",
+    "target": "AppImage",
+    "publish": [{
+      "provider": "github",
+      "publishAutoUpdate": false
+    }]
   },
   "mac": {
-    "icon": "electron-icon.png"
+    "category": "public.app-category.video",
+    "icon": "electron-icon.png",
+    "target": "dmg",
+    "publish": [{
+      "provider": "github",
+      "publishAutoUpdate": false
+    }]
   },
   "win": {
-    "icon": "electron-icon.png"
+    "icon": "electron-icon.png",
+    "target": "nsis",
+    "publish": [{
+      "provider": "github",
+      "publishAutoUpdate": false
+    }]
   }
 }

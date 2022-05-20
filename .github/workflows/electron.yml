@@ -1,0 +1,17 @@
+name: electron
+on: workflow_dispatch
+jobs:
+  build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+      - run: npm ci
+      - run: npm run electron:build
+        env:
+          GH_TOKEN: ${{secrets.GH_TOKEN}}
