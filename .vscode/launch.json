@@ -33,7 +33,7 @@
     "type": "pwa-chrome",
     "url": "http://localhost:8080/"
   }, {
-    "args": ["bin/dms"],
+    "args": ["bin/ulmas"],
     "name": "Standalone Server",
     "outFiles": ["${workspaceFolder}/dist/**/*"],
     "outputCapture": "std",

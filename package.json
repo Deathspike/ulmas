@@ -1,14 +1,14 @@
 {
-  "name": "dms",
+  "name": "ulmas",
   "author": "Deathspike",
-  "description": "Unopinionated Direct Media Server for Local Media Assets.",
+  "description": "Unopinionated Local Media Asset Server.",
   "license": "MIT",
-  "repository": "git://github.com/Deathspike/dms",
+  "repository": "git://github.com/Deathspike/ulmas",
   "version": "1.0.0-alpha.0",
   "main": "dist/server",
   "types": "dist/server",
   "bin": {
-    "dms": "./bin/dms"
+    "ulmas": "./bin/ulmas"
   },
   "engines": {
     "npm": ">= 8.0.0",
