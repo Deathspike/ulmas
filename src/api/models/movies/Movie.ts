@@ -7,6 +7,7 @@ import {MediaStatus} from '../MediaStatus';
 export class Movie {
   constructor(source?: Movie) {
     this.id = source?.id ?? '';
+    this.path = source?.path ?? '';
     this.media = source?.media ?? new Media();
     this.title = source?.title ?? '';
     this.dateAdded = source?.dateAdded;
@@ -21,6 +22,11 @@ export class Movie {
   @clv.IsNotEmpty()
   @swg.ApiProperty()
   readonly id: string;
+
+  @clv.IsString()
+  @clv.IsNotEmpty()
+  @swg.ApiProperty()
+  readonly path: string;
 
   @clv.IsObject()
   @clt.Type(() => Media)

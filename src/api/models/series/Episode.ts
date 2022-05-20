@@ -6,6 +6,8 @@ import {MediaStatus} from '../MediaStatus';
 
 export class Episode {
   constructor(source?: Episode) {
+    this.id = source?.id ?? '';
+    this.path = source?.path ?? '';
     this.media = source?.media ?? new Media();
     this.episode = source?.episode ?? NaN;
     this.season = source?.season ?? NaN;
@@ -18,6 +20,16 @@ export class Episode {
     this.watched = source?.watched;
   }
   
+  @clv.IsString()
+  @clv.IsNotEmpty()
+  @swg.ApiProperty()
+  readonly id: string;
+
+  @clv.IsString()
+  @clv.IsNotEmpty()
+  @swg.ApiProperty()
+  readonly path: string;
+
   @clv.IsObject()
   @clt.Type(() => Media)
   @swg.ApiProperty({type: [Media]})

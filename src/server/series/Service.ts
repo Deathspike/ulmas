@@ -62,6 +62,7 @@ export class Service {
     return new app.api.models.Series({
       ...seriesInfo,
       id: app.id(seriesPath),
+      path: seriesPath,
       episodes, images,
       dateEpisodeAdded: this.fetchDateEpisodeAdded(episodes),
       unwatchedCount: this.fetchUnwatchedCount(episodes)
@@ -83,6 +84,8 @@ export class Service {
       .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
     return new app.api.models.Episode({
       ...episodeInfo,
+      id: app.id(episodePath),
+      path: episodePath,
       media: new app.api.models.Media({images, subtitles, videos})
     });
   }

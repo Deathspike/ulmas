@@ -7,6 +7,7 @@ import {MediaFile} from '../MediaFile';
 export class Series {
   constructor(source?: Series) {
     this.id = source?.id ?? '';
+    this.path = source?.path ?? '';
     this.episodes = source?.episodes ?? [];
     this.images = source?.images;
     this.title = source?.title ?? '';
@@ -21,6 +22,11 @@ export class Series {
   @clv.IsNotEmpty()
   @swg.ApiProperty()
   readonly id: string;
+
+  @clv.IsString()
+  @clv.IsNotEmpty()
+  @swg.ApiProperty()
+  readonly path: string;
 
   @clv.IsArray()
   @clv.ValidateNested({each: true})

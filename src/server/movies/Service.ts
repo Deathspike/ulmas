@@ -60,6 +60,7 @@ export class Service {
     return new app.api.models.Movie({
       ...movieInfo,
       id: app.id(moviePath),
+      path: moviePath,
       media: new app.api.models.Media({images, subtitles, videos})
     });
   }
