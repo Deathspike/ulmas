@@ -1,11 +1,12 @@
 import childProcess from 'child_process';
+import treeKill from 'tree-kill';
 
 export class Mpv {
   private position = 0;
   private total = 0;
 
-  async openAsync(start: number, subtitleUrls: Array<string>, videoUrl: string) {
-    await this.runAsync(['--fs', '--hwdec=auto']
+  async openAsync(signal: AbortSignal, start: number, subtitleUrls: Array<string>, videoUrl: string) {
+    await this.runAsync(signal, ['--fs', '--hwdec=auto']
       .concat(videoUrl)
       .concat(`--start=${start}`)
       .concat(subtitleUrls.map(x => `--sub-file=${x}`)));
@@ -19,12 +20,16 @@ export class Mpv {
     this.total = Number(match[4]) * 3600 + Number(match[5]) * 60 + Number(match[6]);
   }
 
-  private async runAsync(args: Array<string>) {
+  private async runAsync(signal: AbortSignal, args: Array<string>) {
     return await new Promise((resolve, reject) => {
       const process = childProcess.spawn('mpv', args);
       process.stderr.on('data', this.onData.bind(this));
       process.on('error', reject);
       process.on('exit', resolve);
+      signal.addEventListener('abort', () => {
+        if (!process.pid) return;
+        treeKill(process.pid);
+      });
     });
   }
 }

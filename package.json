@@ -29,6 +29,7 @@
     "reflect-metadata": "0.1.13",
     "rxjs": "7.5.5",
     "swagger-ui-express": "4.3.0",
+    "tree-kill": "1.2.2",
     "xml-formatter": "2.6.1"
   },
   "devDependencies": {

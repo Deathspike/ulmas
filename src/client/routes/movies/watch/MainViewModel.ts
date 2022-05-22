@@ -3,9 +3,9 @@ import * as core from 'client/core';
 import * as mobx from 'mobx';
 import {Service} from 'typedi';
 
-// TODO: Handle cancellation. If we navigate away, mpv should stop (trying to) play.
 @Service({transient: true})
 export class MainViewModel {
+  private readonly abortController = new AbortController();
   private readonly sectionId = this.routeService.get('sectionId');
   private readonly movieId = this.routeService.get('movieId');
 
@@ -25,12 +25,18 @@ export class MainViewModel {
     if (videoUrl) {
       // TODO: Handle finished.
       const position = this.source?.resume?.position ?? 0;
-      this.apiService.media.mpvAsync(new api.models.MediaRequest({position, subtitleUrls, videoUrl}));
+      const request = new api.models.MediaRequest({position, subtitleUrls, videoUrl});
+      this.apiService.media.mpvAsync(request, this.abortController.signal);
     } else {
       // TODO: Handle no video.
     }
   }
   
+  @mobx.action
+  componentWillUnmount() {
+    this.abortController.abort();
+  }
+
   @mobx.action
   async refreshAsync() {
     const movie = await this.apiService.movies.itemAsync(this.sectionId, this.movieId);

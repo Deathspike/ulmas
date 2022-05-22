@@ -21,7 +21,7 @@ export class Server {
     this.attachMiddleware();
     this.attachRequestValidation();
     this.attachSwagger();
-    await this.server.listen(process.env.PORT || 6877);
+    await this.server.listen(process.env.PORT || 6877).catch(() => {});
   }
   
   private attachMiddleware() {

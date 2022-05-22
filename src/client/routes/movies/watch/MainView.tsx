@@ -16,6 +16,10 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
     this.props.vm.componentDidMount();
   }
 
+  componentWillUnmount() {
+    this.props.vm.componentWillUnmount();
+  }
+  
   render() {
     return (
       <ui.HeaderView title={this.props.vm.title}>

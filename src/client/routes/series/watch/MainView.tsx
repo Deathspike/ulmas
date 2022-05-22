@@ -15,6 +15,10 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
   componentDidMount() {
     this.props.vm.componentDidMount();
   }
+  
+  componentWillUnmount() {
+    this.props.vm.componentWillUnmount();
+  }
 
   render() {
     return (
