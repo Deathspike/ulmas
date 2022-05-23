@@ -2,6 +2,7 @@ import * as api from 'api'
 import * as app from '.';
 import * as core from 'client/core';
 import * as mobx from 'mobx';
+import {language} from './language';
 import {Service} from 'typedi';
 
 @Service({transient: true})
@@ -27,19 +28,40 @@ export class MainViewModel {
   }
 
   @mobx.computed
-  get episodes() {
-    return this.source
-      ?.episodes
-      ?.map(x => new app.EpisodeViewModel(x));
+  get hasEpisodes() {
+    return Boolean(this.source?.episodes.length);
+  }
+
+  @mobx.computed
+  get hasWatchedAll() {
+    return Boolean(this.source?.episodes.every(x => x.watched));
   }
 
   @mobx.computed
   get posterUrl() {
     return this.source
-      ? this.mediaService.seriesImageUrl(this.source, 'poster')
+      ? this.mediaService.seriesImageUrl(this.source, ['poster'])
       : undefined;
   }
 
+  @mobx.computed
+  get plot() {
+    return this.source?.plot;
+  }
+
+  @mobx.computed
+  get seasons() {
+    const seasons = Array.from(new Set(this.source
+      ?.episodes
+      ?.map(x => x.season)));
+    return seasons.map(x => {
+      const id = String(x).padStart(2, '0');
+      const posterUrl = this.mediaService.seriesImageUrl(this.source!, [`season${id}-poster`, 'poster']);
+      const title = x ? `${language.season} ${id}` : language.specials;
+      return new app.SeasonViewModel(id, posterUrl, title, encodeURIComponent(x));
+    });
+  }
+  
   @mobx.computed
   get title() {
     return this.source?.title;

@@ -3,12 +3,12 @@ import * as React from 'react';
 import * as ReactLocation from '@tanstack/react-location';
 import * as ui from 'client/ui';
 
-export function MovieView(props: {vm: app.MovieViewModel}) {
+export function SeasonView(props: {vm: app.SeasonViewModel}) {
   const navigate = ReactLocation.useNavigate();
   return (
-    <ui.ImageLinkView imageHeight={21} titleHeight={3}
+    <ui.ImageLinkView imageHeight={19} titleHeight={2}
       imageUrl={props.vm.posterUrl}
       title={props.vm.title} 
-      onClick={() => navigate({to: props.vm.id})} />
+      onClick={() => navigate({to: props.vm.url})} />
   );
 }

@@ -4,6 +4,7 @@ import * as React from 'react';
 import * as ReactLocation from '@tanstack/react-location';
 import * as ui from 'client/ui';
 import {Container} from 'typedi';
+import {language} from './language';
 
 @mobxReact.observer
 export class MainView extends React.Component<{vm: app.MainViewModel}> {
@@ -15,7 +16,7 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
 
   render() {
     return (
-      <ui.HeaderView title="Sections">
+      <ui.HeaderView title={language.title}>
         {this.props.vm.sections?.map(x =>
           <ui.material.Grid key={x.id}>
             <ReactLocation.Link to={x.url}>

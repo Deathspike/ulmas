@@ -34,7 +34,7 @@ export class MainViewModel {
     const series = this.seriesSource
       ?.slice()
       ?.sort((a, b) => a.dateEpisodeAdded && b.dateEpisodeAdded ? b.dateEpisodeAdded.localeCompare(a.dateEpisodeAdded) : 0)
-      ?.map(x => new app.SeriesViewModel(x.id, this.mediaService.seriesImageUrl(x, 'poster'), x.title));
+      ?.map(x => new app.SeriesViewModel(x.id, this.mediaService.seriesImageUrl(x, ['poster']), x.title));
     return series
       ? Array.from(createPages(series))
       : undefined;
@@ -56,7 +56,6 @@ export class MainViewModel {
 
 function *createPages(series: Array<app.SeriesViewModel>) {
   while (series.length) {
-    const result = series.splice(0, 24);
-    yield new app.PageViewModel(result);
+    yield series.splice(0, 24);
   }
 }

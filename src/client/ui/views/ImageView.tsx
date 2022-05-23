@@ -1,10 +1,9 @@
 import LazyLoad from 'react-lazyload';
 import * as React from 'react';
-import * as ui from 'client/ui';
 
-export function ImageView(props: {imageUrl?: string}) {
+export function ImageView(props: {imageHeight: number, imageUrl?: string}) {
   return (
-    <LazyLoad style={styles.imageContainer} once resize>
+    <LazyLoad style={{...styles.imageContainer, height: `${props.imageHeight}vw`}} once resize>
       <img style={styles.image} src={props.imageUrl} onLoad={x => x.currentTarget.style.opacity = '1'} />
     </LazyLoad>
   );
@@ -12,13 +11,9 @@ export function ImageView(props: {imageUrl?: string}) {
 
 const styles = {
   imageContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: ui.sz(12),
-    height: '100%',
-    position: 'relative' as React.CSSProperties['position']
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },
   image: {
-    borderRadius: ui.sz(12),
     objectFit: 'cover' as React.CSSProperties['objectFit'],
     opacity: 0,
     height: '100%',

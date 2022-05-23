@@ -23,7 +23,12 @@ export class MainViewModel {
 
   @mobx.computed
   get sections() {
-    return this.source?.map(x => new app.SectionViewModel(x));
+    return this.source?.map(x => {
+      const id = x.id;
+      const title = x.title;
+      const url = `${encodeURIComponent(x.type)}/${encodeURIComponent(x.id)}`;
+      return new app.SectionViewModel(id, title, url);
+    });
   }
 
   @mobx.observable

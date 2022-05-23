@@ -34,7 +34,7 @@ export class MainViewModel {
     const movies = this.moviesSource
       ?.slice()
       ?.sort((a, b) => b.dateAdded.localeCompare(a.dateAdded))
-      ?.map(x => new app.MovieViewModel(x.id, this.mediaService.movieImageUrl(x, 'poster'), x.title));
+      ?.map(x => new app.MovieViewModel(x.id, this.mediaService.movieImageUrl(x, ['poster']), x.title));
     return movies
       ? Array.from(createPages(movies))
       : undefined;
@@ -56,7 +56,6 @@ export class MainViewModel {
 
 function *createPages(movies: Array<app.MovieViewModel>) {
   while (movies.length) {
-    const result = movies.splice(0, 24);
-    yield new app.PageViewModel(result);
+    yield movies.splice(0, 24);
   }
 }

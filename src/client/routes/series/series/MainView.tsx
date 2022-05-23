@@ -1,9 +1,9 @@
 import * as app from '.';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
-import * as ReactLocation from '@tanstack/react-location';
 import * as ui from 'client/ui';
 import {Container} from 'typedi';
+import {language} from './language';
 
 @mobxReact.observer
 export class MainView extends React.Component<{vm: app.MainViewModel}> {
@@ -16,17 +16,80 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
   render() {
     return (
       <ui.HeaderView title={this.props.vm.title}>
-        {this.props.vm.posterUrl
-          ? <img src={this.props.vm.posterUrl} style={{maxWidth: 300}} />
-          : undefined}
-        {this.props.vm.episodes?.map(x =>
-          <ui.material.Grid key={x.id}>
-            <ReactLocation.Link to={x.url}>
-              {x.title}
-            </ReactLocation.Link>
+        <ui.material.Paper sx={styles.rootContainer} square>
+          <ui.material.Grid sx={styles.imageContainer}>
+            <ui.ImageView imageHeight={36} imageUrl={this.props.vm.posterUrl} />
           </ui.material.Grid>
-        )}
+          <ui.material.Grid sx={styles.infoContainer}>
+            <ui.material.Typography variant="h1" sx={styles.title}>
+              {this.props.vm.title}
+            </ui.material.Typography>
+            <ui.material.Grid>
+              <ui.material.Button sx={styles.buttonPrimary}
+                disabled={!this.props.vm.hasEpisodes}
+                variant="contained">
+                <ui.icons.PlayArrow />
+              </ui.material.Button>
+              <ui.material.Button sx={styles.buttonSecondary}
+                disabled={!this.props.vm.hasEpisodes}
+                variant="contained"
+                color="secondary">
+                {this.props.vm.hasWatchedAll ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
+              </ui.material.Button>
+              <ui.material.Button sx={styles.buttonSecondary}
+                variant="contained"
+                color="secondary">
+                <ui.icons.InfoOutlined />
+              </ui.material.Button>
+            </ui.material.Grid>
+            <ui.material.Typography sx={styles.plot}>
+              {this.props.vm.plot ?? language.missingPlot}
+            </ui.material.Typography>
+            {this.props.vm.hasEpisodes && <React.Fragment>
+              <ui.material.Typography variant="h2" sx={styles.title}>
+                {language.seasons}
+              </ui.material.Typography>
+              <ui.ImageLinkGridView columns={5} gapSize={2} imageHeight={19} titleHeight={2}>
+                {this.props.vm.seasons?.map(x => <app.SeasonView key={x.id} vm={x} /> )}
+              </ui.ImageLinkGridView>
+            </React.Fragment>}
+          </ui.material.Grid>
+          <ui.material.Grid sx={styles.clear} />
+        </ui.material.Paper>
       </ui.HeaderView>
     );
+  }
+}
+
+const styles = {
+  rootContainer: {
+    display: 'flex',
+    padding: ui.sz(16)
+  },
+  imageContainer: {
+    marginRight: ui.sz(16)
+  },
+  infoContainer: {
+    flex: 1
+  },
+  title: {
+    marginBottom: ui.sz(4),
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap'
+  },
+  buttonPrimary: {
+    color: '#000',
+    marginBottom: ui.sz(16)
+  },
+  buttonSecondary: {
+    marginLeft: ui.sz(4),
+    marginBottom: ui.sz(16)
+  },
+  plot: {
+    marginBottom: ui.sz(16)
+  },
+  clear: {
+    clear: 'both'
   }
 }

@@ -1,3 +1,4 @@
 export * from './MainView';
 export * from './MainViewModel';
-export * from './EpisodeViewModel';
+export * from './SeasonView';
+export * from './SeasonViewModel';

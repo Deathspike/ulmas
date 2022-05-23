@@ -14,8 +14,9 @@ function createMenu() {
 
 function createWindow() {
   if (!mainWindow) {
+    const debugWindow = {width: 1280, height: 720, useContentSize: true};
     const isDebugging = electron.app.commandLine.hasSwitch('remote-debugging-port');
-    mainWindow = new electron.BrowserWindow({fullscreen: !isDebugging, icon: 'electron-icon.png', show: false});
+    mainWindow = new electron.BrowserWindow({...debugWindow, fullscreen: !isDebugging, icon: 'electron-icon.png', show: false});
     mainWindow.removeMenu();
     mainWindow.on('ready-to-show', () => mainWindow.show());
     mainWindow.loadURL(`http://localhost:${isDebugging ? 8080 : 6877}/`);
