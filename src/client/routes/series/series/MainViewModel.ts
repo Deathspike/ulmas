@@ -55,10 +55,10 @@ export class MainViewModel {
       ?.episodes
       ?.map(x => x.season)));
     return seasons.map(x => {
-      const id = String(x).padStart(2, '0');
-      const posterUrl = this.mediaService.seriesImageUrl(this.source!, [`season${id}-poster`, 'poster']);
-      const title = x ? `${language.season} ${id}` : language.specials;
-      return new app.SeasonViewModel(id, posterUrl, title, encodeURIComponent(x));
+      const posterUrl = this.source && this.mediaService.seriesImageUrl(this.source, [app.getSeasonPoster(x), 'poster']);
+      const title = app.getSeasonTitle(x);
+      const url = encodeURIComponent(x);
+      return new app.SeasonViewModel(String(x), posterUrl, title, url);
     });
   }
   

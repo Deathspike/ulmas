@@ -49,7 +49,7 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
               <ui.material.Typography variant="h2" sx={styles.title}>
                 {language.seasons}
               </ui.material.Typography>
-              <ui.ImageLinkGridView columns={5} gapSize={2} imageHeight={19} titleHeight={2}>
+              <ui.ImageLinkGridView columns={4} gapSize={2} imageHeight={23} titleHeight={3}>
                 {this.props.vm.seasons?.map(x => <app.SeasonView key={x.id} vm={x} /> )}
               </ui.ImageLinkGridView>
             </React.Fragment>}
@@ -67,7 +67,8 @@ const styles = {
     padding: ui.sz(16)
   },
   imageContainer: {
-    marginRight: ui.sz(16)
+    marginRight: ui.sz(16),
+    width: '24vw'
   },
   infoContainer: {
     flex: 1
