@@ -26,7 +26,7 @@ export class MainViewModel {
   }
 
   @mobx.computed
-  get posterUrl() {
+  get posterSrc() {
     return this.source
       ? this.mediaService.movieImageUrl(this.source, ['poster'])
       : undefined;

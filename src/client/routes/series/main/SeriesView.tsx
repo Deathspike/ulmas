@@ -7,7 +7,7 @@ export function SeriesView(props: {vm: app.SeriesViewModel}) {
   const navigate = ReactLocation.useNavigate();
   return (
     <ui.ImageLinkView imageHeight={21} titleHeight={3}
-      imageUrl={props.vm.posterUrl}
+      imageSrc={props.vm.posterSrc}
       title={props.vm.title} 
       onClick={() => navigate({to: props.vm.id})} />
   );

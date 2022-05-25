@@ -18,7 +18,7 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
       <ui.HeaderView title={this.props.vm.title}>
         <ui.material.Paper sx={styles.rootContainer} square>
           <ui.material.Grid sx={styles.imageContainer}>
-            <ui.ImageView imageHeight={36} imageUrl={this.props.vm.posterUrl} />
+            <ui.ImageView imageHeight={36} imageSrc={this.props.vm.posterSrc} />
           </ui.material.Grid>
           <ui.material.Grid sx={styles.infoContainer}>
             <ui.material.Typography variant="h1" sx={styles.title}>
@@ -71,7 +71,8 @@ const styles = {
     width: '24vw'
   },
   infoContainer: {
-    flex: 1
+    flex: 1,
+    minWidth: 0
   },
   title: {
     marginBottom: ui.sz(4),

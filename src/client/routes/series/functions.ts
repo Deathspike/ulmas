@@ -11,3 +11,14 @@ export function getSeasonTitle(season: number) {
   const id = String(season).padStart(2, '0');
   return `${language.season} ${id}`;
 }
+
+export async function imageAsync(src?: string) {
+  if (!src) return;
+  return await new Promise<HTMLImageElement | undefined>(x => {
+    const image = document.createElement('img');
+    image.addEventListener('abort', () => x(undefined));
+    image.addEventListener('error', () => x(undefined));
+    image.addEventListener('load', () => x(image));
+    image.src = src;
+  });
+}

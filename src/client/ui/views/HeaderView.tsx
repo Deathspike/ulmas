@@ -33,7 +33,7 @@ const styles = {
   },
   titleContainer: {
     flex: 1,
-    width: 0
+    minWidth: 0
   },
   title: {
     color: 'primary.contrastText',

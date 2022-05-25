@@ -7,7 +7,7 @@ export function SeasonView(props: {vm: app.SeasonViewModel}) {
   const navigate = ReactLocation.useNavigate();
   return (
     <ui.ImageLinkView imageHeight={23} titleHeight={3}
-      imageUrl={props.vm.posterUrl}
+      imageSrc={props.vm.posterSrc}
       title={props.vm.title} 
       onClick={() => navigate({to: props.vm.url})} />
   );
