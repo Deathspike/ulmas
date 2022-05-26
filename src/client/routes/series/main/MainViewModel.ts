@@ -31,13 +31,10 @@ export class MainViewModel {
 
   @mobx.computed
   get pages() {
-    const series = this.seriesSource
+    return createPages(this.seriesSource
       ?.slice()
       ?.sort((a, b) => a.dateEpisodeAdded && b.dateEpisodeAdded ? b.dateEpisodeAdded.localeCompare(a.dateEpisodeAdded) : 0)
-      ?.map(x => new app.SeriesViewModel(x.id, this.mediaService.seriesImageUrl(x, ['poster']), x.title));
-    return series
-      ? Array.from(createPages(series))
-      : undefined;
+      ?.map(x => new app.SeriesViewModel(x.id, this.mediaService.seriesImageUrl(x, 'poster'), x.title)));
   }
   
   @mobx.computed
@@ -54,8 +51,8 @@ export class MainViewModel {
   private seriesSource?: Array<api.models.SeriesEntry>;
 }
 
-function *createPages(series: Array<app.SeriesViewModel>) {
-  while (series.length) {
-    yield series.splice(0, 24);
-  }
+function createPages(series?: Array<app.SeriesViewModel>) {
+  const result: Array<Array<app.SeriesViewModel>> = [];
+  while (series?.length) result.push(series.splice(0, 24));
+  return result;
 }

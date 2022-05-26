@@ -20,21 +20,11 @@ export class MainViewModel {
   async refreshAsync() {
     const series = await this.apiService.series.itemAsync(this.sectionId, this.seriesId);
     if (series.value) {
-      this.posterSrc = await app.imageAsync(this.mediaService.seriesImageUrl(series.value, ['poster']));
+      this.posterSrc = await app.imageAsync(this.mediaService.seriesImageUrl(series.value, 'poster'));
       this.source = series.value;
     } else {
       // TODO: Handle error.
     }
-  }
-
-  @mobx.computed
-  get hasEpisodes() {
-    return Boolean(this.source?.episodes.length);
-  }
-
-  @mobx.computed
-  get hasWatchedAll() {
-    return Boolean(this.source?.episodes.every(x => x.watched));
   }
 
   @mobx.computed
@@ -44,11 +34,11 @@ export class MainViewModel {
 
   @mobx.computed
   get seasons() {
-    const seasons = Array.from(new Set(this.source
-      ?.episodes
-      ?.map(x => x.season)));
-    return seasons.map(x => {
-      const posterSrc = this.source && this.mediaService.seriesImageUrl(this.source, [app.getSeasonPoster(x), 'poster']);
+    const seasons = this.source?.episodes.length
+      ? Array.from(new Set(this.source.episodes.map(x => x.season)))
+      : undefined;
+    return seasons?.map(x => {
+      const posterSrc = this.source && this.mediaService.seriesImageUrl(this.source, app.getSeasonPoster(x), 'poster');
       const title = app.getSeasonTitle(x);
       const url = encodeURIComponent(x);
       return new app.SeasonViewModel(String(x), posterSrc, title, url);
@@ -58,6 +48,11 @@ export class MainViewModel {
   @mobx.computed
   get title() {
     return this.source?.title;
+  }
+
+  @mobx.computed
+  get watched() {
+    return Boolean(this.source?.episodes.every(x => x.watched));
   }
 
   @mobx.observable

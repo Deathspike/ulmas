@@ -23,7 +23,9 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
   render() {
     return (
       <ui.HeaderView title={this.props.vm.title}>
-        Loading
+        <ui.material.Typography>
+          Loading
+        </ui.material.Typography>
       </ui.HeaderView>
     );
   }

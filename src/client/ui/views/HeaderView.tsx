@@ -5,7 +5,7 @@ import * as ui from '..';
 export function HeaderView(props: React.PropsWithChildren<{title?: string}>) {
   return (
     <React.Fragment>
-      <mui.AppBar>
+      <mui.AppBar sx={styles.rootContainer}>
         <mui.Toolbar>
           <mui.IconButton sx={styles.toolBarButton} onClick={() => history.back()}>
             <ui.icons.ArrowBackIos />
@@ -25,23 +25,24 @@ export function HeaderView(props: React.PropsWithChildren<{title?: string}>) {
 }
 
 const styles = {
+  rootContainer: {
+    color: 'primary.contrastText'
+  },
   toolBarButton: {
-    color: 'primary.contrastText',
-    marginRight: ui.sz(2),
-    paddingLeft: ui.sz(12),
-    paddingRight: ui.sz(5)
+    marginLeft: '0.25vw',
+    marginRight: '0.25vw',
+    padding: '0.5vw 0.25vw 0.5vw 1vw',
   },
   titleContainer: {
     flex: 1,
     minWidth: 0
   },
   title: {
-    color: 'primary.contrastText',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap'
   },
   children: {
-    paddingTop: ui.sz(32)
+    paddingTop: '3.5vw'
   }
 };

@@ -15,13 +15,13 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
   render() {
     return (
       <ui.HeaderView title={this.props.vm.title}>
-        <ui.material.Paper sx={styles.seriesContainer} square>
+        <ui.material.Grid sx={styles.seriesContainer}>
           {this.props.vm.pages?.map((series, i) => (
-            <ui.ImageLinkGridView key={i} columns={6} gapSize={2} imageHeight={21} titleHeight={3}>
+            <ui.ImageLinkGridView key={i} imageHeight={21} columns={6} columnGap={2} rowGap={1}>
               {series.map(x => <app.SeriesView key={x.id} vm={x} />)}
             </ui.ImageLinkGridView>
           ))}
-        </ui.material.Paper>
+        </ui.material.Grid>
       </ui.HeaderView>
     );
   }
@@ -29,6 +29,6 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
 
 const styles = {
   seriesContainer: {
-    padding: ui.sz(16)
+    padding: '1.5vw'
   }
 };

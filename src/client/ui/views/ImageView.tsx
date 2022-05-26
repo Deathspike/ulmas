@@ -27,7 +27,7 @@ const styles = {
     objectFit: 'cover' as React.CSSProperties['objectFit'],
     opacity: 0,
     height: '100%',
-    transition: 'opacity 0.25s ease',
+    transition: 'opacity 0.5s ease',
     width: '100%'
   }
 };

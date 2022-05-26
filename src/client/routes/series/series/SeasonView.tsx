@@ -6,9 +6,8 @@ import * as ui from 'client/ui';
 export function SeasonView(props: {vm: app.SeasonViewModel}) {
   const navigate = ReactLocation.useNavigate();
   return (
-    <ui.ImageLinkView imageHeight={23} titleHeight={3}
-      imageSrc={props.vm.posterSrc}
-      title={props.vm.title} 
+    <ui.ImageLinkView title={props.vm.title} 
+      imageHeight={23} imageSrc={props.vm.posterSrc}
       onClick={() => navigate({to: props.vm.url})} />
   );
 }

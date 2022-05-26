@@ -18,11 +18,11 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
     return (
       <ui.HeaderView title={language.title}>
         {this.props.vm.sections?.map(x =>
-          <ui.material.Grid key={x.id}>
+          <ui.material.Typography key={x.id}>
             <ReactLocation.Link to={x.url}>
               {x.title}
             </ReactLocation.Link>
-          </ui.material.Grid>
+          </ui.material.Typography>
         )}
       </ui.HeaderView>
     );

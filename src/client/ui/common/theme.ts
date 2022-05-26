@@ -13,19 +13,22 @@ export const theme = ui.material.createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
+          backgroundColor: '#333',
+          fontSize: 0,
           overflowY: 'scroll',
           userSelect: 'none'
         },
         '::-webkit-scrollbar': {
-          width: ui.sz(12)
+          width: '1.5vw'
         },
         '::-webkit-scrollbar-track': {
           backgroundColor: '#333'
         },
         '::-webkit-scrollbar-thumb': {
           backgroundColor: '#FA0',
-          border: `${ui.sz(4)} solid #333`,
-          borderRadius: ui.sz(8)
+          border: '0.5vw solid #333',
+          borderRadius: '1.5vw',
+          minHeight: '3vw'
         }
       }
     },
@@ -36,7 +39,7 @@ export const theme = ui.material.createTheme({
     },
     MuiToolbar: {
       styleOverrides: {
-        root: {height: ui.sz(32)},
+        root: {height: '3.5vw'},
         gutters: {padding: '0 !important'},
         regular: {minHeight: '0 !important'}
       }
@@ -44,34 +47,40 @@ export const theme = ui.material.createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: ui.sz(4),
-          fontSize: ui.sz(10),
-          lineHeight: ui.sz(10),
-          minWidth: ui.sz(48),
-          padding: `${ui.sz(2)} ${ui.sz(4)}`
+          borderRadius: '1vw',
+          boxShadow: 'none',
+          fontSize: '1vw',
+          height: '2vw',
+          lineHeight: '1vw',
+          minWidth: '6vw',
+          padding: 0
         }
       }
     },
     MuiSvgIcon: {
       styleOverrides: {
         root: {
-          fontSize: ui.sz(15)
+          fontSize: '1.75vw'
         }
       }
     },
     MuiTypography: {
       styleOverrides: {
         body1: {
-          fontSize: ui.sz(12),
-          lineHeight: ui.sz(16)
+          fontSize: '1.25vw',
+          lineHeight: 1.4
         },
         h1: {
-          fontSize: ui.sz(26),
-          lineHeight: ui.sz(26)
+          fontSize: '3vw',
+          lineHeight: 1.1
         },
         h2: {
-          fontSize: ui.sz(18),
-          lineHeight: ui.sz(18)
+          fontSize: '2vw',
+          lineHeight: 1.1
+        },
+        h3: {
+          fontSize: '1.5vw',
+          lineHeight: 1.1
         }
       }
     }

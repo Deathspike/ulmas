@@ -31,13 +31,10 @@ export class MainViewModel {
 
   @mobx.computed
   get pages() {
-    const movies = this.moviesSource
+    return createPages(this.moviesSource
       ?.slice()
       ?.sort((a, b) => b.dateAdded.localeCompare(a.dateAdded))
-      ?.map(x => new app.MovieViewModel(x.id, this.mediaService.movieImageUrl(x, ['poster']), x.title));
-    return movies
-      ? Array.from(createPages(movies))
-      : undefined;
+      ?.map(x => new app.MovieViewModel(x.id, this.mediaService.movieImageUrl(x, 'poster'), x.title)));
   }
   
   @mobx.computed
@@ -54,8 +51,8 @@ export class MainViewModel {
   private moviesSource?: Array<api.models.MovieEntry>;
 }
 
-function *createPages(movies: Array<app.MovieViewModel>) {
-  while (movies.length) {
-    yield movies.splice(0, 24);
-  }
+function createPages(movies?: Array<app.MovieViewModel>) {
+  const result: Array<Array<app.MovieViewModel>> = [];
+  while (movies?.length) result.push(movies.splice(0, 24));
+  return result;
 }

@@ -9,14 +9,20 @@ export class MediaService {
     private readonly apiService: ApiService,
     private readonly routeService: RouteService) {}
 
-  movieImageUrl(movie: api.models.Movie | api.models.MovieEntry, names: Array<string>) {
+  episodeImageUrl(series: api.models.Series | api.models.SeriesEntry, episode: api.models.Episode, ...names: Array<string>) {
+    const expressions = names.map(x => new RegExp(`-${x}\.[^\\.]+$`, 'i'));
+    const match = expressions.map(x => episode.media.images?.find(y => x.test(y.path))).find(Boolean);
+    return match ? this.apiService.series.mediaUrl(this.routeService.get('sectionId'), series.id, match.id) : undefined;
+  }
+
+  movieImageUrl(movie: api.models.Movie | api.models.MovieEntry, ...names: Array<string>) {
     const expressions = names.map(x => new RegExp(`[\\\\/-]${x}\.[^\\.]+$`, 'i'));
     const images = isMovie(movie) ? movie.media.images : movie.images;
     const match = expressions.map(x => images?.find(y => x.test(y.path))).find(Boolean);
     return match ? this.apiService.movies.mediaUrl(this.routeService.get('sectionId'), movie.id, match.id) : undefined;
   }
 
-  seriesImageUrl(series: api.models.Series | api.models.SeriesEntry, names: Array<string>) {
+  seriesImageUrl(series: api.models.Series | api.models.SeriesEntry, ...names: Array<string>) {
     const expressions = names.map(x => new RegExp(`[\\\\/]${x}\.[^\\.]+$`, 'i'));
     const match = expressions.map(x => series.images?.find(y => x.test(y.path))).find(Boolean);
     return match ? this.apiService.series.mediaUrl(this.routeService.get('sectionId'), series.id, match.id) : undefined;
