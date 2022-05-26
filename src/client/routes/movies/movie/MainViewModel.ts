@@ -1,4 +1,4 @@
-import * as api from 'api'
+import * as api from 'api';
 import * as core from 'client/core';
 import * as mobx from 'mobx';
 import {Service} from 'typedi';
@@ -35,6 +35,11 @@ export class MainViewModel {
   @mobx.computed
   get title() {
     return this.source?.title;
+  }
+
+  @mobx.computed
+  get watched() {
+    return this.source?.watched ?? false;
   }
 
   @mobx.observable

@@ -9,7 +9,9 @@ export function EpisodeView(props: {vm: app.EpisodeViewModel}) {
   return (
     <ui.material.Grid sx={styles.rootContainer} onClick={() => navigate({to: props.vm.url})}>
       <ui.material.Grid sx={styles.imageContainer}>
-        <ui.ImageView imageHeight={18} imageSrc={props.vm.thumbSrc} />
+        <ui.ImageView imageHeight={18} imageSrc={props.vm.thumbSrc}>
+          <ui.WatchView value={props.vm.watched} />
+        </ui.ImageView>
         <ui.material.Button sx={styles.button}
           variant="contained"
           color="secondary">
@@ -39,7 +41,7 @@ const styles = {
     cursor: 'pointer',
     display: 'flex',
     marginBottom: '1.5vw',
-    '&:hover': {borderColor: 'primary.main'}
+    '&:hover': {borderColor: ui.theme.palette.primary.main}
   },
   imageContainer: {
     width: '30vw'

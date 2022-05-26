@@ -4,6 +4,6 @@ export class EpisodeViewModel {
     readonly plot: string | undefined,
     readonly thumbSrc: string | undefined,
     readonly title: string,
-    readonly watched: boolean | undefined,
-    readonly url: string) {}
+    readonly url: string,
+    readonly watched: boolean) {}
 }

@@ -8,6 +8,8 @@ export function SeasonView(props: {vm: app.SeasonViewModel}) {
   return (
     <ui.ImageLinkView title={props.vm.title} 
       imageHeight={23} imageSrc={props.vm.posterSrc}
-      onClick={() => navigate({to: props.vm.url})} />
+      onClick={() => navigate({to: props.vm.url})}>
+      <ui.WatchView value={props.vm.unwatchedCount} />
+    </ui.ImageLinkView>
   );
 }

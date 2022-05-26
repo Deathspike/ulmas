@@ -3,5 +3,6 @@ export class SeasonViewModel {
     readonly id: string,
     readonly posterSrc: string | undefined,
     readonly title: string,
-    readonly url: string) {}
+    readonly url: string,
+    readonly unwatchedCount: number) {}
 }

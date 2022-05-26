@@ -37,7 +37,7 @@ export class MainViewModel {
       const title = `${x.episode}. ${x.title}`;
       const thumbSrc = this.source && this.mediaService.episodeImageUrl(this.source, x, 'thumb');
       const url = encodeURIComponent(x.id);
-      return new app.EpisodeViewModel(x.id, x.plot, thumbSrc, title, x.watched, url);
+      return new app.EpisodeViewModel(x.id, x.plot, thumbSrc, title, url, x.watched ?? false);
     }));
   }
 

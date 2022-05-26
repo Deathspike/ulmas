@@ -6,3 +6,4 @@ export * from './views/HeaderView';
 export * from './views/ImageLinkGridView';
 export * from './views/ImageLinkView';
 export * from './views/ImageView';
+export * from './views/WatchView';

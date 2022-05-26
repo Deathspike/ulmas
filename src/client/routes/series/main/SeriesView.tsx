@@ -8,6 +8,8 @@ export function SeriesView(props: {vm: app.SeriesViewModel}) {
   return (
     <ui.ImageLinkView title={props.vm.title} 
       imageHeight={21} imageSrc={props.vm.posterSrc}
-      onClick={() => navigate({to: props.vm.id})} />
+      onClick={() => navigate({to: props.vm.id})}>
+      <ui.WatchView value={props.vm.unwatchedCount} />
+    </ui.ImageLinkView>
   );
 }

@@ -26,7 +26,7 @@ export function HeaderView(props: React.PropsWithChildren<{title?: string}>) {
 
 const styles = {
   rootContainer: {
-    color: 'primary.contrastText'
+    color: ui.theme.palette.primary.contrastText
   },
   toolBarButton: {
     marginLeft: '0.25vw',

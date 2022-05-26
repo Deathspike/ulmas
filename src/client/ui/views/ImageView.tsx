@@ -1,7 +1,7 @@
 import LazyLoad from 'react-lazyload';
 import * as React from 'react';
 
-export function ImageView(props: {imageHeight: number, imageSrc?: HTMLImageElement | string}) {
+export function ImageView(props: React.PropsWithChildren<{imageHeight: number, imageSrc?: HTMLImageElement | string}>) {
   return (
     <LazyLoad style={{...styles.imageContainer, height: `${props.imageHeight}vw`}} once resize>
       {props.imageSrc && typeof props.imageSrc === 'string' && <img
@@ -15,13 +15,15 @@ export function ImageView(props: {imageHeight: number, imageSrc?: HTMLImageEleme
         props.imageSrc.style.width = styles.image.width;
         x?.parentNode?.replaceChild(props.imageSrc, x);
       }} />}
+      {props.children}
     </LazyLoad>
   );
 }
 
 const styles = {
   imageContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    position: 'relative' as React.CSSProperties['position']
   },
   image: {
     objectFit: 'cover' as React.CSSProperties['objectFit'],

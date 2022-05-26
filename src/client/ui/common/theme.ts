@@ -15,7 +15,6 @@ export const theme = ui.material.createTheme({
         body: {
           backgroundColor: '#333',
           fontSize: 0,
-          overflowY: 'scroll',
           userSelect: 'none'
         },
         '::-webkit-scrollbar': {

@@ -16,15 +16,32 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
   render() {
     return (
       <ui.HeaderView title={this.props.vm.title}>
-        {this.props.vm.posterSrc
-          ? <img src={this.props.vm.posterSrc} style={{maxWidth: 300}} />
-          : undefined}
-        <ui.material.Grid>
+        <ui.material.Grid sx={styles.rootContainer}>
+          <ui.material.Grid sx={styles.imageContainer}>
+            <ui.ImageView imageHeight={36} imageSrc={this.props.vm.posterSrc}>
+              <ui.WatchView value={this.props.vm.watched} />
+            </ui.ImageView>
+          </ui.material.Grid>
+        </ui.material.Grid>
+        <ui.material.Typography>
           <ReactLocation.Link to="watch">
             Watch Now
           </ReactLocation.Link>
-        </ui.material.Grid>
+        </ui.material.Typography>
       </ui.HeaderView>
     );
   }
 }
+
+const styles = {
+  rootContainer: {
+    display: 'flex',
+    padding: '1.5vw',
+    paddingBottom: 0  
+  },
+  imageContainer: {
+    marginRight: '1.5vw',
+    marginBottom: '1.5vw',
+    width: '24vw'
+  }
+};

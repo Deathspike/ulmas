@@ -41,7 +41,8 @@ export class MainViewModel {
       const posterSrc = this.source && this.mediaService.seriesImageUrl(this.source, app.getSeasonPoster(x), 'poster');
       const title = app.getSeasonTitle(x);
       const url = encodeURIComponent(x);
-      return new app.SeasonViewModel(String(x), posterSrc, title, url);
+      const unwatchedCount = this.source && fetchUnwatchedCount(this.source.episodes.filter(y => y.season === x));
+      return new app.SeasonViewModel(String(x), posterSrc, title, url, unwatchedCount ?? 0);
     });
   }
   
@@ -60,4 +61,9 @@ export class MainViewModel {
 
   @mobx.observable
   private source?: api.models.Series;
+}
+
+function fetchUnwatchedCount(episodes: Array<api.models.Episode>) {
+  const watched = episodes.filter(x => x.watched);
+  return episodes.length - watched.length;
 }

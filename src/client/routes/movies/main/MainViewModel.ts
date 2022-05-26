@@ -34,7 +34,7 @@ export class MainViewModel {
     return createPages(this.moviesSource
       ?.slice()
       ?.sort((a, b) => b.dateAdded.localeCompare(a.dateAdded))
-      ?.map(x => new app.MovieViewModel(x.id, this.mediaService.movieImageUrl(x, 'poster'), x.title)));
+      ?.map(x => new app.MovieViewModel(x.id, this.mediaService.movieImageUrl(x, 'poster'), x.title, x.watched ?? false)));
   }
   
   @mobx.computed

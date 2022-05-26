@@ -34,7 +34,7 @@ export class MainViewModel {
     return createPages(this.seriesSource
       ?.slice()
       ?.sort((a, b) => a.dateEpisodeAdded && b.dateEpisodeAdded ? b.dateEpisodeAdded.localeCompare(a.dateEpisodeAdded) : 0)
-      ?.map(x => new app.SeriesViewModel(x.id, this.mediaService.seriesImageUrl(x, 'poster'), x.title)));
+      ?.map(x => new app.SeriesViewModel(x.id, this.mediaService.seriesImageUrl(x, 'poster'), x.title, x.unwatchedCount ?? 0)));
   }
   
   @mobx.computed
