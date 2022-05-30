@@ -24,7 +24,7 @@ export class Router {
 
   private createAbortSignal(response: express.Response) {
     const controller = new AbortController();
-    response.on('close', controller.abort.bind(controller));
+    response.on('close', () => controller.abort());
     return controller.signal;
   }
 }

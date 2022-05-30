@@ -23,7 +23,7 @@ export class Mpv {
   private async runAsync(signal: AbortSignal, args: Array<string>) {
     return await new Promise((resolve, reject) => {
       const process = childProcess.spawn('mpv', args);
-      process.stderr.on('data', this.onData.bind(this));
+      process.stderr.on('data', x => this.onData(x));
       process.on('error', reject);
       process.on('exit', resolve);
       signal.addEventListener('abort', () => {

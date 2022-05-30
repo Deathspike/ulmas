@@ -3,32 +3,34 @@ import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import * as ReactLocation from '@tanstack/react-location';
 import * as ui from 'client/ui';
-import {Container} from 'typedi';
+import {core} from 'client/core';
 
 @mobxReact.observer
 export class MainView extends React.Component<{vm: app.MainViewModel}> {
   static async createAsync() {
-    const vm = Container.get(app.MainViewModel);
+    const vm = new app.MainViewModel(core.route.get('sectionId'), core.route.get('movieId'));
     await vm.refreshAsync();
     return <MainView vm={vm} />;
   }
 
   render() {
     return (
-      <ui.HeaderView title={this.props.vm.title}>
-        <ui.material.Grid sx={styles.rootContainer}>
-          <ui.material.Grid sx={styles.imageContainer}>
-            <ui.ImageView imageHeight={36} imageSrc={this.props.vm.posterSrc}>
-              <ui.WatchView value={this.props.vm.watched} />
-            </ui.ImageView>
+      <React.Fragment>
+        {this.props.vm.movie && <ui.HeaderView title={this.props.vm.movie.title} onBack={() => history.back()}>
+          <ui.material.Grid sx={styles.rootContainer}>
+            <ui.material.Grid sx={styles.imageContainer}>
+              <ui.ImageView imageHeight={36} imageUrl={core.image.movie(this.props.vm.movie, 'poster')}>
+                <ui.WatchView value={this.props.vm.movie.watched ?? false} />
+              </ui.ImageView>
+            </ui.material.Grid>
           </ui.material.Grid>
-        </ui.material.Grid>
-        <ui.material.Typography>
-          <ReactLocation.Link to="watch">
-            Watch Now
-          </ReactLocation.Link>
-        </ui.material.Typography>
-      </ui.HeaderView>
+          <ui.material.Typography>
+            <ReactLocation.Link to="watch">
+              Watch Now
+            </ReactLocation.Link>
+          </ui.material.Typography>
+        </ui.HeaderView>}
+      </React.Fragment>
     );
   }
 }

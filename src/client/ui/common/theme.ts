@@ -15,6 +15,7 @@ export const theme = ui.material.createTheme({
         body: {
           backgroundColor: '#333',
           fontSize: 0,
+          overflowY: 'scroll',
           userSelect: 'none'
         },
         '::-webkit-scrollbar': {
@@ -53,6 +54,56 @@ export const theme = ui.material.createTheme({
           lineHeight: '1vw',
           minWidth: '6vw',
           padding: 0
+        }
+      }
+    },
+    MuiBackdrop: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(0, 0, 0, 0.75)'
+        }
+      }
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: 0,
+          minWidth: '30vw'
+        }
+      }
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: {
+          fontSize: '1.5vw',
+          lineHeight: 1.1,
+          padding: '1vw',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap'
+        }
+      }
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: {
+          overflow: 'hidden',
+          padding: 0
+        }
+      }
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          fontSize: '1.75vw',
+          padding: '0.5vw'
+        }
+      }
+    },
+    MuiLinearProgress: {
+      styleOverrides: {
+        root: {
+          height: '0.25vw'
         }
       }
     },

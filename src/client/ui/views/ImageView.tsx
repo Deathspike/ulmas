@@ -1,23 +1,32 @@
 import LazyLoad from 'react-lazyload';
 import * as React from 'react';
+const attributeName = 'data-src';
 
-export function ImageView(props: React.PropsWithChildren<{imageHeight: number, imageSrc?: HTMLImageElement | string}>) {
+export function ImageView(props: React.PropsWithChildren<{imageHeight: number, imageUrl?: string}>) {
   return (
     <LazyLoad style={{...styles.imageContainer, height: `${props.imageHeight}vw`}} once resize>
-      {props.imageSrc && typeof props.imageSrc === 'string' && <img
+      {props.imageUrl && <img ref={x => x && onRender(x, props.imageUrl)}
         onLoad={x => x.currentTarget.style.opacity = '1'}
-        src={props.imageSrc}
         style={styles.image} />}
-      {props.imageSrc && typeof props.imageSrc === 'object' && <div ref={x => {
-        if (typeof props.imageSrc !== 'object') throw new Error();
-        props.imageSrc.style.objectFit = String(styles.image.objectFit);
-        props.imageSrc.style.height = styles.image.height;
-        props.imageSrc.style.width = styles.image.width;
-        x?.parentNode?.replaceChild(props.imageSrc, x);
-      }} />}
       {props.children}
     </LazyLoad>
   );
+}
+
+function onRender(image: HTMLImageElement, imageUrl = '') {
+  if (image.src && image.src !== imageUrl) {
+    setTimeout(() => onTimeout(image, imageUrl), 500);
+    image.setAttribute(attributeName, imageUrl);
+    image.style.opacity = '0';
+  } else {
+    image.src = imageUrl;
+  }
+}
+
+function onTimeout(image: HTMLImageElement, imageUrl: string) {
+  if (image.getAttribute(attributeName) !== imageUrl) return;
+  image.removeAttribute(attributeName);
+  image.src = imageUrl;
 }
 
 const styles = {

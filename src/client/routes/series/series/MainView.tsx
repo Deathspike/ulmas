@@ -2,60 +2,61 @@ import * as app from '.';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import * as ui from 'client/ui';
-import {Container} from 'typedi';
+import {core} from 'client/core';
 import {language} from './language';
 
 @mobxReact.observer
 export class MainView extends React.Component<{vm: app.MainViewModel}> {
   static async createAsync() {
-    const vm = Container.get(app.MainViewModel);
+    const vm = new app.MainViewModel(core.route.get('sectionId'), core.route.get('seriesId'));
     await vm.refreshAsync();
     return <MainView vm={vm} />;
   }
 
   render() {
     return (
-      <ui.HeaderView title={this.props.vm.title}>
-        <ui.material.Grid sx={styles.rootContainer}>
-          <ui.material.Grid sx={styles.imageContainer}>
-            <ui.ImageView imageHeight={36} imageSrc={this.props.vm.posterSrc} />
-          </ui.material.Grid>
-          <ui.material.Grid sx={styles.infoContainer}>
-            <ui.material.Typography variant="h1" sx={styles.title}>
-              {this.props.vm.title}
-            </ui.material.Typography>
-            <ui.material.Grid>
-              <ui.material.Button sx={styles.buttonPrimary}
-                disabled={!this.props.vm.seasons}
-                variant="contained">
-                <ui.icons.PlayArrow />
-              </ui.material.Button>
-              <ui.material.Button sx={styles.buttonSecondary}
-                disabled={!this.props.vm.seasons}
-                variant="contained"
-                color="secondary">
-                {this.props.vm.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
-              </ui.material.Button>
-              <ui.material.Button sx={styles.buttonSecondary}
-                variant="contained"
-                color="secondary">
-                <ui.icons.InfoOutlined />
-              </ui.material.Button>
+      <React.Fragment>
+        {this.props.vm.series && <ui.HeaderView title={this.props.vm.series.title} onBack={() => this.props.vm.onBack()}>
+          <ui.material.Grid sx={styles.rootContainer}>
+            <ui.material.Grid sx={styles.imageContainer}>
+              <ui.ImageView imageHeight={36} imageUrl={core.image.series(this.props.vm.series, 'poster')} />
             </ui.material.Grid>
-            <ui.material.Typography sx={styles.plot}>
-              {this.props.vm.plot ?? language.missingPlot}
-            </ui.material.Typography>
-            {this.props.vm.seasons && <React.Fragment>
-              <ui.material.Typography variant="h2" sx={styles.title}>
-                {language.seasons}
+            <ui.material.Grid sx={styles.infoContainer}>
+              <ui.material.Typography variant="h1" sx={styles.title}>
+                {this.props.vm.series.title}
               </ui.material.Typography>
-              <ui.ImageLinkGridView imageHeight={23} columns={4} columnGap={2} rowGap={1}>
-                {this.props.vm.seasons?.map(x => <app.SeasonView key={x.id} vm={x} /> )}
-              </ui.ImageLinkGridView>
-            </React.Fragment>}
+              <ui.material.Grid>
+                <ui.material.Button sx={styles.buttonPrimary}
+                  disabled={!this.props.vm.series.episodes.length}
+                  variant="contained"
+                  onClick={() => this.props.vm.play()}>
+                  <ui.icons.PlayArrow />
+                </ui.material.Button>
+                <ui.material.Button sx={styles.buttonSecondary}
+                  disabled={!this.props.vm.series.episodes.length}
+                  variant="contained"
+                  color="secondary">
+                  {this.props.vm.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
+                </ui.material.Button>
+                <ui.material.Button sx={styles.buttonSecondary}
+                  variant="contained"
+                  color="secondary">
+                  <ui.icons.InfoOutlined />
+                </ui.material.Button>
+              </ui.material.Grid>
+              <ui.material.Typography sx={styles.plot}>
+                {this.props.vm.series.plot ?? language.missingPlot}
+              </ui.material.Typography>
+              {this.props.vm.currentSeason
+                ? <app.SeasonView vm={this.props.vm.currentSeason} mvm={this.props.vm} />
+                : <app.SeriesView vm={this.props.vm} />}
+            </ui.material.Grid>
+            {this.props.vm.currentPlayer
+              ? <app.PlayerView vm={this.props.vm.currentPlayer} />
+              : undefined}
           </ui.material.Grid>
-        </ui.material.Grid>
-      </ui.HeaderView>
+        </ui.HeaderView>}
+      </React.Fragment>
     );
   }
 }

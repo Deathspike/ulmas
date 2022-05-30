@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as ui from 'client/ui';
 
-export function ImageLinkView(props: React.PropsWithChildren<{imageHeight: number, imageSrc?: HTMLImageElement | string, title: string, onClick: () => void}>) {
+export function ImageLinkView(props: React.PropsWithChildren<{imageHeight: number, imageUrl?: string, title: string, onClick: () => void}>) {
   return (
     <ui.material.Grid sx={styles.rootContainer} onClick={props.onClick}>
       <ui.material.Grid sx={styles.imageContainer}>
-        <ui.ImageView imageHeight={props.imageHeight} imageSrc={props.imageSrc}>
+        <ui.ImageView imageHeight={props.imageHeight} imageUrl={props.imageUrl}>
           {props.children}
         </ui.ImageView>
       </ui.material.Grid>

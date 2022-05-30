@@ -1,6 +1,3 @@
-import {Service} from 'typedi';
-
-@Service()
 export class RouteService {
   private params: Record<string, string> = {};
 

@@ -1,5 +1,5 @@
 import * as app from '..';
-import * as fun from './utilities';
+import * as fun from './functions';
 import * as nst from '@nestjs/common';
 import {DateTime} from 'luxon';
 import {SeriesCache} from './cache/SeriesCache';

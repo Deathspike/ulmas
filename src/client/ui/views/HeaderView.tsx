@@ -1,25 +1,24 @@
-import * as mui from '@mui/material';
 import * as React from 'react';
 import * as ui from '..';
 
-export function HeaderView(props: React.PropsWithChildren<{title?: string}>) {
+export function HeaderView(props: React.PropsWithChildren<{title?: string, onBack: () => void}>) {
   return (
     <React.Fragment>
-      <mui.AppBar sx={styles.rootContainer}>
-        <mui.Toolbar>
-          <mui.IconButton sx={styles.toolBarButton} onClick={() => history.back()}>
+      <ui.material.AppBar sx={styles.rootContainer}>
+        <ui.material.Toolbar>
+          <ui.material.IconButton sx={styles.toolBarButton} onClick={props.onBack}>
             <ui.icons.ArrowBackIos />
-          </mui.IconButton>
-          <mui.Grid sx={styles.titleContainer}>
-            <mui.Typography sx={styles.title}>
+          </ui.material.IconButton>
+          <ui.material.Grid sx={styles.titleContainer}>
+            <ui.material.Typography sx={styles.title}>
               {props.title}
-            </mui.Typography>
-          </mui.Grid>
-        </mui.Toolbar>
-      </mui.AppBar>
-      <mui.Grid sx={styles.children}>
+            </ui.material.Typography>
+          </ui.material.Grid>
+        </ui.material.Toolbar>
+      </ui.material.AppBar>
+      <ui.material.Grid sx={styles.children}>
         {props.children}
-      </mui.Grid>
+      </ui.material.Grid>
     </React.Fragment>
   );
 }

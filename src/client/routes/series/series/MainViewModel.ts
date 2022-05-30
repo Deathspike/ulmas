@@ -1,69 +1,80 @@
-import * as api from 'api'
+import * as api from 'api';
 import * as app from '.';
-import * as core from 'client/core';
 import * as mobx from 'mobx';
-import {Service} from 'typedi';
+import {core} from 'client/core';
 
-@Service({transient: true})
 export class MainViewModel {
-  private readonly sectionId = this.routeService.get('sectionId');
-  private readonly seriesId = this.routeService.get('seriesId');
-
   constructor(
-    private readonly apiService: core.ApiService,
-    private readonly mediaService: core.MediaService,
-    private readonly routeService: core.RouteService) {
+    private readonly sectionId: string,
+    private readonly seriesId: string) {
     mobx.makeObservable(this);
   }
 
   @mobx.action
-  async refreshAsync() {
-    const series = await this.apiService.series.itemAsync(this.sectionId, this.seriesId);
-    if (series.value) {
-      this.posterSrc = await app.imageAsync(this.mediaService.seriesImageUrl(series.value, 'poster'));
-      this.source = series.value;
+  onBack() {
+    if (this.currentSeason && this.seasons && this.seasons.length > 1) {
+      this.currentSeason = undefined;
     } else {
-      // TODO: Handle error.
+      history.back();
     }
   }
 
-  @mobx.computed
-  get plot() {
-    return this.source?.plot;
+  @mobx.action
+  play(episode?: api.models.Episode) {
+    if (this.series && this.seasons) {
+      const episodes = this.currentSeason
+        ? this.currentSeason.episodes
+        : this.seasons.flatMap(x => x.episodes);
+      episode ??= episodes.find(x => x.season && !x.watched)
+        ?? episodes.find(x => !x.watched)
+        ?? episodes[0];
+      if (episode) {
+        this.currentPlayer = new app.PlayerViewModel(this.sectionId, this.series, episodes, episode);
+        this.currentPlayer.load();
+      }
+    }
   }
 
-  @mobx.computed
-  get seasons() {
-    const seasons = this.source?.episodes.length
-      ? Array.from(new Set(this.source.episodes.map(x => x.season)))
-      : undefined;
-    return seasons?.map(x => {
-      const posterSrc = this.source && this.mediaService.seriesImageUrl(this.source, app.getSeasonPoster(x), 'poster');
-      const title = app.getSeasonTitle(x);
-      const url = encodeURIComponent(x);
-      const unwatchedCount = this.source && fetchUnwatchedCount(this.source.episodes.filter(y => y.season === x));
-      return new app.SeasonViewModel(String(x), posterSrc, title, url, unwatchedCount ?? 0);
-    });
+  @mobx.action
+  async refreshAsync() {
+    const series = await core.api.series.itemAsync(this.sectionId, this.seriesId);
+    if (series.value) {
+      const episodes = series.value.episodes
+        .sort((a, b) => a.episode - b.episode);
+      this.seasons = Array.from(new Set(series.value.episodes.map(x => x.season)))
+        .map(x => new app.SeasonViewModel(x, episodes.filter(y => y.season === x)))
+        .sort((a, b) => a.season - b.season);
+      this.currentSeason = this.seasons.length !== 1
+        ? this.seasons.find(x => x.season === this.currentSeason?.season)
+        : this.seasons[0];
+      this.series = series.value;
+    } else {
+      // TODO: Handle error.
+      // TODO: Handle refreshes for `currentPlayer`.
+    }
   }
-  
-  @mobx.computed
-  get title() {
-    return this.source?.title;
+
+  @mobx.action
+  selectSeason(season: app.SeasonViewModel) {
+    this.currentSeason = season;
   }
 
   @mobx.computed
   get watched() {
-    return Boolean(this.source?.episodes.every(x => x.watched));
+    return this.currentSeason
+      ? !this.currentSeason.unwatchedCount
+      : !this.series?.episodes.some(x => !x.watched);
   }
 
   @mobx.observable
-  posterSrc?: HTMLImageElement;
+  currentPlayer?: app.PlayerViewModel;
 
   @mobx.observable
-  private source?: api.models.Series;
-}
+  currentSeason?: app.SeasonViewModel;
 
-function fetchUnwatchedCount(episodes: Array<api.models.Episode>) {
-  const watched = episodes.filter(x => x.watched);
-  return episodes.length - watched.length;
+  @mobx.observable
+  seasons?: Array<app.SeasonViewModel>;
+
+  @mobx.observable
+  series?: api.models.Series;
 }

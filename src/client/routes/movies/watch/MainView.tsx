@@ -2,12 +2,12 @@ import * as app from '.';
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 import * as ui from 'client/ui';
-import {Container} from 'typedi';
+import {core} from 'client/core';
 
 @mobxReact.observer
 export class MainView extends React.Component<{vm: app.MainViewModel}> {
   static async createAsync() {
-    const vm = Container.get(app.MainViewModel);
+    const vm = new app.MainViewModel(core.route.get('sectionId'), core.route.get('movieId'));
     await vm.refreshAsync();
     return <MainView vm={vm} />;
   }
@@ -22,7 +22,7 @@ export class MainView extends React.Component<{vm: app.MainViewModel}> {
   
   render() {
     return (
-      <ui.HeaderView title={this.props.vm.title}>
+      <ui.HeaderView title={this.props.vm.title} onBack={() => history.back()}>
         <ui.material.Typography>
           {this.props.vm.title}
         </ui.material.Typography>

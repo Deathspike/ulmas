@@ -1,29 +1,22 @@
 import * as api from 'api';
-import * as app from '.';
-import * as core from 'client/core';
 import * as mobx from 'mobx';
-import {Service} from 'typedi';
+import {core} from 'client/core';
 
-@Service({transient: true})
 export class MainViewModel {
-  private readonly sectionId = this.routeService.get('sectionId');
-
   constructor(
-    private readonly apiService: core.ApiService,
-    private readonly mediaService: core.MediaService,
-    private readonly routeService: core.RouteService) {
+    private readonly sectionId: string) {
     mobx.makeObservable(this);
   }
 
   @mobx.action
   async refreshAsync() {
-    const sectionsPromise = this.apiService.sections.readAsync();
-    const seriesPromise = this.apiService.series.entriesAsync(this.sectionId);
+    const sectionsPromise = core.api.sections.readAsync();
+    const seriesPromise = core.api.series.entriesAsync(this.sectionId);
     const sections = await sectionsPromise;
     const series = await seriesPromise;
     if (sections.value && series.value) {
-      this.sectionsSource = sections.value;
-      this.seriesSource = series.value;
+      this.series = series.value;
+      this.title = sections.value.find(x => x.id === this.sectionId)?.title;
     } else {
       // TODO: Handle error.
     }
@@ -31,28 +24,20 @@ export class MainViewModel {
 
   @mobx.computed
   get pages() {
-    return createPages(this.seriesSource
+    return createPages(this.series
       ?.slice()
-      ?.sort((a, b) => a.dateEpisodeAdded && b.dateEpisodeAdded ? b.dateEpisodeAdded.localeCompare(a.dateEpisodeAdded) : 0)
-      ?.map(x => new app.SeriesViewModel(x.id, this.mediaService.seriesImageUrl(x, 'poster'), x.title, x.unwatchedCount ?? 0)));
+      ?.sort((a, b) => a.dateEpisodeAdded && b.dateEpisodeAdded ? b.dateEpisodeAdded.localeCompare(a.dateEpisodeAdded) : 0));
   }
   
-  @mobx.computed
-  get title() {
-    return this.sectionsSource
-      ?.find(x => x.id === this.sectionId)
-      ?.title;
-  }
+  @mobx.observable
+  series?: Array<api.models.SeriesEntry>;
 
   @mobx.observable
-  private sectionsSource?: Array<api.models.Section>;
-  
-  @mobx.observable
-  private seriesSource?: Array<api.models.SeriesEntry>;
+  title?: string;
 }
 
-function createPages(series?: Array<app.SeriesViewModel>) {
-  const result: Array<Array<app.SeriesViewModel>> = [];
+function createPages(series?: Array<api.models.SeriesEntry>) {
+  const result = [];
   while (series?.length) result.push(series.splice(0, 24));
   return result;
 }

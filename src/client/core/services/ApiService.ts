@@ -1,7 +1,5 @@
 import * as api from 'api';
-import {Service} from 'typedi';
 
-@Service()
 export class ApiService {
   private readonly server = new api.Server(`${window.location.protocol}//${window.location.hostname}:6877/`);
 

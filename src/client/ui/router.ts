@@ -1,7 +1,6 @@
-import * as core from 'client/core';
 import * as React from 'react';
 import * as ReactLocation from '@tanstack/react-location';
-import {Container} from 'typedi';
+import {core} from 'client/core';
 
 export const router = {
   all(path: string, children: Array<ReactLocation.Route>) {
@@ -16,7 +15,7 @@ export const router = {
         return element;
       }),
       loader: async (route: ReactLocation.RouteMatch) => {
-        Container.get(core.RouteService).set(route.params);
+        core.route.set(route.params);
         const element = await createAsync();
         return {element};
       },
