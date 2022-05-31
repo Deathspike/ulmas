@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as ui from '..';
+import * as ui from 'client/ui';
 
 export function HeaderView(props: React.PropsWithChildren<{title?: string, onBack: () => void}>) {
   return (

@@ -8,13 +8,12 @@ export class ServerResponse<T> {
   }
 
   static async jsonAsync<T>(url: string, options?: RequestInit) {
-    const response = await fetch(url, options)
-      .catch(() => {});
-    const value = response && response.status >= 200 && response.status < 300
-      ? await response.json().catch(() => {})
-      : undefined;
-    return response
-      ? new ServerResponse<T>(response.status, value)
-      : new ServerResponse<T>();
+    try {
+      const response = await fetch(url, options);
+      const value = response.status >= 200 && response.status < 300 ? await response.json() : undefined;
+      return new ServerResponse<T>(response.status, value);
+    } catch {
+      return new ServerResponse<T>();
+    }
   }
 }

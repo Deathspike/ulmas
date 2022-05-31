@@ -1,4 +1,3 @@
-export * from './Router';
-export * as main from './main';
-export * as movie from './movie';
-export * as watch from './watch';
+export {main} from './main';
+export {movie} from './movie';
+export {watch} from './watch';

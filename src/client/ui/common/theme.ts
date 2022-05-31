@@ -1,4 +1,4 @@
-import * as ui from '..';
+import * as ui from 'client/ui';
 
 export const theme = ui.material.createTheme({
   breakpoints: {
@@ -39,9 +39,15 @@ export const theme = ui.material.createTheme({
     },
     MuiToolbar: {
       styleOverrides: {
-        root: {height: '3.5vw'},
-        gutters: {padding: '0 !important'},
-        regular: {minHeight: '0 !important'}
+        root: {
+          height: '3.5vw'
+        },
+        gutters: {
+          padding: '0 !important'
+        },
+        regular: {
+          minHeight: '0 !important'
+        }
       }
     },
     MuiButton: {
@@ -60,7 +66,6 @@ export const theme = ui.material.createTheme({
     MuiBackdrop: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgba(0, 0, 0, 0.75)',
           zIndex: 2000
         }
       }

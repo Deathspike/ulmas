@@ -1,3 +1,2 @@
-export * from './Router';
-export * as main from './main';
-export * as series from './series';
+export {main} from './main';
+export {series} from './series';

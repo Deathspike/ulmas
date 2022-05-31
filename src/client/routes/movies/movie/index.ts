@@ -1,2 +1,3 @@
-export * from './MainView';
-export * from './MainViewModel';
+export * from './router';
+export * from './viewModels/MainViewModel';
+export * from './views/MainView';
