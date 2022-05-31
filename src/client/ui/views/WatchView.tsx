@@ -18,8 +18,7 @@ const styles = {
   rootContainer: {
     position: 'absolute',
     right: 0,
-    top: 0,
-    zIndex: 1,
+    top: 0
   },
   unwatchedCount: {
     backgroundColor: ui.theme.palette.primary.dark,

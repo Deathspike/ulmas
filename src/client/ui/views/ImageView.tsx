@@ -15,7 +15,7 @@ export function ImageView(props: React.PropsWithChildren<{imageHeight: number, i
 
 function onRender(image: HTMLImageElement, imageUrl = '') {
   if (image.src && image.src !== imageUrl) {
-    setTimeout(() => onTimeout(image, imageUrl), 500);
+    setTimeout(() => onTimeout(image, imageUrl), 225);
     image.setAttribute(attributeName, imageUrl);
     image.style.opacity = '0';
   } else {
@@ -38,7 +38,7 @@ const styles = {
     objectFit: 'cover' as React.CSSProperties['objectFit'],
     opacity: 0,
     height: '100%',
-    transition: 'opacity 0.5s ease',
+    transition: 'opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
     width: '100%'
   }
 };

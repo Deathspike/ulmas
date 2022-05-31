@@ -60,35 +60,8 @@ export const theme = ui.material.createTheme({
     MuiBackdrop: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgba(0, 0, 0, 0.75)'
-        }
-      }
-    },
-    MuiDialog: {
-      styleOverrides: {
-        paper: {
-          borderRadius: 0,
-          minWidth: '30vw'
-        }
-      }
-    },
-    MuiDialogTitle: {
-      styleOverrides: {
-        root: {
-          fontSize: '1.5vw',
-          lineHeight: 1.1,
-          padding: '1vw',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap'
-        }
-      }
-    },
-    MuiDialogContent: {
-      styleOverrides: {
-        root: {
-          overflow: 'hidden',
-          padding: 0
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          zIndex: 2000
         }
       }
     },
