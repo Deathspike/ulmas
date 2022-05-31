@@ -8,7 +8,7 @@ export class PlayerViewModel {
   private readonly episodes: Array<app.EpisodeViewModel>;
   private readonly sectionId: string;
   private readonly seriesId: string;
-  private counterCallback?: Function;
+  private counterCallback?: () => void;
   private counterInterval?: NodeJS.Timeout;
 
   constructor(sectionId: string, seriesId: string, episodes: Array<app.EpisodeViewModel>, current: app.EpisodeViewModel) {
@@ -97,7 +97,7 @@ export class PlayerViewModel {
     this.startCounter(() => this.moveToNext() && this.load());
   }
 
-  private startCounter(callback: Function) {
+  private startCounter(callback: () => void) {
     this.stopCounter();
     this.counter = 100;
     this.counterCallback = callback;
