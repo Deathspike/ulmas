@@ -1,39 +1,36 @@
 import * as app from '..';
 import * as React from 'react';
 import * as ui from 'client/ui';
-import {observer} from 'mobx-react';
 
-export const PlayerView = observer(function (props: {vm: app.PlayerViewModel}) {
-  return (
-    <ui.material.Fade in={props.vm.isActive} unmountOnExit>
-      <ui.material.Backdrop open>
-        <ui.material.Grid sx={styles.rootContainer}>
-          <ui.material.Grid sx={styles.titleContainer}>
-            <ui.material.Typography variant="h3">
-              {getStateTitle(props.vm.state)}
-            </ui.material.Typography>
-            <ui.material.IconButton sx={styles.closeButton} onClick={() => props.vm.close()}>
-              <ui.icons.Close />
-            </ui.material.IconButton>
-          </ui.material.Grid>
-          <ui.ImageView imageHeight={18} imageUrl={props.vm.current.thumbUrl}>
-            <ui.material.Fade in={props.vm.state !== 'playing'}>
-              <ui.material.IconButton sx={styles.continueButton} onClick={() => props.vm.continue()}>
-                <ui.icons.SkipNext sx={styles.continueIcon} />
-              </ui.material.IconButton>
-            </ui.material.Fade>
-          </ui.ImageView>
-          <ui.material.LinearProgress
-            variant={props.vm.state !== 'playing' ? 'determinate' : 'indeterminate'}
-            value={props.vm.counter ?? 100} />
-          <ui.material.Typography sx={styles.title}>
-            {props.vm.current.source.episode}. {props.vm.current.source.title}
+export const PlayerView = ui.createView<{vm: app.PlayerViewModel}>(props => (
+  <ui.material.Fade in={props.vm.isActive} unmountOnExit>
+    <ui.material.Backdrop open>
+      <ui.material.Grid sx={styles.rootContainer}>
+        <ui.material.Grid sx={styles.titleContainer}>
+          <ui.material.Typography variant="h3">
+            {getStateTitle(props.vm.state)}
           </ui.material.Typography>
+          <ui.material.IconButton sx={styles.closeButton} onClick={() => props.vm.close()}>
+            <ui.icons.Close />
+          </ui.material.IconButton>
         </ui.material.Grid>
-      </ui.material.Backdrop>
-    </ui.material.Fade>
-  );
-});
+        <ui.ImageView imageHeight={18} imageUrl={props.vm.current.thumbUrl}>
+          <ui.material.Fade in={props.vm.state !== 'playing'}>
+            <ui.material.IconButton sx={styles.continueButton} onClick={() => props.vm.continue()}>
+              <ui.icons.SkipNext sx={styles.continueIcon} />
+            </ui.material.IconButton>
+          </ui.material.Fade>
+        </ui.ImageView>
+        <ui.material.LinearProgress
+          variant={props.vm.state !== 'playing' ? 'determinate' : 'indeterminate'}
+          value={props.vm.counter ?? 100} />
+        <ui.material.Typography sx={styles.title}>
+          {props.vm.current.source.episode}. {props.vm.current.source.title}
+        </ui.material.Typography>
+      </ui.material.Grid>
+    </ui.material.Backdrop>
+  </ui.material.Fade>
+));
 
 function getStateTitle(state: app.PlayerViewModel['state']) {
   switch (state) {

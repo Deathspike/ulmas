@@ -40,7 +40,7 @@ export class MainViewModel {
     if (series.value) {
       const episodes = series.value.episodes
         .sort((a, b) => a.episode - b.episode)
-        .map(x => new app.EpisodeViewModel(this.sectionId, this.seriesId, x));
+        .map(x => new app.EpisodeViewModel(x => this.play(x), this.sectionId, this.seriesId, x));
       this.seasons = Array.from(new Set(series.value.episodes.map(x => x.season)))
         .sort((a, b) => a - b)
         .map(x => new app.SeasonViewModel(this.sectionId, series.value!, x, episodes.filter(y => y.source.season === x)));

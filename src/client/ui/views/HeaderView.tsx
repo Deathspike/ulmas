@@ -1,27 +1,25 @@
 import * as React from 'react';
 import * as ui from 'client/ui';
 
-export function HeaderView(props: React.PropsWithChildren<{title?: string, onBack: () => void}>) {
-  return (
-    <React.Fragment>
-      <ui.material.AppBar sx={styles.rootContainer}>
-        <ui.material.Toolbar>
-          <ui.material.IconButton sx={styles.toolBarButton} onClick={props.onBack}>
-            <ui.icons.ArrowBackIos />
-          </ui.material.IconButton>
-          <ui.material.Grid sx={styles.titleContainer}>
-            <ui.material.Typography sx={styles.title}>
-              {props.title}
-            </ui.material.Typography>
-          </ui.material.Grid>
-        </ui.material.Toolbar>
-      </ui.material.AppBar>
-      <ui.material.Grid sx={styles.children}>
-        {props.children}
-      </ui.material.Grid>
-    </React.Fragment>
-  );
-}
+export const HeaderView = ui.createView<{title: string, onBack: () => void}>(props => (
+  <React.Fragment>
+    <ui.material.AppBar sx={styles.rootContainer}>
+      <ui.material.Toolbar>
+        <ui.material.IconButton sx={styles.toolBarButton} onClick={props.onBack}>
+          <ui.icons.ArrowBackIos />
+        </ui.material.IconButton>
+        <ui.material.Grid sx={styles.titleContainer}>
+          <ui.material.Typography sx={styles.title}>
+            {props.title}
+          </ui.material.Typography>
+        </ui.material.Grid>
+      </ui.material.Toolbar>
+    </ui.material.AppBar>
+    <ui.material.Grid sx={styles.children}>
+      {props.children}
+    </ui.material.Grid>
+  </React.Fragment>
+));
 
 const styles = {
   rootContainer: {

@@ -3,20 +3,16 @@ import * as app from '..';
 import * as React from 'react';
 import * as ui from 'client/ui';
 
-export function SeasonView(props: {mvm: app.MainViewModel, vm: app.SeasonViewModel}) {
-  return (
-    <React.Fragment>
-      <ui.material.Typography variant="h2" sx={styles.title}>
-        {props.vm.title}
-      </ui.material.Typography>
-      {props.vm.pages.map((episodes, i) => (
-        <LazyLoad key={i} style={{height: `${episodes.length * 21.50}vw`}}>
-          {episodes.map(x => <app.EpisodeView key={x.source.id} mvm={props.mvm} vm={x} />)}
-        </LazyLoad>
-      ))}
-    </React.Fragment>
-  )
-}
+export const SeasonView = ui.createView<{vm: app.SeasonViewModel}>(props => (
+  <ui.material.Grid>
+    <ui.material.Typography variant="h2" sx={styles.title}>
+      {props.vm.title}
+    </ui.material.Typography>
+    {props.vm.pages.map((x, i) => <LazyLoad key={i} style={{height: `${x.length * 21.50}vw`}}>
+      {x.map(x => <app.EpisodeView key={x.source.id} vm={x} />)}
+    </LazyLoad>)}
+  </ui.material.Grid>
+));
 
 const styles = {
   title: {

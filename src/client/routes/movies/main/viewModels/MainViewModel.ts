@@ -10,6 +10,7 @@ export class MainViewModel {
 
   @mobx.action
   async refreshAsync() {
+    // TODO: Handle section not found.
     const sectionsPromise = core.api.sections.readAsync();
     const moviesPromise = core.api.movies.entriesAsync(this.sectionId);
     const sections = await sectionsPromise;
@@ -24,9 +25,10 @@ export class MainViewModel {
 
   @mobx.computed
   get pages() {
-    return ui.createPages(24, this.movies?.slice().sort((a, b) => {
+    if (!this.movies) return;
+    return Array.from(ui.createPages(24, this.movies.slice().sort((a, b) => {
       return b.source.dateAdded.localeCompare(a.source.dateAdded);
-    }));
+    })));
   }
   
   @mobx.observable

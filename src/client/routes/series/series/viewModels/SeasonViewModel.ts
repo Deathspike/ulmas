@@ -5,8 +5,9 @@ import * as ui from 'client/ui';
 import {core} from 'client/core';
 
 export class SeasonViewModel {
-  constructor(private readonly sectionId: string, private readonly series: api.models.Series, season: number, episodes: Array<app.EpisodeViewModel>) {
+  constructor(sectionId: string, series: api.models.Series, season: number, episodes: Array<app.EpisodeViewModel>) {
     this.episodes = episodes;
+    this.posterUrl = core.image.series(sectionId, series, getSeasonPoster(season), 'poster');
     this.season = season;
     this.title = getSeasonTitle(season);
     mobx.makeObservable(this);
@@ -14,12 +15,7 @@ export class SeasonViewModel {
 
   @mobx.computed
   get pages() {
-    return ui.createPages(4, this.episodes.slice());
-  }
-
-  @mobx.computed
-  get posterUrl() {
-    return core.image.series(this.sectionId, this.series, getSeasonPoster(this.season), 'poster');
+    return Array.from(ui.createPages(4, this.episodes));
   }
 
   @mobx.computed
@@ -29,6 +25,9 @@ export class SeasonViewModel {
   
   @mobx.observable
   episodes: Array<app.EpisodeViewModel>;
+
+  @mobx.observable
+  posterUrl?: string;
 
   @mobx.observable
   season: number;

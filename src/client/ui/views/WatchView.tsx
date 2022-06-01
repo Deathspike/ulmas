@@ -1,18 +1,16 @@
 import * as React from 'react';
 import * as ui from 'client/ui';
 
-export function WatchView(props: {value: boolean | number}) {
-  return (
-    <ui.material.Grid sx={styles.rootContainer}>
-      {typeof props.value === 'number'
-        && props.value
-        && <ui.material.Typography sx={styles.unwatchedCount}>{props.value}</ui.material.Typography>}
-      {typeof props.value === 'boolean'
-        && !props.value
-        && <ui.material.Typography sx={styles.watched} />}
-    </ui.material.Grid>
-  );
-}
+export const WatchView = ui.createView<{value: boolean | number}>(props => (
+  <ui.material.Grid sx={styles.rootContainer}>
+    {typeof props.value === 'number'
+      && props.value
+      && <ui.material.Typography sx={styles.unwatchedCount}>{props.value}</ui.material.Typography>}
+    {typeof props.value === 'boolean'
+      && !props.value
+      && <ui.material.Typography sx={styles.watched} />}
+  </ui.material.Grid>
+));
 
 const styles = {
   rootContainer: {

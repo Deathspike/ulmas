@@ -1,17 +1,16 @@
 import LazyLoad from 'react-lazyload';
 import * as React from 'react';
+import * as ui from 'client/ui';
 const attributeName = 'data-src';
 
-export function ImageView(props: React.PropsWithChildren<{imageHeight: number, imageUrl?: string}>) {
-  return (
-    <LazyLoad style={{...styles.imageContainer, height: `${props.imageHeight}vw`}} once resize>
-      {props.imageUrl && <img ref={x => x && onRender(x, props.imageUrl)}
-        onLoad={x => x.currentTarget.style.opacity = '1'}
-        style={styles.image} />}
-      {props.children}
-    </LazyLoad>
-  );
-}
+export const ImageView = ui.createView<{imageHeight: number, imageUrl?: string}>(props => (
+  <LazyLoad style={{...styles.imageContainer, height: `${props.imageHeight}vw`}} once resize>
+    {props.imageUrl && <img ref={x => x && onRender(x, props.imageUrl)}
+      onLoad={x => x.currentTarget.style.opacity = '1'}
+      style={styles.image} />}
+    {props.children}
+  </LazyLoad>
+));
 
 function onRender(image: HTMLImageElement, imageUrl = '') {
   if (image.src && image.src !== imageUrl) {
