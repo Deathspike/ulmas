@@ -17,6 +17,7 @@ export function fetchLastPlayed(episodes: Array<app.api.models.Episode>) {
 }
 
 export function fetchUnwatchedCount(episodes: Array<app.api.models.Episode>) {
-  const watched = episodes.filter(x => x.watched);
-  return episodes.length - watched.length;
+  const watchedCount = episodes.filter(x => x.watched).length;
+  const unwatchedCount = episodes.length - watchedCount;
+  return unwatchedCount || undefined;
 }
