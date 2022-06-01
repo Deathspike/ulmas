@@ -63,13 +63,6 @@ export const theme = ui.material.createTheme({
         }
       }
     },
-    MuiBackdrop: {
-      styleOverrides: {
-        root: {
-          zIndex: 2000
-        }
-      }
-    },
     MuiIconButton: {
       styleOverrides: {
         root: {

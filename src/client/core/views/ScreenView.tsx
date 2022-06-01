@@ -21,6 +21,9 @@ export class ScreenView extends React.Component {
   render() {
     return (
       <React.Fragment>
+        {core.screen.currentView 
+          ? core.screen.currentView.element
+          : undefined}
         {Boolean(core.screen.waitCount) && (
           <ui.material.Backdrop invisible open>
             <ui.material.Fade in style={{transitionDelay: '300ms'}}>
@@ -30,7 +33,6 @@ export class ScreenView extends React.Component {
             </ui.material.Fade>
           </ui.material.Backdrop>
         )}
-        {core.screen.currentView && core.screen.currentView.element}
       </React.Fragment>
     );
   }
