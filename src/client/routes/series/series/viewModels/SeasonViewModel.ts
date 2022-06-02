@@ -1,13 +1,11 @@
-import * as api from 'api';
 import * as app from '..';
 import * as mobx from 'mobx';
 import * as ui from 'client/ui';
 import {core} from 'client/core';
 
 export class SeasonViewModel {
-  constructor(sectionId: string, series: api.models.Series, season: number, episodes: Array<app.EpisodeViewModel>) {
+  constructor(private readonly mvm: app.MainViewModel, private readonly sectionId: string, season: number, episodes: Array<app.EpisodeViewModel>) {
     this.episodes = episodes;
-    this.posterUrl = core.image.series(sectionId, series, getSeasonPoster(season), 'poster');
     this.season = season;
     this.title = getSeasonTitle(season);
     mobx.makeObservable(this);
@@ -19,15 +17,19 @@ export class SeasonViewModel {
   }
 
   @mobx.computed
+  get posterUrl() {
+    return this.mvm.source
+      ? core.image.series(this.sectionId, this.mvm.source, getSeasonPoster(this.season), 'poster')
+      : undefined;
+  }
+
+  @mobx.computed
   get unwatchedCount() {
     return this.episodes.filter(x => !x.source.watched).length;
   }
   
   @mobx.observable
   episodes: Array<app.EpisodeViewModel>;
-
-  @mobx.observable
-  posterUrl?: string;
 
   @mobx.observable
   season: number;

@@ -19,16 +19,29 @@ export class MainViewModel {
   }
 
   @mobx.action
-  play(current?: app.EpisodeViewModel) {
-    if (this.seasons) {
+  async markAsync() {
+    await core.screen.waitAsync(async () => {
       const episodes = this.currentSeason
         ? this.currentSeason.episodes
-        : this.seasons.flatMap(x => x.episodes);
+        : this.seasons?.flatMap(x => x.episodes);
+      if (episodes) {
+        await app.core.watchedAsync(this.sectionId, this.seriesId, episodes.map(x => x.source), !this.watched);
+      }
+    });
+  }
+
+  @mobx.action
+  play(current?: app.EpisodeViewModel) {
+    const episodes = this.currentSeason
+      ? this.currentSeason.episodes
+      : this.seasons?.flatMap(x => x.episodes);
+    if (episodes) {
       current ??= episodes.find(x => x.source.season && !x.source.watched)
         ?? episodes.find(x => !x.source.watched)
+        ?? episodes.find(x => x.source.season)
         ?? episodes[0];
       if (current) {
-        this.currentPlayer = new app.PlayerViewModel(this.sectionId, this.seriesId, episodes, current);
+        this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.seriesId, episodes.map(x => x.source), current.source);
         this.currentPlayer.load();
       }
     }
@@ -40,10 +53,10 @@ export class MainViewModel {
     if (series.value) {
       const episodes = series.value.episodes
         .sort((a, b) => a.episode - b.episode)
-        .map(x => new app.EpisodeViewModel(x => this.play(x), this.sectionId, this.seriesId, x));
+        .map(x => new app.EpisodeViewModel(this, this.sectionId, x));
       this.seasons = Array.from(new Set(series.value.episodes.map(x => x.season)))
         .sort((a, b) => a - b)
-        .map(x => new app.SeasonViewModel(this.sectionId, series.value!, x, episodes.filter(y => y.source.season === x)));
+        .map(x => new app.SeasonViewModel(this, this.sectionId, x, episodes.filter(y => y.source.season === x)));
       this.currentSeason = this.seasons.length !== 1
         ? this.seasons.find(x => x.season === this.currentSeason?.season)
         : this.seasons[0];
@@ -74,7 +87,7 @@ export class MainViewModel {
   }
 
   @mobx.observable
-  currentPlayer?: app.PlayerViewModel;
+  currentPlayer?: app.core.PlayerViewModel;
 
   @mobx.observable
   currentSeason?: app.SeasonViewModel;

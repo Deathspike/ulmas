@@ -22,7 +22,8 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(props => props.vm
           <ui.material.Button sx={styles.buttonSecondary}
             color="secondary"
             disabled={!props.vm.source.episodes.length}
-            variant="contained">
+            variant="contained"
+            onClick={() => props.vm.markAsync()}>
             {props.vm.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
           </ui.material.Button>
           <ui.material.Button sx={styles.buttonSecondary}
@@ -39,7 +40,7 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(props => props.vm
           : <app.SeriesView vm={props.vm} />}
       </ui.material.Grid>
       {props.vm.currentPlayer
-        ? <app.PlayerView vm={props.vm.currentPlayer} />
+        ? <app.core.PlayerView vm={props.vm.currentPlayer} />
         : undefined}
     </ui.material.Grid>
   </ui.HeaderView>

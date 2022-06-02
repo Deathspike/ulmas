@@ -6,11 +6,15 @@ export const EpisodeView = ui.createView<{vm: app.EpisodeViewModel}>(props => (
   <ui.material.Grid key={props.vm.source.id} sx={styles.rootContainer} onClick={() => props.vm.play()}>
     <ui.material.Grid sx={styles.imageContainer}>
       <ui.ImageView imageHeight={18} imageUrl={props.vm.thumbUrl}>
-        <ui.WatchView value={props.vm.source.watched ?? false} />
+        {props.vm.source.resume && <ui.material.LinearProgress sx={styles.progress}
+          variant="determinate"
+          value={props.vm.source.resume.position / props.vm.source.resume.total * 100} />}
+        <ui.WatchView value={Boolean(props.vm.source.resume || props.vm.source.watched)} />
       </ui.ImageView>
       <ui.material.Button sx={styles.button}
         color="secondary"
-        variant="contained">
+        variant="contained"
+        onClick={x => Boolean(x.stopPropagation()) || props.vm.markAsync()}>
         {props.vm.source.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
       </ui.material.Button>
       <ui.material.Button sx={styles.button}
@@ -40,6 +44,11 @@ const styles = {
   },
   imageContainer: {
     width: '30vw'
+  },
+  progress: {
+    bottom: 0,
+    position: 'absolute',
+    width: '100%'
   },
   button: {
     borderRadius: 0,

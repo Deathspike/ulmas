@@ -1,21 +1,33 @@
 import * as api from 'api';
+import * as app from '..';
 import * as mobx from 'mobx';
 import {core} from 'client/core';
 
 export class EpisodeViewModel {
-  constructor(private readonly onPlay: (vm: EpisodeViewModel) => void, sectionId: string, seriesId: string, source: api.models.Episode) {
-    this.thumbUrl = core.image.episode(sectionId, seriesId, source, 'thumb');
+  constructor(private readonly mvm: app.MainViewModel, private readonly sectionId: string, source: api.models.Episode) {
     this.source = source;
     mobx.makeObservable(this);
   }
 
   @mobx.action
-  play() {
-    this.onPlay(this);
+  async markAsync() {
+    await core.screen.waitAsync(async () => {
+      if (!this.mvm.source) return;
+      await app.core.watchedAsync(this.sectionId, this.mvm.source.id, [this.source], !this.source.watched);
+    });
   }
 
-  @mobx.observable
-  thumbUrl?: string;
+  @mobx.action
+  play() {
+    this.mvm.play(this);
+  }
+
+  @mobx.computed
+  get thumbUrl() {
+    return this.mvm.source
+      ? core.image.episode(this.sectionId, this.mvm.source.id, this.source, 'thumb')
+      : undefined;
+  }
 
   @mobx.observable
   source: api.models.Episode;

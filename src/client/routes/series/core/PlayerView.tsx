@@ -1,4 +1,4 @@
-import * as app from '..';
+import * as app from '.';
 import * as React from 'react';
 import * as ui from 'client/ui';
 
@@ -14,7 +14,7 @@ export const PlayerView = ui.createView<{vm: app.PlayerViewModel}>(props => (
             <ui.icons.Close />
           </ui.material.IconButton>
         </ui.material.Grid>
-        <ui.ImageView imageHeight={18} imageUrl={props.vm.current.thumbUrl}>
+        <ui.ImageView imageHeight={18} imageUrl={props.vm.thumbUrl}>
           <ui.material.Fade in={props.vm.state !== 'playing'}>
             <ui.material.IconButton sx={styles.continueButton} onClick={() => props.vm.continue()}>
               <ui.icons.SkipNext sx={styles.continueIcon} />
@@ -25,7 +25,7 @@ export const PlayerView = ui.createView<{vm: app.PlayerViewModel}>(props => (
           variant={props.vm.state !== 'playing' ? 'determinate' : 'indeterminate'}
           value={props.vm.counter ?? 100} />
         <ui.material.Typography sx={styles.title}>
-          {props.vm.current.source.episode}. {props.vm.current.source.title}
+          {props.vm.current.episode}. {props.vm.current.title}
         </ui.material.Typography>
       </ui.material.Grid>
     </ui.material.Backdrop>
@@ -35,11 +35,11 @@ export const PlayerView = ui.createView<{vm: app.PlayerViewModel}>(props => (
 function getStateTitle(state: app.PlayerViewModel['state']) {
   switch (state) {
     case 'error':
-      return app.language.stateError;
+      return app.language.error;
     case 'pending':
-      return app.language.statePending;
+      return app.language.pending;
     default:
-      return app.language.statePlaying;
+      return app.language.playing;
   }
 }
 

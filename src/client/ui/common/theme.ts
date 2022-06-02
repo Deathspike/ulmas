@@ -74,7 +74,7 @@ export const theme = ui.material.createTheme({
     MuiLinearProgress: {
       styleOverrides: {
         root: {
-          height: '0.25vw'
+          height: '0.35vw'
         }
       }
     },

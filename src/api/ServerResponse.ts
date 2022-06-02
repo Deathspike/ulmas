@@ -4,7 +4,12 @@ export class ServerResponse<T> {
     readonly value?: T) {}
 
   static async emptyAsync(url: string, options?: RequestInit) {
-    return await this.jsonAsync<void>(url, options);
+    try {
+      const response = await fetch(url, options);
+      return new ServerResponse<void>(response.status);
+    } catch {
+      return new ServerResponse<void>();
+    }  
   }
 
   static async jsonAsync<T>(url: string, options?: RequestInit) {

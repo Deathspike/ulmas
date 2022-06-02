@@ -1,19 +1,15 @@
 import * as api from 'api';
-import * as app from '..';
+import * as app from '.';
 import * as mobx from 'mobx';
 import {core} from 'client/core';
 
 export class PlayerViewModel {
   private readonly controller = new AbortController();
-  private readonly episodes: Array<app.EpisodeViewModel>;
-  private readonly sectionId: string;
-  private readonly seriesId: string;
+  private readonly episodes: Array<api.models.Episode>;
   private counterCallback?: () => void;
   private counterInterval?: NodeJS.Timeout;
 
-  constructor(sectionId: string, seriesId: string, episodes: Array<app.EpisodeViewModel>, current: app.EpisodeViewModel) {
-    this.sectionId = sectionId;
-    this.seriesId = seriesId;
+  constructor(private readonly sectionId: string, private readonly seriesId: string, episodes: Array<api.models.Episode>, current: api.models.Episode) {
     this.episodes = episodes;
     this.current = current;
     mobx.makeObservable(this);
@@ -34,24 +30,30 @@ export class PlayerViewModel {
 
   @mobx.action
   load() {
-    const subtitleUrls = this.current.source.media.subtitles
+    const subtitleUrls = this.current.media.subtitles
       ?.map(x => core.api.series.mediaUrl(this.sectionId, this.seriesId, x.id)) ?? [];
-    const videoUrl = this.current.source.media.videos
+    const videoUrl = this.current.media.videos
       ?.map(x => core.api.series.mediaUrl(this.sectionId, this.seriesId, x.id))
       ?.find(Boolean);
     if (videoUrl) {
-      this.loadExternalPlayer(subtitleUrls, videoUrl);
       this.state = 'playing';
+      this.loadExternalPlayer(subtitleUrls, videoUrl);
     } else {
-      this.onError();
+      this.state = 'error';
+      this.startCounter(() => this.moveToNext() && this.load());
     }
+  }
+
+  @mobx.computed
+  get thumbUrl() {
+    return core.image.episode(this.sectionId, this.seriesId, this.current, 'thumb');
   }
 
   @mobx.observable
   counter?: number;
 
   @mobx.observable
-  current: app.EpisodeViewModel;
+  current: api.models.Episode;
 
   @mobx.observable
   isActive = true;
@@ -60,9 +62,9 @@ export class PlayerViewModel {
   state?: 'error' | 'pending' | 'playing';
 
   private loadExternalPlayer(subtitleUrls: Array<string>, videoUrl: string) {
-    const position = this.current.source.resume ? this.current.source.resume.position : 0;
+    const position = this.current.resume ? this.current.resume.position : 0;
     const request = new api.models.MediaRequest({position, subtitleUrls, videoUrl});
-    core.api.media.mpvAsync(request, this.controller.signal).then(x => this.onComplete(x));
+    core.api.media.mpvAsync(request, this.controller.signal).then(x => this.onCompleteAsync(x));
   }
 
   private moveToNext() {
@@ -76,25 +78,21 @@ export class PlayerViewModel {
     }
   }
 
-  private onComplete(resume: api.ServerResponse<api.models.MediaResume>) {
+  private async onCompleteAsync(resume: api.ServerResponse<api.models.MediaResume>) {
     if (!resume.status) {
       this.isActive = false;
     } else if (!resume.value || !resume.value.total) {
-      this.onError();
+      this.state = 'error';
+      this.startCounter(() => this.moveToNext() && this.load());
     } else if (resume.value.position / resume.value.total < 0.9) {
-      // TODO: Save progress.
+      await app.resumeAsync(this.sectionId, this.seriesId, [this.current], resume.value);
       this.isActive = false;
     } else {
-      // TODO: Save watched.
+      await app.watchedAsync(this.sectionId, this.seriesId, [this.current], true);
       if (!this.moveToNext()) return;
       this.state = 'pending';
       this.startCounter(() => this.load());
     }
-  }
-
-  private onError() {
-    this.state = 'error';
-    this.startCounter(() => this.moveToNext() && this.load());
   }
 
   private startCounter(callback: () => void) {

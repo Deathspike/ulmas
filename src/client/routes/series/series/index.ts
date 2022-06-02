@@ -1,11 +1,10 @@
+export * as core from '../core';
 export * from './language';
 export * from './router';
 export * from './viewModels/EpisodeViewModel';
 export * from './viewModels/MainViewModel';
-export * from './viewModels/PlayerViewModel';
 export * from './viewModels/SeasonViewModel';
 export * from './views/EpisodeView';
 export * from './views/MainView';
-export * from './views/PlayerView';
 export * from './views/SeasonView';
 export * from './views/SeriesView';
