@@ -18,14 +18,14 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(props => props.vm
           <ui.material.Button sx={styles.buttonPrimary}
             disabled={!props.vm.source.episodes.length}
             variant="contained"
-            onClick={() => props.vm.playAsync()}>
+            onClick={ui.click(() => props.vm.playAsync())}>
             <ui.icons.PlayArrow />
           </ui.material.Button>
           <ui.material.Button sx={styles.buttonSecondary}
             color="secondary"
             disabled={!props.vm.source.episodes.length}
             variant="contained"
-            onClick={() => props.vm.markAsync()}>
+            onClick={ui.click(() => props.vm.markAsync())}>
             {props.vm.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
           </ui.material.Button>
           <ui.material.Button sx={styles.buttonSecondary}

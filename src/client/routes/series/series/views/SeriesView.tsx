@@ -10,10 +10,10 @@ export const SeriesView = ui.createView<{vm: app.MainViewModel}>(props => props.
     <ui.ImageLinkGridView imageHeight={23} columns={4} columnGap={2} rowGap={1}>
       {props.vm.seasons?.map(x => <ui.ImageLinkView key={x.season} title={x.title}
         imageHeight={23} imageUrl={props.vm.posterUrl}
-        onClick={() => props.vm.selectSeason(x)}>
+        onClick={ui.click(() => props.vm.selectSeason(x))}>
         <ui.ImageLinkIconView
           icon={<ui.icons.PlayArrow sx={styles.playIcon} />}
-          onClick={() => props.vm.playSeasonAsync(x)} />
+          onClick={ui.click(() => props.vm.playSeasonAsync(x))} />
         <ui.WatchView value={x.unwatchedCount} />
       </ui.ImageLinkView>)}
     </ui.ImageLinkGridView>

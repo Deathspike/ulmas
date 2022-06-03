@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as ui from 'client/ui';
 
 export const ImageLinkView = ui.createView<{imageHeight: number, imageUrl?: string, title: string, onClick: () => void}>(props => (
-  <ui.material.Grid sx={styles.rootContainer} onClick={props.onClick}>
+  <ui.material.Grid sx={styles.rootContainer} onClick={ui.click(props.onClick)}>
     <ui.material.Grid sx={styles.imageContainer}>
       <ui.ImageView imageHeight={props.imageHeight} imageUrl={props.imageUrl}>
         {props.children}

@@ -1,6 +1,14 @@
 import * as mobxReact from 'mobx-react';
 import * as React from 'react';
 
+export function click(fn: () => void) {
+  return (ev?: React.SyntheticEvent) => {
+    ev?.preventDefault();
+    ev?.stopPropagation();
+    fn();
+  };
+}
+
 export function *createPages<T>(maxPerPage: number, items: Array<T>) {
   for (let i = 0; i < items.length; i += maxPerPage) {
     yield items.slice(i, i + maxPerPage);

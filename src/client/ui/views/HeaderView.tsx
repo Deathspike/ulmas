@@ -5,7 +5,7 @@ export const HeaderView = ui.createView<{title: string, onBack: () => void}>(pro
   <React.Fragment>
     <ui.material.AppBar sx={styles.rootContainer}>
       <ui.material.Toolbar>
-        <ui.material.IconButton sx={styles.toolBarButton} onClick={props.onBack}>
+        <ui.material.IconButton sx={styles.toolBarButton} onClick={ui.click(props.onBack)}>
           <ui.icons.ArrowBackIos />
         </ui.material.IconButton>
         <ui.material.Grid sx={styles.titleContainer}>

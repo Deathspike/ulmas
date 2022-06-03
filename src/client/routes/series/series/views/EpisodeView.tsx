@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as ui from 'client/ui';
 
 export const EpisodeView = ui.createView<{vm: app.EpisodeViewModel}>(props => (
-  <ui.material.Grid key={props.vm.source.id} sx={styles.rootContainer} onClick={() => props.vm.playAsync()}>
+  <ui.material.Grid key={props.vm.source.id} sx={styles.rootContainer} onClick={ui.click(() => props.vm.playAsync())}>
     <ui.material.Grid sx={styles.imageContainer}>
       <ui.ImageView imageHeight={18} imageUrl={props.vm.thumbUrl}>
         {props.vm.source.resume && <ui.material.LinearProgress sx={styles.progress}
@@ -14,7 +14,7 @@ export const EpisodeView = ui.createView<{vm: app.EpisodeViewModel}>(props => (
       <ui.material.Button sx={styles.button}
         color="secondary"
         variant="contained"
-        onClick={x => Boolean(x.stopPropagation()) || props.vm.markAsync()}>
+        onClick={ui.click(() => props.vm.markAsync())}>
         {props.vm.source.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
       </ui.material.Button>
       <ui.material.Button sx={styles.button}

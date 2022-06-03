@@ -10,14 +10,14 @@ export const PlayerView = ui.createView<{vm: app.PlayerViewModel}>(props => (
           <ui.material.Typography variant="h3">
             {getStateTitle(props.vm.state)}
           </ui.material.Typography>
-          <ui.material.IconButton sx={styles.closeButton} onClick={() => props.vm.close()}>
+          <ui.material.IconButton sx={styles.closeButton} onClick={ui.click(() => props.vm.close())}>
             <ui.icons.Close />
           </ui.material.IconButton>
         </ui.material.Grid>
         <ui.ImageView imageHeight={18} imageUrl={props.vm.thumbUrl}>
           {props.vm.state !== 'playing' && <ui.ImageLinkIconView
             icon={<ui.icons.SkipNext sx={styles.continueIcon} />}
-            onClick={() => props.vm.continue()} />}
+            onClick={ui.click(() => props.vm.continue())} />}
         </ui.ImageView>
         <ui.material.LinearProgress
           variant={props.vm.state !== 'playing' ? 'determinate' : 'indeterminate'}

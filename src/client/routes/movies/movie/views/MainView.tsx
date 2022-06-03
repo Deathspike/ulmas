@@ -12,7 +12,7 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(props => props.vm
         </ui.ImageView>
       </ui.material.Grid>
     </ui.material.Grid>
-    <ui.material.Typography onClick={() => props.vm.watch()}>
+    <ui.material.Typography onClick={ui.click(() => props.vm.watch())}>
       Watch Now
     </ui.material.Typography>
   </ui.HeaderView>

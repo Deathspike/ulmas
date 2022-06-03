@@ -3,7 +3,7 @@ import * as ui from 'client/ui';
 
 export const ImageLinkIconView = ui.createView<{icon: JSX.Element, onClick: () => void}>(props => (
   <ui.material.Grid sx={styles.container}>
-    <ui.material.IconButton sx={styles.button} onClick={x => Boolean(x.stopPropagation()) || props.onClick()}>
+    <ui.material.IconButton sx={styles.button} onClick={ui.click(() => props.onClick())}>
       {props.icon}
     </ui.material.IconButton>
   </ui.material.Grid>
