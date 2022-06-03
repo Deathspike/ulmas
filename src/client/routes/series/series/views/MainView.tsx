@@ -6,7 +6,9 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(props => props.vm
   <ui.HeaderView title={props.vm.source.title} onBack={() => props.vm.onBack()}>
     <ui.material.Grid sx={styles.rootContainer}>
       <ui.material.Grid sx={styles.imageContainer}>
-        <ui.ImageView imageHeight={36} imageUrl={props.vm.posterUrl} />
+        <ui.ImageView imageHeight={36} imageUrl={props.vm.posterUrl}>
+          <ui.WatchView value={props.vm.unwatchedCount ?? 0} />
+        </ui.ImageView>
       </ui.material.Grid>
       <ui.material.Grid sx={styles.infoContainer}>
         <ui.material.Typography variant="h1" sx={styles.title}>

@@ -11,6 +11,9 @@ export const SeriesView = ui.createView<{vm: app.MainViewModel}>(props => props.
       {props.vm.seasons?.map(x => <ui.ImageLinkView key={x.season} title={x.title}
         imageHeight={23} imageUrl={props.vm.posterUrl}
         onClick={() => props.vm.selectSeason(x)}>
+        <ui.ImageLinkIconView
+          icon={<ui.icons.PlayArrow sx={styles.playIcon} />}
+          onClick={() => props.vm.playSeasonAsync(x)} />
         <ui.WatchView value={x.unwatchedCount} />
       </ui.ImageLinkView>)}
     </ui.ImageLinkGridView>
@@ -23,5 +26,8 @@ const styles = {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap'
+  },
+  playIcon: {
+    fontSize: '3vw'
   }
 };

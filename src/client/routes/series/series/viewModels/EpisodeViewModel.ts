@@ -19,7 +19,7 @@ export class EpisodeViewModel {
 
   @mobx.action
   async playAsync() {
-    await this.mvm.playAsync(this);
+    await this.mvm.playEpisodeAsync(this);
   }
 
   @mobx.computed
