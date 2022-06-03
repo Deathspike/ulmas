@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as ui from 'client/ui';
 
 export const EpisodeView = ui.createView<{vm: app.EpisodeViewModel}>(props => (
-  <ui.material.Grid key={props.vm.source.id} sx={styles.rootContainer} onClick={() => props.vm.play()}>
+  <ui.material.Grid key={props.vm.source.id} sx={styles.rootContainer} onClick={() => props.vm.playAsync()}>
     <ui.material.Grid sx={styles.imageContainer}>
       <ui.ImageView imageHeight={18} imageUrl={props.vm.thumbUrl}>
         {props.vm.source.resume && <ui.material.LinearProgress sx={styles.progress}
@@ -47,8 +47,8 @@ const styles = {
   },
   progress: {
     bottom: 0,
-    position: 'absolute',
-    width: '100%'
+    width: '100%',
+    position: 'absolute'
   },
   button: {
     borderRadius: 0,

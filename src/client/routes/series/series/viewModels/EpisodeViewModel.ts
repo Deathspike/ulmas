@@ -18,8 +18,8 @@ export class EpisodeViewModel {
   }
 
   @mobx.action
-  play() {
-    this.mvm.play(this);
+  async playAsync() {
+    await this.mvm.playAsync(this);
   }
 
   @mobx.computed

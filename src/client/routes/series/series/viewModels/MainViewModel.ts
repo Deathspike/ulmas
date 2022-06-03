@@ -31,19 +31,14 @@ export class MainViewModel {
   }
 
   @mobx.action
-  play(current?: app.EpisodeViewModel) {
+  async playAsync(current?: app.EpisodeViewModel) {
     const episodes = this.currentSeason
       ? this.currentSeason.episodes
       : this.seasons?.flatMap(x => x.episodes);
     if (episodes) {
-      current ??= episodes.find(x => x.source.season && !x.source.watched)
-        ?? episodes.find(x => !x.source.watched)
-        ?? episodes.find(x => x.source.season)
-        ?? episodes[0];
-      if (current) {
-        this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.seriesId, episodes.map(x => x.source), current.source);
-        this.currentPlayer.load();
-      }
+      this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.seriesId, episodes.map(x => x.source), current?.source);
+      this.currentPlayer.load();
+      await this.currentPlayer.waitAsync();
     }
   }
 
@@ -52,7 +47,7 @@ export class MainViewModel {
     const series = await core.api.series.itemAsync(this.sectionId, this.seriesId);
     if (series.value) {
       const episodes = series.value.episodes
-        .sort((a, b) => a.episode - b.episode)
+        .sort((a, b) => a.season - b.season || a.episode - b.episode)
         .map(x => new app.EpisodeViewModel(this, this.sectionId, x));
       this.seasons = Array.from(new Set(series.value.episodes.map(x => x.season)))
         .sort((a, b) => a - b)

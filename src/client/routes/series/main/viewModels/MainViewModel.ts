@@ -1,3 +1,4 @@
+import * as api from 'api';
 import * as app from '..';
 import * as mobx from 'mobx';
 import * as ui from 'client/ui';
@@ -16,11 +17,18 @@ export class MainViewModel {
     const sections = await sectionsPromise;
     const series = await seriesPromise;
     if (sections.value && series.value) {
-      this.series = series.value.map(x => new app.SeriesViewModel(this.sectionId, x));
+      this.series = series.value.map(x => new app.SeriesViewModel(this, this.sectionId, x));
       this.title = sections.value.find(x => x.id === this.sectionId)?.title;
     } else {
       // TODO: Handle error.
     }
+  }
+
+  @mobx.action
+  async playAsync(series: api.models.Series) {
+    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, series.id, series.episodes);
+    this.currentPlayer.load();
+    await this.currentPlayer.waitAsync();
   }
 
   @mobx.computed
@@ -33,6 +41,9 @@ export class MainViewModel {
     })));
   }
   
+  @mobx.observable
+  currentPlayer?: app.core.PlayerViewModel;
+
   @mobx.observable
   series?: Array<app.SeriesViewModel>;
 

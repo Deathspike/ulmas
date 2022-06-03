@@ -10,6 +10,9 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(props => props.vm
         {x.map(x => <app.SeriesView key={x.source.id} vm={x} />)}
       </ui.ImageLinkGridView>)}
     </ui.material.Grid>
+    {props.vm.currentPlayer
+      ? <app.core.PlayerView vm={props.vm.currentPlayer} />
+      : undefined}
   </ui.HeaderView>
 ));
 

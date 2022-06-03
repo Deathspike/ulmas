@@ -10,9 +10,9 @@ export class MainViewModel {
   }
 
   @mobx.action
-  onBack() {
-    core.screen.backAsync();
+  async onBackAsync() {
     this.abortController.abort();
+    await core.screen.backAsync();
   }
 
   @mobx.action

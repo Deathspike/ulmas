@@ -16,7 +16,7 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(props => props.vm
           <ui.material.Button sx={styles.buttonPrimary}
             disabled={!props.vm.source.episodes.length}
             variant="contained"
-            onClick={() => props.vm.play()}>
+            onClick={() => props.vm.playAsync()}>
             <ui.icons.PlayArrow />
           </ui.material.Button>
           <ui.material.Button sx={styles.buttonSecondary}

@@ -9,9 +9,15 @@ export class PlayerViewModel {
   private counterCallback?: () => void;
   private counterInterval?: NodeJS.Timeout;
 
-  constructor(private readonly sectionId: string, private readonly seriesId: string, episodes: Array<api.models.Episode>, current: api.models.Episode) {
-    this.episodes = episodes;
-    this.current = current;
+  constructor(private readonly sectionId: string, private readonly seriesId: string, episodes: Array<api.models.Episode>, current?: api.models.Episode) {
+    this.episodes = episodes
+      .slice()
+      .sort((a, b) => a.season - b.season || a.episode - b.episode);
+    this.current = current
+      ?? this.episodes.find(x => x.season && !x.watched)
+      ?? this.episodes.find(x => !x.watched)
+      ?? this.episodes.find(x => x.season)
+      ?? this.episodes[0];
     mobx.makeObservable(this);
   }
 
@@ -44,6 +50,11 @@ export class PlayerViewModel {
     }
   }
 
+  @mobx.action
+  async waitAsync() {
+    await mobx.when(() => !this.isActive);
+  }
+
   @mobx.computed
   get thumbUrl() {
     return core.image.episode(this.sectionId, this.seriesId, this.current, 'thumb');
@@ -68,7 +79,8 @@ export class PlayerViewModel {
   }
 
   private moveToNext() {
-    const nextIndex = this.episodes.indexOf(this.current) + 1;
+    const index = this.episodes.findIndex(x => x.id === this.current.id);
+    const nextIndex = index + 1;
     if (nextIndex < this.episodes.length) {
       this.current = this.episodes[nextIndex];
       return true;

@@ -80,7 +80,7 @@ export class Service {
       x => this.inspectEpisodeAsync(x.context, x).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
     const episodes = fun.ensure(rootEpisodes
       .concat(subdirEpisodes))
-      .sort((a, b) => a.season !== b.season ? a.season - b.season : a.episode - b.episode);
+      .sort((a, b) => a.season - b.season || a.episode - b.episode);
     const images = Object.entries(context.images)
       .filter(([_, x]) => episodes.every(y => !y.media.images?.some(z => z.path === x.fullPath)))
       .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));

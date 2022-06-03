@@ -15,11 +15,9 @@ export const PlayerView = ui.createView<{vm: app.PlayerViewModel}>(props => (
           </ui.material.IconButton>
         </ui.material.Grid>
         <ui.ImageView imageHeight={18} imageUrl={props.vm.thumbUrl}>
-          <ui.material.Fade in={props.vm.state !== 'playing'}>
-            <ui.material.IconButton sx={styles.continueButton} onClick={() => props.vm.continue()}>
-              <ui.icons.SkipNext sx={styles.continueIcon} />
-            </ui.material.IconButton>
-          </ui.material.Fade>
+          {props.vm.state !== 'playing' && <ui.ImageLinkIconView
+            icon={<ui.icons.SkipNext sx={styles.continueIcon} />}
+            onClick={() => props.vm.continue()} />}
         </ui.ImageView>
         <ui.material.LinearProgress
           variant={props.vm.state !== 'playing' ? 'determinate' : 'indeterminate'}
@@ -46,11 +44,11 @@ function getStateTitle(state: app.PlayerViewModel['state']) {
 const styles = {
   rootContainer: {
     backgroundColor: '#333',
+    width: '30vw',
     position: 'absolute',
     left: '50%',
     top: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '30vw'
+    transform: 'translate(-50%, -50%)'
   },
   titleContainer: {
     position: 'relative',
@@ -61,15 +59,6 @@ const styles = {
     right: '0.5vw',
     top: '50%',
     transform: 'translateY(-50%)'
-  },
-  continueButton: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5) !important',
-    position: 'absolute',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
-    transition: 'opacity 0.5s ease',
-    '&:hover': {color: 'primary.main'}
   },
   continueIcon: {
     fontSize: '3vw'

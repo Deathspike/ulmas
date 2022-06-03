@@ -47,9 +47,9 @@ export class ScreenView extends React.Component {
 const styles = {
   progress: {
     height: '4vw !important',
-    left: 'calc(50% - 2vw)',
+    width: '4vw !important',
     position: 'absolute',
-    top: 'calc(50% - 2vw)',
-    width: '4vw !important'
+    left: 'calc(50% - 2vw)',
+    top: 'calc(50% - 2vw)'
   }
 };

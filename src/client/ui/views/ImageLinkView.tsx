@@ -20,7 +20,8 @@ const styles = {
     '&:hover > *': {borderColor: ui.theme.palette.primary.main}
   },
   imageContainer: {
-    border: '0.25vw solid transparent'
+    border: '0.25vw solid transparent',
+    transition: 'all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
   },
   title: {
     height: '1.75vw',
