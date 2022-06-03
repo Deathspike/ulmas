@@ -102,7 +102,7 @@ export class MainViewModel {
   seasons?: Array<app.SeasonViewModel>;
 
   @mobx.observable
-  source?: api.models.Series;
+  source?: Omit<api.models.Series, 'unwatchedCount'>;
 
   private async loadAsync(episodes: Array<api.models.Episode>, current?: api.models.Episode) {
     this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.seriesId, episodes, current);

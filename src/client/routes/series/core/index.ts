@@ -1,4 +1,4 @@
 export * from './functions';
 export * from './language';
-export * from './PlayerView';
-export * from './PlayerViewModel';
+export * from './views/PlayerView';
+export * from './viewModels/PlayerViewModel';

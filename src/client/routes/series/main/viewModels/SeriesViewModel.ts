@@ -21,9 +21,9 @@ export class SeriesViewModel {
       .waitAsync(() => core.api.series.itemAsync(this.sectionId, this.source.id))
       .then(x => x.value && mobx.makeAutoObservable(x.value));
     if (series) {
-      const dispose = mobx.autorun(() => this.updateUnwatchedCount(series));
+      const disposer = mobx.autorun(() => this.updateUnwatchedCount(series));
       await this.mvm.playAsync(series);
-      dispose();
+      disposer();
     } else {
       // TODO: Handle error.
     }
