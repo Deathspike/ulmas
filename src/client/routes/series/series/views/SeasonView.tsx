@@ -9,7 +9,7 @@ export const SeasonView = ui.createView<{vm: app.SeasonViewModel}>(({vm}) => (
       {vm.title}
     </ui.material.Typography>
     {vm.pages.map((x, i) => (
-      <LazyLoad key={i} style={{height: `${x.length * 21.50}vw`}}>
+      <LazyLoad key={i} style={{height: `${x.length * 21.50}vw`}} once resize>
         {x.map(x => <app.EpisodeView key={x.source.id} vm={x} />)}
       </LazyLoad>
     ))}
