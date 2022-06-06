@@ -1,22 +1,29 @@
 import * as React from 'react';
 import * as ui from 'client/ui';
 
-export const ImageLinkView = ui.createView<{imageHeight: number, imageUrl?: string, title: string, onClick: () => void}>(props => (
-  <ui.material.Grid sx={styles.rootContainer} onClick={ui.click(props.onClick)}>
+export const ImageLinkView = ui.createView<Props>(({children, imageHeight, imageUrl, title, ...props}) => (
+  <ui.material.Grid sx={styles.rootContainer} tabIndex={0} {...props}>
     <ui.material.Grid sx={styles.imageContainer}>
-      <ui.ImageView imageHeight={props.imageHeight} imageUrl={props.imageUrl}>
-        {props.children}
+      <ui.ImageView imageHeight={imageHeight} imageUrl={imageUrl}>
+        {children}
       </ui.ImageView>
     </ui.material.Grid>
     <ui.material.Typography sx={styles.title}>
-      {props.title}
+      {title}
     </ui.material.Typography>
   </ui.material.Grid>
 ));
 
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
+  imageHeight: number;
+  imageUrl?: string;
+  title: string;
+}
+
 const styles = {
   rootContainer: {
     cursor: 'pointer',
+    '&:focus > *': {borderColor: ui.theme.palette.primary.light},
     '&:hover > *': {borderColor: ui.theme.palette.primary.main}
   },
   imageContainer: {

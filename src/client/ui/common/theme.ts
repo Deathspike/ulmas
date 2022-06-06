@@ -18,6 +18,9 @@ export const theme = ui.material.createTheme({
           overflowY: 'scroll',
           userSelect: 'none'
         },
+        ':focus': {
+          outline: 'none'
+        },
         '::-webkit-scrollbar': {
           width: '1.5vw'
         },

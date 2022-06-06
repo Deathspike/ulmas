@@ -2,26 +2,30 @@ import LazyLoad from 'react-lazyload';
 import * as React from 'react';
 import * as ui from 'client/ui';
 
-export const ImageLinkGridView = ui.createView<{imageHeight: number, columns: number, columnGap: number, rowGap: number}>(props => {
+export const ImageLinkGridView = ui.createView<Props>(({children, columns, columnGap, imageHeight, rowGap, ...props}) => {
+  const count = Array.isArray(children)
+    ? children.length
+    : 0;
   const gridGap = styles.page.gridGap
-    .replace('{columnGap}', String(props.columnGap))
-    .replace('{rowGap}', String(props.rowGap));
+    .replace('{columnGap}', String(columnGap))
+    .replace('{rowGap}', String(rowGap));
   const gridTemplateColumns = styles.page.gridTemplateColumns
-    .replace('{columns}', String(props.columns))
-    .replace('{totalColumnGap}', String((props.columns - 1) * props.columnGap));
+    .replace('{columns}', String(columns))
+    .replace('{totalColumnGap}', String((columns - 1) * columnGap));
   return (
-    <LazyLoad style={{height: `${calculateHeight(props)}vw`}} once resize unmountIfInvisible>
-      <ui.material.Grid sx={{...styles.page, gridGap, gridTemplateColumns}}>
-        {props.children}
+    <LazyLoad style={{height: `${Math.ceil(count / columns) * (imageHeight + rowGap + 2.25)}vw`}} once resize unmountIfInvisible>
+      <ui.material.Grid sx={{...styles.page, gridGap, gridTemplateColumns}} {...props}>
+        {children}
       </ui.material.Grid>
     </LazyLoad>
   );
 });
 
-function calculateHeight(props: React.PropsWithChildren<{imageHeight: number, columns: number, rowGap: number}>) {
-  const childCount = Array.isArray(props.children) ? props.children.length : 0;
-  const rowCount = Math.ceil(childCount / props.columns);
-  return rowCount * (props.imageHeight + props.rowGap + 2.25);
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
+  imageHeight: number;
+  columns: number;
+  columnGap: number;
+  rowGap: number;
 }
 
 const styles = {

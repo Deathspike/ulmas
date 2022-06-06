@@ -1,29 +1,32 @@
 import * as app from '..';
 import * as React from 'react';
 import * as ui from 'client/ui';
+import {core} from 'client/core';
 
-export const PlayerView = ui.createView<{vm: app.PlayerViewModel}>(props => (
-  <ui.material.Fade in={props.vm.isActive} unmountOnExit>
+export const PlayerView = ui.createView<{vm: app.PlayerViewModel}>(({vm}) => (
+  <ui.material.Fade in={vm.isActive} unmountOnExit>
     <ui.material.Backdrop open>
       <ui.material.Grid sx={styles.rootContainer}>
         <ui.material.Grid sx={styles.titleContainer}>
           <ui.material.Typography variant="h3">
-            {getStateTitle(props.vm.state)}
+            {getStateTitle(vm.state)}
           </ui.material.Typography>
-          <ui.material.IconButton sx={styles.closeButton} onClick={ui.click(() => props.vm.close())}>
+          <ui.material.IconButton sx={styles.closeButton}
+            onClick={core.input.click(() => vm.close())}
+            onKeyDown={core.input.keyRestore()}>
             <ui.icons.Close />
           </ui.material.IconButton>
         </ui.material.Grid>
-        <ui.ImageView imageHeight={18} imageUrl={props.vm.thumbUrl}>
-          {props.vm.state !== 'playing' && <ui.ImageLinkIconView
-            icon={<ui.icons.SkipNext sx={styles.continueIcon} />}
-            onClick={ui.click(() => props.vm.continue())} />}
+        <ui.ImageView imageHeight={18} imageUrl={vm.thumbUrl}>
+          {vm.state !== 'playing' && <ui.ImageLinkIconView onButton={core.input.click(() => vm.continue())}>
+            <ui.icons.SkipNext sx={styles.continueIcon} />  
+          </ui.ImageLinkIconView>}
         </ui.ImageView>
         <ui.material.LinearProgress
-          variant={props.vm.state !== 'playing' ? 'determinate' : 'indeterminate'}
-          value={props.vm.counter ?? 100} />
+          variant={vm.state !== 'playing' ? 'determinate' : 'indeterminate'}
+          value={vm.counter ?? 100} />
         <ui.material.Typography sx={styles.title}>
-          {props.vm.current.episode}. {props.vm.current.title}
+          {vm.current.episode}. {vm.current.title}
         </ui.material.Typography>
       </ui.material.Grid>
     </ui.material.Backdrop>

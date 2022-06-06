@@ -10,6 +10,16 @@ export class EpisodeViewModel {
   }
 
   @mobx.action
+  handleKey(keyName: string) {
+    if (keyName === 'enter' || keyName === 'space') {
+      this.playAsync();
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  @mobx.action
   async markAsync() {
     await core.screen.waitAsync(async () => {
       if (!this.mvm.source) return;

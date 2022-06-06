@@ -1,48 +1,54 @@
 import * as app from '..';
 import * as React from 'react';
 import * as ui from 'client/ui';
+import {core} from 'client/core';
 
-export const MainView = ui.createView<{vm: app.MainViewModel}>(props => props.vm.source && (
-  <ui.HeaderView title={props.vm.source.title} onBack={() => props.vm.onBack()}>
+export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.source && (
+  <ui.HeaderView tabIndex={-1} title={vm.source.title}
+    onButton={core.input.click(() => vm.onBack())}
+    onKeyDown={core.input.keyDown(k => vm.handleKey(k))}>
     <ui.material.Grid sx={styles.rootContainer}>
       <ui.material.Grid sx={styles.imageContainer}>
-        <ui.ImageView imageHeight={36} imageUrl={props.vm.posterUrl}>
-          <ui.WatchView value={props.vm.unwatchedCount ?? 0} />
+        <ui.ImageView imageHeight={36} imageUrl={vm.posterUrl}>
+          <ui.WatchView value={vm.unwatchedCount ?? 0} />
         </ui.ImageView>
       </ui.material.Grid>
       <ui.material.Grid sx={styles.infoContainer}>
         <ui.material.Typography variant="h1" sx={styles.title}>
-          {props.vm.source.title}
+          {vm.source.title}
         </ui.material.Typography>
         <ui.material.Grid>
-          <ui.material.Button sx={styles.buttonPrimary}
-            disabled={!props.vm.source.episodes.length}
+          <ui.material.Button sx={styles.buttonPrimary} ref={ui.autoFocus()}
+            disabled={!vm.source.episodes.length}
             variant="contained"
-            onClick={ui.click(() => props.vm.playAsync())}>
+            onClick={core.input.click(() => vm.playAsync())}
+            onKeyDown={core.input.keyRestore()}>
             <ui.icons.PlayArrow />
           </ui.material.Button>
           <ui.material.Button sx={styles.buttonSecondary}
             color="secondary"
-            disabled={!props.vm.source.episodes.length}
+            disabled={!vm.source.episodes.length}
             variant="contained"
-            onClick={ui.click(() => props.vm.markAsync())}>
-            {props.vm.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
+            onClick={core.input.click(() => vm.markAsync())}
+            onKeyDown={core.input.keyRestore()}>
+            {vm.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
           </ui.material.Button>
           <ui.material.Button sx={styles.buttonSecondary}
             color="secondary"
-            variant="contained">
+            variant="contained"
+            onKeyDown={core.input.keyRestore()}>
             <ui.icons.InfoOutlined />
           </ui.material.Button>
         </ui.material.Grid>
         <ui.material.Typography sx={styles.plot}>
-          {props.vm.source.plot ?? app.language.missingPlot}
+          {vm.source.plot ?? app.language.missingPlot}
         </ui.material.Typography>
-        {props.vm.currentSeason
-          ? <app.SeasonView vm={props.vm.currentSeason} />
-          : <app.SeriesView vm={props.vm} />}
+        {vm.currentSeason
+          ? <app.SeasonView vm={vm.currentSeason} />
+          : <app.SeriesView vm={vm} />}
       </ui.material.Grid>
-      {props.vm.currentPlayer
-        ? <app.core.PlayerView vm={props.vm.currentPlayer} />
+      {vm.currentPlayer
+        ? <app.core.PlayerView vm={vm.currentPlayer} />
         : undefined}
     </ui.material.Grid>
   </ui.HeaderView>

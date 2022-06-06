@@ -3,8 +3,8 @@ import * as React from 'react';
 import * as ui from 'client/ui';
 import {core} from 'client/core';
 
-export const MainView = ui.createView<{vm: app.MainViewModel}>(props => (
-  <ui.HeaderView title={app.language.title} onBack={() => core.screen.backAsync()}>
-    {props.vm.sections?.map(x => <app.SectionView key={x.source.id} vm={x} />)}
+export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => (
+  <ui.HeaderView title={app.language.title} onButton={core.input.click(() => core.screen.backAsync())}>
+    {vm.sections?.map(x => <app.SectionView key={x.source.id} vm={x} />)}
   </ui.HeaderView>
 ));

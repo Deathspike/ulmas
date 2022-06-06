@@ -1,4 +1,5 @@
 import * as mobx from 'mobx';
+import {createSelector} from './functions/createSelector';
 
 export class ScreenService {
   constructor() {
@@ -44,13 +45,14 @@ export class ScreenService {
         ? await builder.createAsync(builder.restoreState)
         : undefined;
       this.currentView = element
-        ? {element, x: builder?.restoreX, y: builder?.restoreY}
+        ? {element, ...builder}
         : this.currentView;
     });
   }
 
   private saveState(restoreState?: any) {
     const view = this.views[this.views.length - 1];
+    if (view) view.restoreActive = createSelector(document.activeElement);
     if (view) view.restoreState = restoreState;
     if (view) view.restoreX = window.scrollX;
     if (view) view.restoreY = window.scrollY;
@@ -59,12 +61,14 @@ export class ScreenService {
 
 type View = {
   element: JSX.Element;
-  x?: number;
-  y?: number;
+  restoreActive?: string;
+  restoreX?: number;
+  restoreY?: number;
 };
 
 type ViewBuilder = {
   createAsync: (restoreState?: any) => Promise<JSX.Element> | JSX.Element;
+  restoreActive?: string;
   restoreState?: any;
   restoreX?: number;
   restoreY?: number;

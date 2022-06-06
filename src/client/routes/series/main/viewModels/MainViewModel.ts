@@ -8,6 +8,28 @@ export class MainViewModel {
   constructor(private readonly sectionId: string) {
     mobx.makeObservable(this);
   }
+  
+  @mobx.action
+  handleKey(keyName: string) {
+    if (keyName === 'enter' || keyName === 'space') {
+      this.currentPlayer?.continue();
+      return true;
+    } else if (keyName === 'escape') {
+      this.onBack();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @mobx.action
+  onBack() {
+    if (this.currentPlayer?.isActive) {
+      this.currentPlayer.close();
+    } else {
+      core.screen.backAsync();
+    }
+  }
 
   @mobx.action
   async refreshAsync() {
@@ -26,9 +48,14 @@ export class MainViewModel {
 
   @mobx.action
   async playAsync(series: api.models.Series) {
-    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, series.id, series.episodes);
-    this.currentPlayer.load();
-    await this.currentPlayer.waitAsync();
+    if (this.currentPlayer?.isActive) {
+      this.currentPlayer.continue();
+      await this.currentPlayer.waitAsync();
+    } else {
+      this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, series.id, series.episodes);
+      this.currentPlayer.load();
+      await this.currentPlayer.waitAsync();
+    }
   }
 
   @mobx.computed

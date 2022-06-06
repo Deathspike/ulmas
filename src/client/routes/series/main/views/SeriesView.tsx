@@ -1,15 +1,17 @@
 import * as app from '..';
 import * as React from 'react';
 import * as ui from 'client/ui';
+import {core} from 'client/core';
 
-export const SeriesView = ui.createView<{vm: app.SeriesViewModel}>(props => (
-  <ui.ImageLinkView title={props.vm.source.title} 
-    imageHeight={21} imageUrl={props.vm.posterUrl}
-    onClick={ui.click(() => props.vm.open())}>
-    <ui.ImageLinkIconView
-      icon={<ui.icons.PlayArrow sx={styles.playIcon} />}
-      onClick={ui.click(() => props.vm.playAsync())} />
-    <ui.WatchView value={props.vm.source.unwatchedCount ?? 0} />
+export const SeriesView = ui.createView<{vm: app.SeriesViewModel}>(({vm}) => (
+  <ui.ImageLinkView title={vm.source.title} 
+    imageHeight={21} imageUrl={vm.posterUrl}
+    onClick={core.input.click(() => vm.open())}
+    onKeyDown={core.input.keyDown(k => vm.handleKey(k))}>
+    <ui.ImageLinkIconView onButton={core.input.click(() => vm.playAsync())}>
+      <ui.icons.PlayArrow sx={styles.playIcon} />
+    </ui.ImageLinkIconView>
+    <ui.WatchView value={vm.source.unwatchedCount ?? 0} />
   </ui.ImageLinkView>
 ));
 

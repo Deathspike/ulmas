@@ -6,16 +6,19 @@ import {core} from 'client/core';
 
 @mobxReact.observer
 export class ScreenView extends React.Component {
-  private scrollTo?: {x: number; y: number};
+  private restoreFocus?: {restoreActive?: string};
+  private restoreScroll?: {restoreX?: number; restoreY?: number};
 
   componentDidMount() {
-    mobx.reaction(() => core.screen.currentView, x => this.onViewChanged(x));
+    mobx.reaction(() => core.screen.currentView, x => {
+      this.restoreFocus = x;
+      this.restoreScroll = x;
+    });
   }
 
   componentDidUpdate() {
-    if (!this.scrollTo) return;
-    window.scrollTo(this.scrollTo.x, this.scrollTo.y);
-    delete this.scrollTo;
+    this.onRestoreScroll();
+    this.onRestoreFocus();
   }
 
   render() {
@@ -37,10 +40,22 @@ export class ScreenView extends React.Component {
     );
   }
 
-  private onViewChanged(view?: {x?: number; y?: number}) {
-    const x = view?.x ?? 0;
-    const y = view?.y ?? 0;
-    this.scrollTo = {x, y};
+  private onRestoreFocus() {
+    const element = this.restoreFocus?.restoreActive
+      ? document.querySelector(this.restoreFocus.restoreActive)
+      : undefined;
+    if (element instanceof HTMLElement) {
+      element.focus();
+      delete this.restoreFocus;
+    } else if (this.restoreFocus) {
+      requestAnimationFrame(() => this.onRestoreFocus());
+    }
+  }
+
+  private onRestoreScroll() {
+    if (!this.restoreScroll) return;
+    window.scrollTo(this.restoreScroll.restoreX ?? 0, this.restoreScroll.restoreY ?? 0);
+    delete this.restoreScroll;
   }
 }
 

@@ -1,13 +1,20 @@
 import * as React from 'react';
 import * as ui from 'client/ui';
+import {core} from 'client/core';
 
-export const ImageLinkIconView = ui.createView<{icon: JSX.Element, onClick: () => void}>(props => (
-  <ui.material.Grid sx={styles.container}>
-    <ui.material.IconButton sx={styles.button} onClick={ui.click(() => props.onClick())}>
-      {props.icon}
+export const ImageLinkIconView = ui.createView<Props>(({children, onButton, ...props}) => (
+  <ui.material.Grid sx={styles.container} {...props}>
+    <ui.material.IconButton sx={styles.button} tabIndex={-1}
+      onClick={onButton}
+      onKeyDown={core.input.keyRestore()}>
+      {children}
     </ui.material.IconButton>
   </ui.material.Grid>
 ));
+
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
+  onButton: (ev: React.MouseEvent) => void;
+}
 
 const styles = {
   container: {

@@ -9,11 +9,25 @@ export class MainViewModel {
   }
 
   @mobx.action
+  handleKey(keyName: string) {
+    if (keyName === 'enter' || keyName === 'space') {
+      this.currentPlayer?.continue();
+      return true;
+    } else if (keyName === 'escape') {
+      this.onBack();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @mobx.action
   onBack() {
-    if (this.currentSeason && this.seasons && this.seasons.length > 1) {
+    if (this.currentPlayer?.isActive) {
+      this.currentPlayer.close();
+    } else if (this.currentSeason && this.seasons && this.seasons.length > 1) {
       this.currentSeason = undefined;
     } else {
-      this.currentPlayer?.close();
       core.screen.backAsync();
     }
   }
@@ -68,11 +82,6 @@ export class MainViewModel {
     }
   }
 
-  @mobx.action
-  selectSeason(season: app.SeasonViewModel) {
-    this.currentSeason = season;
-  }
-
   @mobx.computed
   get posterUrl() {
     return this.source
@@ -105,8 +114,13 @@ export class MainViewModel {
   source?: Omit<api.models.Series, 'unwatchedCount'>;
 
   private async loadAsync(episodes: Array<api.models.Episode>, current?: api.models.Episode) {
-    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.seriesId, episodes, current);
-    this.currentPlayer.load();
-    await this.currentPlayer.waitAsync();
+    if (this.currentPlayer?.isActive) {
+      this.currentPlayer.continue();
+      await this.currentPlayer.waitAsync();
+    } else {
+      this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.seriesId, episodes, current);
+      this.currentPlayer.load();
+      await this.currentPlayer.waitAsync();
+    }
   }
 }

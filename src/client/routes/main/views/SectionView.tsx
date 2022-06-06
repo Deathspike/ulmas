@@ -1,9 +1,10 @@
 import * as app from '..';
 import * as React from 'react';
 import * as ui from 'client/ui';
+import {core} from 'client/core';
 
-export const SectionView = ui.createView<{vm: app.SectionViewModel}>(props => (
-  <ui.material.Typography key={props.vm.source.id} onClick={ui.click(() => props.vm.open())}>
-    {props.vm.source.title}
+export const SectionView = ui.createView<{vm: app.SectionViewModel}>(({vm}) => (
+  <ui.material.Typography key={vm.source.id} onClick={core.input.click(() => vm.open())}>
+    {vm.source.title}
   </ui.material.Typography>
 ));

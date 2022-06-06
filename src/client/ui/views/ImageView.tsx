@@ -1,31 +1,35 @@
 import LazyLoad from 'react-lazyload';
 import * as React from 'react';
 import * as ui from 'client/ui';
-const attributeName = 'data-src';
 
-export const ImageView = ui.createView<{imageHeight: number, imageUrl?: string}>(props => (
-  <LazyLoad style={{...styles.imageContainer, height: `${props.imageHeight}vw`}} once resize>
-    {props.imageUrl && <img ref={x => x && onRender(x, props.imageUrl)}
+export const ImageView = ui.createView<Props>(({children, imageHeight, imageUrl, ...props}) => (
+  <LazyLoad style={{...styles.imageContainer, height: `${imageHeight}vw`}} once resize>
+    {imageUrl && <img {...props}
+      ref={x => x && onReference(x, imageUrl)}
       onLoad={x => x.currentTarget.style.opacity = '1'}
       style={styles.image} />}
-    {props.children}
+    {children}
   </LazyLoad>
 ));
 
-function onRender(image: HTMLImageElement, imageUrl = '') {
-  if (image.src && image.src !== imageUrl) {
-    setTimeout(() => onTimeout(image, imageUrl), 225);
-    image.setAttribute(attributeName, imageUrl);
-    image.style.opacity = '0';
-  } else {
-    image.src = imageUrl;
-  }
+interface Props extends React.HTMLAttributes<HTMLImageElement> {
+  imageHeight: number;
+  imageUrl?: string;
 }
 
-function onTimeout(image: HTMLImageElement, imageUrl: string) {
-  if (image.getAttribute(attributeName) !== imageUrl) return;
-  image.removeAttribute(attributeName);
-  image.src = imageUrl;
+function onReference(element: HTMLImageElement, imageUrl = '') {
+  if (!element.src || element.src === imageUrl) {
+    element.src = imageUrl;
+  } else {
+    const attributeName = 'data-src';
+    element.setAttribute(attributeName, imageUrl);
+    element.style.opacity = '0';
+    setTimeout(() => {
+      if (element.getAttribute(attributeName) !== imageUrl) return;
+      element.removeAttribute(attributeName);
+      element.src = imageUrl
+    }, 225);
+  }
 }
 
 const styles = {

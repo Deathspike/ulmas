@@ -11,6 +11,21 @@ export class SeriesViewModel {
   }
 
   @mobx.action
+  handleKey(keyName: string) {
+    if (this.mvm.currentPlayer?.isActive) {
+      return false;
+    } else if (keyName === 'enter') {
+      this.open();
+      return true;
+    } else if (keyName === 'space') {
+      this.playAsync();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @mobx.action
   open() {
     routes.series.series(this.sectionId, this.source.id);
   }

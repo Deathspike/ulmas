@@ -1,34 +1,39 @@
 import * as app from '..';
 import * as React from 'react';
 import * as ui from 'client/ui';
+import {core} from 'client/core';
 
-export const EpisodeView = ui.createView<{vm: app.EpisodeViewModel}>(props => (
-  <ui.material.Grid key={props.vm.source.id} sx={styles.rootContainer} onClick={ui.click(() => props.vm.playAsync())}>
+export const EpisodeView = ui.createView<{vm: app.EpisodeViewModel}>(({vm}) => (
+  <ui.material.Grid key={vm.source.id} sx={styles.rootContainer} tabIndex={0}
+    onClick={core.input.click(() => vm.playAsync())}
+    onKeyDown={core.input.keyDown(k => vm.handleKey(k))}>
     <ui.material.Grid sx={styles.imageContainer}>
-      <ui.ImageView imageHeight={18} imageUrl={props.vm.thumbUrl}>
-        {props.vm.source.resume && <ui.material.LinearProgress sx={styles.progress}
+      <ui.ImageView imageHeight={18} imageUrl={vm.thumbUrl}>
+        {vm.source.resume && <ui.material.LinearProgress sx={styles.progress}
           variant="determinate"
-          value={props.vm.source.resume.position / props.vm.source.resume.total * 100} />}
-        <ui.WatchView value={Boolean(props.vm.source.resume || props.vm.source.watched)} />
+          value={vm.source.resume.position / vm.source.resume.total * 100} />}
+        <ui.WatchView value={Boolean(vm.source.resume || vm.source.watched)} />
       </ui.ImageView>
       <ui.material.Button sx={styles.button}
         color="secondary"
         variant="contained"
-        onClick={ui.click(() => props.vm.markAsync())}>
-        {props.vm.source.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
+        onClick={core.input.click(() => vm.markAsync())}
+        onKeyDown={core.input.keyRestore()}>
+        {vm.source.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
       </ui.material.Button>
       <ui.material.Button sx={styles.button}
         color="secondary"
-        variant="contained">
+        variant="contained"
+        onKeyDown={core.input.keyRestore()}>
         <ui.icons.InfoOutlined />
       </ui.material.Button>
     </ui.material.Grid>
     <ui.material.Grid sx={styles.infoContainer}>
       <ui.material.Typography variant="h3" sx={styles.title}>
-        {props.vm.source.episode}. {props.vm.source.title}
+        {vm.source.episode}. {vm.source.title}
       </ui.material.Typography>
       <ui.material.Typography>
-        {props.vm.source.plot ?? app.language.missingPlot}
+        {vm.source.plot ?? app.language.missingPlot}
       </ui.material.Typography>
     </ui.material.Grid>
   </ui.material.Grid>
@@ -40,6 +45,7 @@ const styles = {
     cursor: 'pointer',
     display: 'flex',
     marginBottom: '1.5vw',
+    '&:focus': {borderColor: ui.theme.palette.primary.light},
     '&:hover': {borderColor: ui.theme.palette.primary.main}
   },
   imageContainer: {

@@ -1,25 +1,33 @@
 import * as React from 'react';
 import * as ui from 'client/ui';
+import {core} from 'client/core';
 
-export const HeaderView = ui.createView<{title: string, onBack: () => void}>(props => (
-  <React.Fragment>
+export const HeaderView = ui.createView<Props>(({children, onButton, title, ...props}) => (
+  <ui.material.Grid {...props}>
     <ui.material.AppBar sx={styles.rootContainer}>
       <ui.material.Toolbar>
-        <ui.material.IconButton sx={styles.toolBarButton} onClick={ui.click(props.onBack)}>
+        <ui.material.IconButton sx={styles.toolBarButton} tabIndex={1}
+          onClick={onButton}
+          onKeyDown={core.input.keyRestore()}>
           <ui.icons.ArrowBackIos />
         </ui.material.IconButton>
         <ui.material.Grid sx={styles.titleContainer}>
           <ui.material.Typography sx={styles.title}>
-            {props.title}
+            {title}
           </ui.material.Typography>
         </ui.material.Grid>
       </ui.material.Toolbar>
     </ui.material.AppBar>
     <ui.material.Grid sx={styles.children}>
-      {props.children}
+      {children}
     </ui.material.Grid>
-  </React.Fragment>
+  </ui.material.Grid>
 ));
+
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
+  onButton: (ev: React.MouseEvent) => void;
+  title: string;
+}
 
 const styles = {
   rootContainer: {

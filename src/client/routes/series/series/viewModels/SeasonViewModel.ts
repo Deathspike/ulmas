@@ -11,6 +11,31 @@ export class SeasonViewModel {
     mobx.makeObservable(this);
   }
 
+  @mobx.action
+  handleKey(keyName: string) {
+    if (keyName === 'enter') {
+      if (this.mvm.currentPlayer?.isActive) return false;
+      this.open();
+      return true;
+    } else if (keyName === 'space') {
+      if (this.mvm.currentPlayer?.isActive) return false;
+      this.playAsync();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @mobx.action
+  open() {
+    this.mvm.currentSeason = this;
+  }
+
+  @mobx.action
+  async playAsync() {
+    await this.mvm.playSeasonAsync(this);
+  }
+
   @mobx.computed
   get pages() {
     return Array.from(ui.createPages(4, this.episodes));
