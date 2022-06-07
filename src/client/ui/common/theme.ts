@@ -37,7 +37,9 @@ export const theme = ui.material.createTheme({
     },
     MuiAppBar: {
       styleOverrides: {
-        colorPrimary: {backgroundColor: '#333'}
+        colorPrimary: {
+          backgroundColor: '#333'
+        }
       }
     },
     MuiToolbar: {
@@ -50,6 +52,13 @@ export const theme = ui.material.createTheme({
         },
         regular: {
           minHeight: '0 !important'
+        }
+      }
+    },
+    MuiBackdrop: {
+      styleOverrides: {
+        root: {
+          zIndex: 2000
         }
       }
     },
