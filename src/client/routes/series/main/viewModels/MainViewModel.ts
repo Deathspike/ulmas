@@ -11,7 +11,9 @@ export class MainViewModel {
   
   @mobx.action
   handleKey(keyName: string) {
-    if (keyName === 'enter' || keyName === 'space') {
+    if (keyName.startsWith('arrow')) {
+      return Boolean(this.currentPlayer?.isActive);
+    } else if (keyName === 'enter' || keyName === 'space') {
       this.currentPlayer?.continue();
       return true;
     } else if (keyName === 'escape') {
@@ -48,14 +50,9 @@ export class MainViewModel {
 
   @mobx.action
   async playAsync(series: api.models.Series) {
-    if (this.currentPlayer?.isActive) {
-      this.currentPlayer.continue();
-      await this.currentPlayer.waitAsync();
-    } else {
-      this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, series.id, series.episodes);
-      this.currentPlayer.load();
-      await this.currentPlayer.waitAsync();
-    }
+    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, series.id, series.episodes);
+    this.currentPlayer.load();
+    await this.currentPlayer.waitAsync();
   }
 
   @mobx.computed

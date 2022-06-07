@@ -11,7 +11,9 @@ export class EpisodeViewModel {
 
   @mobx.action
   handleKey(keyName: string) {
-    if (keyName === 'enter' || keyName === 'space') {
+    if (this.mvm.currentPlayer?.isActive) {
+      return false;
+    } else if (keyName === 'enter' || keyName === 'space') {
       this.playAsync();
       return true;
     } else {

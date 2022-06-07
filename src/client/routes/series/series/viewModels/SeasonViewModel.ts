@@ -13,12 +13,12 @@ export class SeasonViewModel {
 
   @mobx.action
   handleKey(keyName: string) {
-    if (keyName === 'enter') {
-      if (this.mvm.currentPlayer?.isActive) return false;
+    if (this.mvm.currentPlayer?.isActive) {
+      return false;
+    } else if (keyName === 'enter') {
       this.open();
       return true;
     } else if (keyName === 'space') {
-      if (this.mvm.currentPlayer?.isActive) return false;
       this.playAsync();
       return true;
     } else {

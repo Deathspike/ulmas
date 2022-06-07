@@ -10,7 +10,9 @@ export class MainViewModel {
 
   @mobx.action
   handleKey(keyName: string) {
-    if (keyName === 'enter' || keyName === 'space') {
+    if (keyName.startsWith('arrow')) {
+      return Boolean(this.currentPlayer?.isActive);
+    } else if (keyName === 'enter' || keyName === 'space') {
       this.currentPlayer?.continue();
       return true;
     } else if (keyName === 'escape') {
@@ -114,13 +116,8 @@ export class MainViewModel {
   source?: Omit<api.models.Series, 'unwatchedCount'>;
 
   private async loadAsync(episodes: Array<api.models.Episode>, current?: api.models.Episode) {
-    if (this.currentPlayer?.isActive) {
-      this.currentPlayer.continue();
-      await this.currentPlayer.waitAsync();
-    } else {
-      this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.seriesId, episodes, current);
-      this.currentPlayer.load();
-      await this.currentPlayer.waitAsync();
-    }
+    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.seriesId, episodes, current);
+    this.currentPlayer.load();
+    await this.currentPlayer.waitAsync();
   }
 }
