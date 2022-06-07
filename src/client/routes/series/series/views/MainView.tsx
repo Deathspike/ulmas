@@ -57,8 +57,9 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.sour
 const styles = {
   rootContainer: {
     display: 'flex',
+    minHeight: '100%',
     padding: '1.5vw',
-    paddingBottom: 0  
+    paddingBottom: 0
   },
   imageContainer: {
     marginRight: '1.5vw',

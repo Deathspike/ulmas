@@ -48,6 +48,7 @@ const styles = {
     whiteSpace: 'nowrap'
   },
   children: {
+    minHeight: '100vh',
     paddingTop: '3.5vw'
   }
 };

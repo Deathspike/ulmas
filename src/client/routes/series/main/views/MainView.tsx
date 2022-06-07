@@ -22,6 +22,7 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.titl
 
 const styles = {
   seriesContainer: {
+    minHeight: '100%',
     padding: '1.5vw'
   }
 };
