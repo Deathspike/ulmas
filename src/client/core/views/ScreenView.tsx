@@ -47,7 +47,7 @@ export class ScreenView extends React.Component {
     if (element instanceof HTMLElement) {
       element.focus();
       delete this.restoreFocus;
-    } else if (this.restoreFocus) {
+    } else if (this.restoreFocus?.restoreActive) {
       requestAnimationFrame(() => this.onRestoreFocus());
     }
   }
