@@ -7,7 +7,8 @@ export const SeriesView = ui.createView<{vm: app.SeriesViewModel}>(({vm}) => (
   <ui.ImageLinkView title={vm.source.title} 
     imageHeight={21} imageUrl={vm.posterUrl}
     onClick={core.input.click(() => vm.open())}
-    onKeyDown={core.input.keyDown(k => vm.handleKey(k))}>
+    onKeyDown={core.input.keyDown(k => vm.handleKey(k))}
+    onMouseDown={x => x.preventDefault()}>
     <ui.ImageLinkIconView onButton={core.input.click(() => vm.playAsync())}>
       <ui.icons.PlayArrow sx={styles.playIcon} />
     </ui.ImageLinkIconView>
