@@ -62,7 +62,7 @@ export class InputService {
       .filter(x => x.index >= 0);
     const validElements = current && current.index >= 0
       ? elements.filter(createFilter(current, dirX, dirY)).sort(createSorter(current, dirX))
-      : elements.sort((a, b) => a.index - b.index);
+      : elements.sort((a, b) => a.index - b.index || Math.abs(a.y) - Math.abs(b.y));
     const bestElement = validElements
       .map(x => x.element)
       .find(Boolean);
