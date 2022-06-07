@@ -16,7 +16,7 @@ export class MainViewModel {
       this.currentPlayer?.continue();
       return true;
     } else if (keyName === 'escape') {
-      this.onBack();
+      this.onBackAsync();
       return true;
     } else {
       return false;
@@ -24,13 +24,14 @@ export class MainViewModel {
   }
 
   @mobx.action
-  onBack() {
+  async onBackAsync() {
     if (this.currentPlayer?.isActive) {
       this.currentPlayer.close();
     } else if (this.currentSeason && this.seasons && this.seasons.length > 1) {
       this.currentSeason = undefined;
+      requestAnimationFrame(() => core.state.replace());
     } else {
-      core.screen.backAsync();
+      await core.screen.backAsync();
     }
   }
 

@@ -28,7 +28,9 @@ export class SeasonViewModel {
 
   @mobx.action
   open() {
+    core.state.save();
     this.mvm.currentSeason = this;
+    requestAnimationFrame(() => window.scrollTo(0, 0));
   }
 
   @mobx.action

@@ -1,5 +1,5 @@
 import * as mobx from 'mobx';
-import {createSelector} from './functions/createSelector';
+import {core} from 'client/core';
 
 export class ScreenService {
   constructor() {
@@ -10,11 +10,13 @@ export class ScreenService {
   async backAsync() {
     this.views.pop();
     await this.buildAsync();
+    requestAnimationFrame(() => core.state.replace());
   }
 
   @mobx.action
-  async openAsync(createAsync: ViewBuilder['createAsync'], restoreState?: any) {
-    this.saveState(restoreState);
+  async openAsync(createAsync: ViewBuilder['createAsync'], viewState?: any) {
+    core.state.save();
+    this.viewState(viewState);
     this.views.push({createAsync});
     await this.buildAsync();
   }
@@ -28,7 +30,7 @@ export class ScreenService {
   }
 
   @mobx.observable
-  currentView?: View;
+  currentView?: JSX.Element;
 
   @mobx.observable
   views: Array<ViewBuilder> = [];
@@ -42,34 +44,23 @@ export class ScreenService {
         ? this.views[this.views.length - 1]
         : undefined;
       const element = builder
-        ? await builder.createAsync(builder.restoreState)
+        ? await builder.createAsync(builder.viewState)
         : undefined;
       this.currentView = element
-        ? {element, ...builder}
+        ? element
         : this.currentView;
     });
   }
 
-  private saveState(restoreState?: any) {
-    const view = this.views[this.views.length - 1];
-    if (view) view.restoreActive = createSelector(document.activeElement);
-    if (view) view.restoreState = restoreState;
-    if (view) view.restoreX = window.scrollX;
-    if (view) view.restoreY = window.scrollY;
+  private viewState(viewState?: any) {
+    const view = this.views.length 
+      ? this.views[this.views.length - 1]
+      : undefined;
+    if (view) view.viewState = viewState;
   }
 }
 
-type View = {
-  element: JSX.Element;
-  restoreActive?: string;
-  restoreX?: number;
-  restoreY?: number;
-};
-
 type ViewBuilder = {
-  createAsync: (restoreState?: any) => Promise<JSX.Element> | JSX.Element;
-  restoreActive?: string;
-  restoreState?: any;
-  restoreX?: number;
-  restoreY?: number;
+  createAsync: (viewState?: any) => Promise<JSX.Element> | JSX.Element;
+  viewState?: any;
 };

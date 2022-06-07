@@ -5,7 +5,7 @@ import {core} from 'client/core';
 
 export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.title && (
   <ui.HeaderView tabIndex={-1} title={vm.title}
-    onButton={core.input.click(() => vm.onBack())}
+    onButton={core.input.click(() => vm.onBackAsync())}
     onKeyDown={core.input.keyDown(k => vm.handleKey(k))}>
     <ui.material.Grid sx={styles.seriesContainer}>
       {vm.pages?.map((x, i) => (
