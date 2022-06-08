@@ -1,3 +1,4 @@
+export * from './functions';
 export * from './services/ApiService';
 export * from './services/ImageService';
 export * from './services/InputService';

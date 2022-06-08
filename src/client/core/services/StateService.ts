@@ -1,5 +1,5 @@
 import * as mobx from 'mobx';
-import {createSelector} from './functions/createSelector';
+import {createSelector} from '..';
 
 export class StateService {
   constructor() {

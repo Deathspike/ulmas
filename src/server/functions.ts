@@ -1,8 +1,8 @@
 import crypto from 'crypto'
 
-export function id(fullPath: string) {
+export function id(value: string) {
   const hash = crypto.createHash('sha1');
-  hash.update(fullPath, 'binary');
+  hash.update(value, 'binary');
   return hash.digest('base64url'); 
 }
 
