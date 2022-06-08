@@ -12,11 +12,17 @@ export class MainViewModel {
   handleKey(keyName: string) {
     if (keyName.startsWith('arrow')) {
       return Boolean(this.currentPlayer?.isActive);
-    } else if (keyName === 'enter' || keyName === 'space') {
+    } else if (keyName === 'enter') {
       this.currentPlayer?.continue();
       return true;
     } else if (keyName === 'escape') {
       this.onBackAsync();
+      return true;
+    } else if (keyName === 'space' && this.currentPlayer?.isActive) {
+      this.currentPlayer.continue();
+      return true;
+    } else if (keyName === 'space') {
+      this.playAsync();
       return true;
     } else {
       return false;

@@ -4,7 +4,9 @@ import * as ui from 'client/ui';
 import {core} from 'client/core';
 
 export const SectionView = ui.createView<{vm: app.SectionViewModel}>(({vm}) => (
-  <ui.material.Typography key={vm.source.id} onClick={core.input.click(() => vm.open())}>
+  <ui.material.Typography key={vm.source.id} 
+    onClick={core.input.click(() => vm.open())}
+    onMouseDown={x => x.preventDefault()}>
     {vm.source.title}
   </ui.material.Typography>
 ));

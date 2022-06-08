@@ -3,7 +3,7 @@ import * as ui from 'client/ui';
 import {core} from 'client/core';
 
 export const HeaderView = ui.createView<Props>(({children, onButton, title, ...props}) => (
-  <ui.material.Grid {...props}>
+  <ui.material.Grid ref={autoFocus()} {...props}>
     <ui.material.AppBar sx={styles.rootContainer}>
       <ui.material.Toolbar>
         <ui.material.IconButton sx={styles.toolBarButton} tabIndex={1}
@@ -27,6 +27,13 @@ export const HeaderView = ui.createView<Props>(({children, onButton, title, ...p
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   onButton: (ev: React.MouseEvent) => void;
   title: string;
+}
+
+function autoFocus() {
+  return (element: HTMLElement | null) => {
+    if (!element || (document.activeElement && document.activeElement !== document.body)) return;
+    element?.focus({preventScroll: true});
+  };
 }
 
 const styles = {
