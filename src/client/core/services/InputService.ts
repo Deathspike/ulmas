@@ -4,7 +4,7 @@ import {core} from 'client/core';
 export class InputService {
   constructor() {
     document.addEventListener('keydown', ev => {
-      if (core.screen.waitCount || !this.handleKey(ev.code.toLowerCase())) return;
+      if (!core.screen.waitCount && !this.handleKey(ev.code.toLowerCase())) return;
       ev.preventDefault();
       ev.stopPropagation();
     });
@@ -20,16 +20,15 @@ export class InputService {
 
   keyDown(handler: (keyName: string) => boolean) {
     return (ev: React.KeyboardEvent) => {
-      if (core.screen.waitCount || !handler(ev.code.toLowerCase())) return;
+      if (!core.screen.waitCount && !handler(ev.code.toLowerCase())) return;
       ev.preventDefault();
       ev.stopPropagation();
     };
   }
 
-  keyRestore() {
-    const keys = ['enter', 'space'];
+  keyRestore(keys = ['enter', 'space']) {
     return (ev: React.KeyboardEvent) => {
-      if (core.screen.waitCount || !keys.includes(ev.code.toLowerCase())) return;
+      if (!core.screen.waitCount && !keys.includes(ev.code.toLowerCase())) return;
       ev.stopPropagation();
     };
   }
