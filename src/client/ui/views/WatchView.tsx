@@ -19,6 +19,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 
 const styles = {
   rootContainer: {
+    pointerEvents: 'none',
     position: 'absolute',
     right: 0,
     top: 0
