@@ -27,7 +27,7 @@ export class SeriesViewModel {
 
   @mobx.action
   open() {
-    routes.series.series(this.sectionId, this.source.id, this.mvm.viewState);
+    routes.series.series(this.sectionId, this.source, this.mvm.viewState);
   }
 
   @mobx.action
@@ -36,7 +36,7 @@ export class SeriesViewModel {
       .waitAsync(() => core.api.series.itemAsync(this.sectionId, this.source.id))
       .then(x => x.value && mobx.makeAutoObservable(x.value));
     if (series) {
-      const disposer = mobx.autorun(() => this.updateUnwatchedCount(series));
+      const disposer = mobx.autorun(() => app.updateUnwatchedCount(this.source, series));
       await this.mvm.playAsync(series);
       disposer();
     } else {
@@ -50,11 +50,5 @@ export class SeriesViewModel {
   }
   
   @mobx.observable
-  source: Writeable<api.models.SeriesEntry>;
-
-  private updateUnwatchedCount(series: api.models.Series) {
-    this.source.unwatchedCount = series.episodes
-      .filter(x => !x.watched)
-      .length || undefined;
-  }
+  source: api.models.SeriesEntry;
 }
