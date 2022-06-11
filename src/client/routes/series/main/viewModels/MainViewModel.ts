@@ -5,7 +5,10 @@ import * as ui from 'client/ui';
 import {core} from 'client/core';
 
 export class MainViewModel {
-  constructor(private readonly sectionId: string) {
+  constructor(private readonly sectionId: string, viewState?: app.ViewState) {
+    this.menu = new app.MenuViewModel(this, viewState);
+    this.source = viewState?.source;
+    this.title = viewState?.title;
     mobx.makeObservable(this);
   }
   
@@ -41,7 +44,7 @@ export class MainViewModel {
     const sections = await sectionsPromise;
     const series = await seriesPromise;
     if (sections.value && series.value) {
-      this.series = series.value.map(x => new app.SeriesViewModel(this, this.sectionId, x));
+      this.source = series.value;
       this.title = sections.value.find(x => x.id === this.sectionId)?.title;
     } else {
       // TODO: Handle error.
@@ -57,19 +60,31 @@ export class MainViewModel {
 
   @mobx.computed
   get pages() {
-    if (!this.series) return;
-    return Array.from(ui.createPages(24, this.series.slice().sort((a, b) => {
-      const ax = a.source.dateEpisodeAdded ?? a.source.dateAdded;
-      const bx = b.source.dateEpisodeAdded ?? b.source.dateAdded;
-      return bx.localeCompare(ax);
-    })));
+    if (!this.source) return;
+    const series = this.source
+      .filter(app.createFilter(this.menu))
+      .sort(app.createSort(this.menu))
+      .map(x => new app.SeriesViewModel(this, this.sectionId, x));
+    return Array.from(ui.createPages(24, this.menu.ascending
+      ? series
+      : series.reverse()));
+  }
+
+  @mobx.computed
+  get viewState() {
+    return this.source && this.title
+      ? new app.ViewState(this.menu.search, this.source, this.title)
+      : undefined;
   }
   
   @mobx.observable
   currentPlayer?: app.core.PlayerViewModel;
 
   @mobx.observable
-  series?: Array<app.SeriesViewModel>;
+  menu: app.MenuViewModel;
+  
+  @mobx.observable
+  source?: Array<api.models.SeriesEntry>;
 
   @mobx.observable
   title?: string;

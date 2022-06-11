@@ -7,7 +7,7 @@ export class SeasonViewModel {
   constructor(private readonly mvm: app.MainViewModel, private readonly sectionId: string, season: number, episodes: Array<app.EpisodeViewModel>) {
     this.episodes = episodes;
     this.season = season;
-    this.title = getSeasonTitle(season);
+    this.title = app.getSeasonTitle(season);
     mobx.makeObservable(this);
   }
 
@@ -46,7 +46,7 @@ export class SeasonViewModel {
   @mobx.computed
   get posterUrl() {
     return this.mvm.source
-      ? core.image.series(this.sectionId, this.mvm.source, getSeasonPoster(this.season), 'poster')
+      ? core.image.series(this.sectionId, this.mvm.source, app.getSeasonPoster(this.season), 'poster')
       : undefined;
   }
 
@@ -63,16 +63,4 @@ export class SeasonViewModel {
 
   @mobx.observable
   title: string;
-}
-
-function getSeasonPoster(season: number) {
-  if (!season) return 'season-specials-poster';
-  const id = String(season).padStart(2, '0');
-  return `season${id}-poster`;
-}
-
-function getSeasonTitle(season: number) {
-  if (!season) return app.language.specials;
-  const id = String(season).padStart(2, '0');
-  return `${app.language.season} ${id}`;
 }

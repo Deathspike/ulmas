@@ -1,4 +1,5 @@
 export * as core from '../core';
+export * from './functions';
 export * from './language';
 export * from './router';
 export * from './viewModels/EpisodeViewModel';

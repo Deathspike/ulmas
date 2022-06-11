@@ -35,13 +35,6 @@ export const theme = ui.material.createTheme({
         }
       }
     },
-    MuiAppBar: {
-      styleOverrides: {
-        colorPrimary: {
-          backgroundColor: '#333'
-        }
-      }
-    },
     MuiToolbar: {
       styleOverrides: {
         root: {
@@ -83,10 +76,43 @@ export const theme = ui.material.createTheme({
         }
       }
     },
+    MuiInput: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#555',
+          fontSize: '1.25vw'
+        },
+        input: {
+          padding: '0.5vw !important'
+        }
+      }
+    },
     MuiLinearProgress: {
       styleOverrides: {
         root: {
           height: '0.35vw'
+        }
+      }
+    },
+    MuiList: {
+      styleOverrides: {
+        root: {
+          padding: '0.5vw'
+        }
+      }
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          padding: '0.5vw'
+        }
+      }
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#444',
+          backgroundImage: 'unset'
         }
       }
     },

@@ -3,9 +3,9 @@ import * as React from 'react';
 import {core} from 'client/core';
 
 export function main(sectionId: string) {
-  core.screen.openAsync(async () => {
-    const vm = new app.MainViewModel(sectionId);
-    await vm.refreshAsync();
+  core.screen.openAsync(async (viewState?: app.ViewState) => {
+    const vm = new app.MainViewModel(sectionId, viewState);
+    if (!viewState) await vm.refreshAsync();
     return <app.MainView vm={vm} />;
   });
 }
