@@ -135,7 +135,7 @@ export class Service {
     return new app.api.models.Episode({
       ...episode,
       ...episodePatch,
-      lastPlayed: episodePatch.watched ? DateTime.utc().toISO() : episode.lastPlayed,
+      lastPlayed: DateTime.utc().toISO(),
       playCount: episodePatch.watched ? (episode.playCount ?? 0) + 1 : episode.playCount
     });
   }
