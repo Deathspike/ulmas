@@ -16,7 +16,7 @@ export function createView<T>(fn: (props: T) => '' | JSX.Element | undefined) {
 }
 
 function requestForceCheck() {
-  if (!raf) return;
+  if (raf) return;
   raf = requestAnimationFrame(() => {
     forceCheck();
     raf = undefined;
