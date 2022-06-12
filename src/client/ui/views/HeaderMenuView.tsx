@@ -17,7 +17,6 @@ export const HeaderMenuView = ui.createView<Props>(({children, icon, ...props}) 
         <ui.material.Paper sx={styles.rootContainer} square={true}>
           <ui.material.List ref={listReference}
             onBlur={() => onBlur(listReference.current, () => setOpen(false))}
-            onClick={() => setOpen(false)}
             onKeyDown={x => onKeyDown(x, buttonReference.current)}>
             {children}
           </ui.material.List>
