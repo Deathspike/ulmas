@@ -1,15 +1,15 @@
+import * as mobx from 'mobx';
 import * as React from 'react';
 import {core} from 'client/core';
 
 export class InputService {
   constructor() {
-    document.addEventListener('keydown', ev => {
-      if (!core.screen.waitCount && !this.handleKey(ev.code.toLowerCase())) return;
-      ev.preventDefault();
-      ev.stopPropagation();
-    });
+    document.addEventListener('keydown', x => this.onKeyDown(x));
+    document.addEventListener('mousemove', x => this.onMouseMove(x));
+    mobx.makeObservable(this);
   }
 
+  @mobx.action
   click(handler: () => void) {
     return (ev: React.MouseEvent) => {
       handler();
@@ -18,6 +18,7 @@ export class InputService {
     };
   }
 
+  @mobx.action
   keyDown(handler: (keyName: string) => boolean) {
     return (ev: React.KeyboardEvent) => {
       if (!core.screen.waitCount && !handler(ev.code.toLowerCase())) return;
@@ -26,6 +27,7 @@ export class InputService {
     };
   }
 
+  @mobx.action
   keyRestore(keys = ['enter', 'space']) {
     return (ev: React.KeyboardEvent) => {
       if (!core.screen.waitCount && !keys.includes(ev.code.toLowerCase())) return;
@@ -33,6 +35,7 @@ export class InputService {
     };
   }
 
+  @mobx.action
   mouseRestore() {
     return (ev: React.MouseEvent) => {
       focusParent(ev.currentTarget);
@@ -41,26 +44,29 @@ export class InputService {
     };
   }
   
+  @mobx.observable
+  keyboardMode = false;
+  
   private handleKey(keyName: string) {
     switch (keyName) {
       case 'arrowleft':
-        this.process(-1, 0);
+        this.handleNavigation(-1, 0);
         return true;
       case 'arrowright':
-        this.process(1, 0);
+        this.handleNavigation(1, 0);
         return true;
       case 'arrowdown':
-        this.process(0, 1);
+        this.handleNavigation(0, 1);
         return true;
       case 'arrowup':
-        this.process(0, -1);
+        this.handleNavigation(0, -1);
         return true;
       default:
         return false;
     }
   }
 
-  private process(dirX: number, dirY: number) {
+  private handleNavigation(dirX: number, dirY: number) {
     const current = document.activeElement && document.activeElement !== document.body
       ? fetchBox(document.activeElement)
       : undefined;
@@ -75,6 +81,19 @@ export class InputService {
       .find(Boolean);
     bestElement?.focus({preventScroll: true});
     bestElement?.scrollIntoView({behavior: 'smooth', block: 'center'});
+  }
+
+  private onKeyDown(ev: KeyboardEvent) {
+    this.keyboardMode = true;
+    if (!core.screen.waitCount && !this.handleKey(ev.code.toLowerCase())) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+  }
+  
+  private onMouseMove(ev: MouseEvent) {
+    this.keyboardMode = false;
+    ev.preventDefault();
+    ev.stopPropagation();
   }
 }
 
