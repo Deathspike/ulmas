@@ -1,11 +1,15 @@
 import * as mobx from 'mobx';
 import * as React from 'react';
 import {core} from 'client/core';
+import {GamepadWatcher} from 'client/core';
 
 export class InputService {
   constructor() {
+    const watcher = new GamepadWatcher();
     document.addEventListener('keydown', x => this.onKeyDown(x));
     document.addEventListener('mousemove', x => this.onMouseMove(x));
+    window.addEventListener('gamepadconnected', x => watcher.connect(x.gamepad.index));
+    window.addEventListener('gamepaddisconnected', x => watcher.disconnect(x.gamepad.index));
     mobx.makeObservable(this);
   }
 
