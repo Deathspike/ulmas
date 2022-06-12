@@ -13,30 +13,40 @@ export class MenuViewModel {
 
   @mobx.action
   changeFilter(filter: MenuViewModel['filter']['value']) {
+    if (this.filter.value === filter) return;
     this.filter.change(filter);
+    requestAnimationFrame(() => window.scrollTo(0, 0));
   }
 
   @mobx.action
   changeSearch(search: string) {
+    if (this.search === search) return;
     this.search = search;
+    requestAnimationFrame(() => window.scrollTo(0, 0));
   }
 
   @mobx.action
   changeSort(sort: MenuViewModel['sort']['value']) {
     if (this.sort.value === sort) {
       this.order.change(this.ascending ? 'descending' : 'ascending')
+      requestAnimationFrame(() => window.scrollTo(0, 0));
     } else if (sort === 'title') {
       this.order.change('ascending');
       this.sort.change(sort);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
     } else {
       this.order.change('descending');
       this.sort.change(sort);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
     }
   }
 
   @mobx.action
   async refreshAsync() {
-    await core.screen.waitAsync(() => this.mvm.refreshAsync());
+    await core.screen.waitAsync(async () => {
+      await this.mvm.refreshAsync();
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    });
   }
 
   @mobx.computed
