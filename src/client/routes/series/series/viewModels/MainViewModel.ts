@@ -87,7 +87,6 @@ export class MainViewModel {
         : this.seasons[0];
     } else {
       // TODO: Handle error.
-      // TODO: Handle refreshes for `currentPlayer`.
     }
   }
 

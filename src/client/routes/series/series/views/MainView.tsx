@@ -5,6 +5,7 @@ import {core} from 'client/core';
 
 export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.source && (
   <ui.HeaderView tabIndex={-1} title={vm.source.title}
+    additionalContent={<app.MenuView vm={vm} />}
     onButton={core.input.click(() => vm.onBackAsync())}
     onKeyDown={core.input.keyDown(k => vm.handleKey(k))}>
     <ui.material.Grid sx={styles.rootContainer}>
