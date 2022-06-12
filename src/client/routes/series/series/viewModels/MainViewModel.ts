@@ -4,7 +4,7 @@ import * as mobx from 'mobx';
 import {core} from 'client/core';
 
 export class MainViewModel {
-  constructor(private readonly sectionId: string, private readonly series: api.models.SeriesEntry) {
+  constructor(private readonly sectionId: string, private readonly seriesId: string) {
     mobx.makeObservable(this);
   }
 
@@ -48,7 +48,7 @@ export class MainViewModel {
         ? this.currentSeason.episodes
         : this.seasons?.flatMap(x => x.episodes);
       if (episodes) {
-        await app.core.watchedAsync(this.sectionId, this.series.id, episodes.map(x => x.source), !this.watched);
+        await app.core.watchedAsync(this.sectionId, this.seriesId, episodes.map(x => x.source), !this.watched);
       }
     });
   }
@@ -73,7 +73,7 @@ export class MainViewModel {
 
   @mobx.action
   async refreshAsync() {
-    const series = await core.api.series.itemAsync(this.sectionId, this.series.id);
+    const series = await core.api.series.itemAsync(this.sectionId, this.seriesId);
     if (series.value) {
       this.source = series.value;
       const episodes = this.source.episodes
@@ -122,9 +122,8 @@ export class MainViewModel {
   source?: Omit<api.models.Series, 'unwatchedCount'>;
 
   private async loadAsync(episodes: Array<api.models.Episode>, current?: api.models.Episode) {
-    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.series.id, episodes, current);
+    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.seriesId, episodes, current);
     this.currentPlayer.load();
     await this.currentPlayer.waitAsync();
-    app.updateUnwatchedCount(this.series, this.source);
   }
 }

@@ -7,7 +7,7 @@ export const EpisodeView = ui.createView<{vm: app.EpisodeViewModel}>(({vm}) => (
   <ui.material.Grid key={vm.source.id} sx={styles.rootContainer} tabIndex={0}
     onClick={core.input.click(() => vm.playAsync())}
     onKeyDown={core.input.keyDown(k => vm.handleKey(k))}
-    onMouseDown={x => x.preventDefault()}>
+    onMouseDown={core.input.mouseRestore()}>
     <ui.material.Grid sx={styles.imageContainer}>
       <ui.ImageView imageHeight={18} imageUrl={vm.thumbUrl}>
         {vm.source.resume && <ui.material.LinearProgress sx={styles.progress}

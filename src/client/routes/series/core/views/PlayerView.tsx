@@ -14,7 +14,7 @@ export const PlayerView = ui.createView<{vm: app.PlayerViewModel}>(({vm}) => (
           <ui.material.IconButton sx={styles.closeButton}
             onClick={core.input.click(() => vm.close())}
             onKeyDown={core.input.keyRestore()}
-            onMouseDown={x => x.preventDefault()}>
+            onMouseDown={core.input.mouseRestore()}>
             <ui.icons.Close />
           </ui.material.IconButton>
         </ui.material.Grid>

@@ -27,7 +27,11 @@ export class StateService {
     const element = selector
       ? document.querySelector<HTMLElement>(selector)
       : undefined;
-    element?.focus({preventScroll: true});
+    if (element) {
+      element.focus();
+    } else if (selector) {
+      window.scrollTo(0, 0);
+    }
   }
 }
 

@@ -5,7 +5,7 @@ import {core} from 'client/core';
 export function main(sectionId: string) {
   core.screen.openAsync(async (viewState?: app.ViewState) => {
     const vm = new app.MainViewModel(sectionId, viewState);
-    if (!viewState) await vm.refreshAsync();
+    await vm.refreshAsync();
     return <app.MainView vm={vm} />;
   });
 }

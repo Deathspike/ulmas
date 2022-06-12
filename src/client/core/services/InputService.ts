@@ -32,6 +32,14 @@ export class InputService {
       ev.stopPropagation();
     };
   }
+
+  mouseRestore() {
+    return (ev: React.MouseEvent) => {
+      focusParent(ev.currentTarget);
+      ev.preventDefault();
+      ev.stopPropagation();
+    };
+  }
   
   private handleKey(keyName: string) {
     switch (keyName) {
@@ -96,4 +104,15 @@ function fetchBox<T extends Element>(element: T) {
   const x = rect.x;
   const y = rect.y + rect.height / 2;
   return {element, index, x, y};
+}
+
+function focusParent(element: Element | null) {
+  while (element) {
+    if (!element.getAttribute('tabindex')) {
+      element = element.parentElement;
+    } else if (element instanceof HTMLElement) {
+      element.focus();
+      element = element.parentElement;
+    }
+  }
 }

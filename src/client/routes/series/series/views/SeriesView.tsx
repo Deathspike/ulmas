@@ -14,7 +14,7 @@ export const SeriesView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.se
           imageHeight={23} imageUrl={x.posterUrl}
           onClick={core.input.click(() => x.open())}
           onKeyDown={core.input.keyDown(k => x.handleKey(k))}
-          onMouseDown={x => x.preventDefault()}>
+          onMouseDown={core.input.mouseRestore()}>
           <ui.ImageLinkIconView onButton={core.input.click(() => x.playAsync())}>
             <ui.icons.PlayArrow sx={styles.playIcon} />
           </ui.ImageLinkIconView>

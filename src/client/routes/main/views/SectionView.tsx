@@ -6,7 +6,7 @@ import {core} from 'client/core';
 export const SectionView = ui.createView<{vm: app.SectionViewModel}>(({vm}) => (
   <ui.material.Typography key={vm.source.id} 
     onClick={core.input.click(() => vm.open())}
-    onMouseDown={x => x.preventDefault()}>
+    onMouseDown={core.input.mouseRestore()}>
     {vm.source.title}
   </ui.material.Typography>
 ));

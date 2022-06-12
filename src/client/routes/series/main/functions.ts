@@ -48,9 +48,3 @@ function sortBy(a: api.models.SeriesEntry, b: api.models.SeriesEntry, sort: app.
       throw new Error();
   }
 }
-
-export function updateUnwatchedCount(series: Writeable<api.models.SeriesEntry>, source?: api.models.Series) {
-  series.unwatchedCount = source?.episodes
-    .filter(x => !x.watched)
-    .length || undefined;
-}

@@ -4,11 +4,11 @@ import * as ui from 'client/ui';
 import {core} from 'client/core';
 
 export const SeriesView = ui.createView<{vm: app.SeriesViewModel}>(({vm}) => (
-  <ui.ImageLinkView title={vm.source.title} 
+  <ui.ImageLinkView id={`series-${vm.source.id}`} title={vm.source.title}
     imageHeight={21} imageUrl={vm.posterUrl}
     onClick={core.input.click(() => vm.open())}
     onKeyDown={core.input.keyDown(k => vm.handleKey(k))}
-    onMouseDown={x => x.preventDefault()}>
+    onMouseDown={core.input.mouseRestore()}>
     <ui.ImageLinkIconView onButton={core.input.click(() => vm.playAsync())}>
       <ui.icons.PlayArrow sx={styles.playIcon} />
     </ui.ImageLinkIconView>

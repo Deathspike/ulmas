@@ -11,8 +11,12 @@ export function createSelector(element: Element | null) {
     const suffix = selector
       ? '>' + selector
       : '';
-    selector = prefix + suffix;
-    element = element.parentElement;
+    selector = element.id
+      ? `#${element.id}` + suffix
+      : prefix + suffix;
+    element = element.id
+      ? null
+      : element.parentElement;
   }
 }
 

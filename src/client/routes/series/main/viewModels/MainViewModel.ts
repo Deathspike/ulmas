@@ -7,8 +7,6 @@ import {core} from 'client/core';
 export class MainViewModel {
   constructor(private readonly sectionId: string, viewState?: app.ViewState) {
     this.menu = new app.MenuViewModel(this, viewState);
-    this.source = viewState?.source;
-    this.title = viewState?.title;
     mobx.makeObservable(this);
   }
   
@@ -72,9 +70,7 @@ export class MainViewModel {
 
   @mobx.computed
   get viewState() {
-    return this.source && this.title
-      ? new app.ViewState(this.menu.search, this.source, this.title)
-      : undefined;
+    return new app.ViewState(this.menu.search);
   }
   
   @mobx.observable
