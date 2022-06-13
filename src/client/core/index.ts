@@ -1,6 +1,7 @@
 export * from './functions';
 export * from './classes/GamepadObserver';
 export * from './classes/GamepadWatcher';
+export * from './classes/LocalStorage';
 export * from './services/ApiService';
 export * from './services/ImageService';
 export * from './services/InputService';

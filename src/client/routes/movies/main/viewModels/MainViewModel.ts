@@ -1,11 +1,34 @@
+import * as api from 'api';
 import * as app from '..';
 import * as mobx from 'mobx';
 import * as ui from 'client/ui';
 import {core} from 'client/core';
 
 export class MainViewModel {
-  constructor(private readonly sectionId: string) {
+  constructor(private readonly sectionId: string, viewState?: app.ViewState) {
+    this.menu = new app.MenuViewModel(this, viewState);
     mobx.makeObservable(this);
+  }
+  
+  @mobx.action
+  handleKey(keyName: string) {
+    if (keyName.startsWith('arrow')) {
+      return Boolean(this.currentPlayer?.isActive);
+    } else if (keyName === 'escape') {
+      this.onBackAsync();
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @mobx.action
+  async onBackAsync() {
+    if (this.currentPlayer?.isActive) {
+      this.currentPlayer.close();
+    } else {
+      await core.screen.backAsync();
+    }
   }
 
   @mobx.action
@@ -16,23 +39,45 @@ export class MainViewModel {
     const sections = await sectionsPromise;
     const movies = await moviesPromise;
     if (sections.value && movies.value) {
-      this.movies = movies.value.map(x => new app.MovieViewModel(this.sectionId, x));
+      this.source = movies.value;
       this.title = sections.value.find(x => x.id === this.sectionId)?.title;
     } else {
       // TODO: Handle error.
     }
   }
 
+  @mobx.action
+  async playAsync(movie: api.models.Movie) {
+    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, movie);
+    this.currentPlayer.load();
+    await this.currentPlayer.waitAsync();
+  }
+
   @mobx.computed
   get pages() {
-    if (!this.movies) return;
-    return Array.from(ui.createPages(24, this.movies.slice().sort((a, b) => {
-      return b.source.dateAdded.localeCompare(a.source.dateAdded);
-    })));
+    if (!this.source) return;
+    const movies = this.source
+      .filter(app.createFilter(this.menu))
+      .sort(app.createSort(this.menu))
+      .map(x => new app.MovieViewModel(this, this.sectionId, x));
+    return Array.from(ui.createPages(24, this.menu.ascending
+      ? movies
+      : movies.reverse()));
+  }
+
+  @mobx.computed
+  get viewState() {
+    return new app.ViewState(this.menu.search);
   }
   
   @mobx.observable
-  movies?: Array<app.MovieViewModel>;
+  currentPlayer?: app.core.PlayerViewModel;
+
+  @mobx.observable
+  menu: app.MenuViewModel;
+  
+  @mobx.observable
+  source?: Array<api.models.MovieEntry>;
 
   @mobx.observable
   title?: string;

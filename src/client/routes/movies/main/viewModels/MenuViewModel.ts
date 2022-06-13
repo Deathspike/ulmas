@@ -5,10 +5,10 @@ import {LocalStorage} from 'client/core';
 
 export class MenuViewModel {
   constructor(private readonly mvm: app.MainViewModel, viewState?: app.ViewState) {
-    this.filter = new LocalStorage('series.filter', 'all');
-    this.order = new LocalStorage('series.order', 'descending');
+    this.filter = new LocalStorage('movies.filter', 'all');
+    this.order = new LocalStorage('movies.order', 'descending');
     this.search = viewState?.search ?? '';
-    this.sort = new LocalStorage('series.sort', 'dateEpisodeAdded');
+    this.sort = new LocalStorage('movies.sort', 'dateAdded');
     mobx.makeObservable(this);
   }
 
@@ -65,5 +65,5 @@ export class MenuViewModel {
   search: string;
 
   @mobx.observable
-  sort: LocalStorage<'dateAdded' | 'dateEpisodeAdded' | 'lastPlayed' | 'premieredDate' | 'title'>;
+  sort: LocalStorage<'dateAdded' | 'lastPlayed' | 'premieredDate' | 'title'>;
 }

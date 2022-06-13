@@ -2,7 +2,6 @@ export * as core from '../core';
 export * from './functions';
 export * from './language';
 export * from './router';
-export * from './classes/LocalStorage';
 export * from './classes/ViewState';
 export * from './viewModels/MainViewModel';
 export * from './viewModels/MenuViewModel';

@@ -34,7 +34,7 @@ export class SeriesViewModel {
   async playAsync() {
     const series = await core.screen
       .waitAsync(() => core.api.series.itemAsync(this.sectionId, this.source.id))
-      .then(x => x.value && mobx.makeAutoObservable(x.value));
+      .then(x => x.value && mobx.makeAutoObservable(new api.models.Series(x.value)));
     if (series) {
       const disposer = mobx.autorun(() => updateUnwatchedCount(this.source, series));
       await this.mvm.playAsync(series);
