@@ -45,14 +45,20 @@ export class PlayerViewModel {
       this.state = 'playing';
       this.loadExternalPlayer(subtitleUrls, videoUrl);
     } else {
-      this.state = 'error';
-      this.startCounter(() => this.moveToNext() && this.load());
+      this.onError();
     }
   }
 
   @mobx.action
   async waitAsync() {
     await mobx.when(() => !this.isActive);
+  }
+
+  @mobx.computed
+  get canMoveToNext() {
+    const index = this.episodes.findIndex(x => x.id === this.current.id);
+    const nextIndex = index + 1;
+    return nextIndex < this.episodes.length;
   }
 
   @mobx.computed
@@ -94,8 +100,7 @@ export class PlayerViewModel {
     if (!resume.status) {
       this.isActive = false;
     } else if (!resume.value || !resume.value.total) {
-      this.state = 'error';
-      this.startCounter(() => this.moveToNext() && this.load());
+      this.onError();
     } else if (resume.value.position / resume.value.total < 0.9) {
       await app.resumeAsync(this.sectionId, this.seriesId, [this.current], resume.value);
       this.isActive = false;
@@ -104,6 +109,17 @@ export class PlayerViewModel {
       if (!this.moveToNext()) return;
       this.state = 'pending';
       this.startCounter(() => this.load());
+    }
+  }
+
+  private onError() {
+    if (this.canMoveToNext) {
+      this.state = 'error';
+      this.startCounter(() => this.moveToNext() && this.load());
+    } else {
+      this.state = 'error';
+      this.stopCounter();
+      this.counter = 100;
     }
   }
 

@@ -19,9 +19,11 @@ export const PlayerView = ui.createView<{vm: app.PlayerViewModel}>(({vm}) => (
           </ui.material.IconButton>
         </ui.material.Grid>
         <ui.ImageView imageHeight={18} imageUrl={vm.thumbUrl}>
-          {vm.state !== 'playing' && <ui.ImageLinkIconView onButton={core.input.click(() => vm.continue())}>
-            <ui.icons.SkipNext sx={styles.continueIcon} />  
-          </ui.ImageLinkIconView>}
+          {vm.canMoveToNext && vm.state !== 'playing' && (
+            <ui.ImageLinkIconView onButton={core.input.click(() => vm.continue())}>
+              <ui.icons.SkipNext sx={styles.continueIcon} />  
+            </ui.ImageLinkIconView>
+          )}
         </ui.ImageView>
         <ui.material.LinearProgress
           variant={vm.state !== 'playing' ? 'determinate' : 'indeterminate'}
