@@ -40,7 +40,7 @@ export class Service {
         const movieCache = new MovieCache(sectionId, movieId);
         const movie = await movieCache.loadAsync();
         const movieUpdate = this.patchMovie(movie, moviePatch);
-        section[movieIndex] = new app.api.models.MovieEntry(movieUpdate);
+        section[movieIndex] = new app.api.models.MovieEntry({...movieUpdate, images: movie.media.images});
         await MovieInfo.saveAsync(movie.path, movieUpdate);
         await Promise.all([sectionCache.saveAsync(section), movieCache.saveAsync(movieUpdate)]);
         return true;
@@ -96,7 +96,7 @@ export class Service {
     return new app.api.models.Movie({
       ...movie,
       ...moviePatch,
-      lastPlayed: moviePatch.watched ? DateTime.utc().toISO() : movie.lastPlayed,
+      lastPlayed: DateTime.utc().toISO(),
       playCount: moviePatch.watched ? (movie.playCount ?? 0) + 1 : movie.playCount
     });
   }
