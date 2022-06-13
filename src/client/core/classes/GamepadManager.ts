@@ -1,6 +1,6 @@
 import * as core from 'client/core';
 
-export class GamepadWatcher {
+export class GamepadManager {
   private readonly gamepads: Record<number, core.GamepadObserver> = [];
   private tickInterval?: NodeJS.Timer;
 
