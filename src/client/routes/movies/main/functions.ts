@@ -2,7 +2,7 @@ import * as api from 'api';
 import * as app from '.';
 
 export function createFilter(menu: app.MenuViewModel) {
-  const search = menu.search
+  const search = menu.search.debounceValue
     .toLowerCase()
     .split(' ');
   return (a: api.models.MovieEntry) => {

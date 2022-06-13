@@ -7,9 +7,9 @@ export const MenuView = ui.createView<{vm: app.MenuViewModel}>(({vm}) => (
   <ui.material.Grid sx={styles.rootContainer}>
     <ui.material.Grid sx={styles.inputContainer}>
       <ui.material.Input sx={styles.input} disableUnderline inputProps={{tabIndex: 1}}
-        value={vm.search}
+        value={vm.search.value}
         onChange={x => vm.changeSearch(x.currentTarget.value)}
-        onKeyDown={x => onKeyDown(x, vm)} />
+        onKeyDown={core.input.keyRestore()} />
       <ui.icons.Search sx={styles.inputIcon} />
     </ui.material.Grid>
     <ui.HeaderMenuView icon={<ui.icons.SortByAlpha />}>
@@ -57,16 +57,6 @@ export const MenuView = ui.createView<{vm: app.MenuViewModel}>(({vm}) => (
     </ui.material.Grid>
   </ui.material.Grid>
 ));
-
-function onKeyDown(ev: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>, vm: app.MenuViewModel) {
-  if (ev.code.toLowerCase() === 'escape' && !core.screen.waitCount) {
-    vm.changeSearch('');
-    ev.stopPropagation();
-  } else {
-    const restore = core.input.keyRestore();
-    restore(ev);
-  }
-}
 
 const styles = {
   rootContainer: {

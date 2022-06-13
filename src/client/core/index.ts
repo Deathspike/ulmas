@@ -1,4 +1,5 @@
 export * from './functions';
+export * from './classes/Debounce';
 export * from './classes/GamepadObserver';
 export * from './classes/GamepadWatcher';
 export * from './classes/LocalStorage';

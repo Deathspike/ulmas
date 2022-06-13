@@ -14,8 +14,8 @@ export class MainViewModel {
   handleKey(keyName: string) {
     if (keyName.startsWith('arrow')) {
       return Boolean(this.currentPlayer?.isActive);
-    } else if (keyName === 'escape' && this.menu.search) {
-      this.menu.changeSearch();
+    } else if (keyName === 'escape' && this.menu.search.value) {
+      this.menu.search.clear();
       return true;
     } else if (keyName === 'escape') {
       this.onBackAsync();
@@ -70,7 +70,7 @@ export class MainViewModel {
 
   @mobx.computed
   get viewState() {
-    return new app.ViewState(this.menu.search);
+    return new app.ViewState(this.menu.search.value);
   }
   
   @mobx.observable
