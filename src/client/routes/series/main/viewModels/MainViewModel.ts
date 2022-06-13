@@ -17,6 +17,9 @@ export class MainViewModel {
     } else if (keyName === 'enter' || keyName === 'space') {
       this.currentPlayer?.continue();
       return true;
+    } else if (keyName === 'escape' && this.menu.search) {
+      this.menu.changeSearch();
+      return true;
     } else if (keyName === 'escape') {
       this.onBackAsync();
       return true;

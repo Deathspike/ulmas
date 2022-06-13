@@ -20,7 +20,7 @@ export class MenuViewModel {
   }
 
   @mobx.action
-  changeSearch(search: string) {
+  changeSearch(search = '') {
     if (this.search === search) return;
     this.search = search;
     requestAnimationFrame(() => window.scrollTo(0, 0));

@@ -14,6 +14,9 @@ export class MainViewModel {
   handleKey(keyName: string) {
     if (keyName.startsWith('arrow')) {
       return Boolean(this.currentPlayer?.isActive);
+    } else if (keyName === 'escape' && this.menu.search) {
+      this.menu.changeSearch();
+      return true;
     } else if (keyName === 'escape') {
       this.onBackAsync();
       return true;
