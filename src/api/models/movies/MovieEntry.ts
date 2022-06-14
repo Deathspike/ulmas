@@ -2,6 +2,7 @@ import * as clt from 'class-transformer';
 import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
 import {MediaFile} from '../MediaFile';
+import {MediaResume} from '../MediaResume';
 
 export class MovieEntry {
   constructor(source?: MovieEntry) {
@@ -10,6 +11,7 @@ export class MovieEntry {
     this.title = source?.title ?? '';
     this.dateAdded = source?.dateAdded ?? '';
     this.lastPlayed = source?.lastPlayed;
+    this.resume = source?.resume;
     this.watched = source?.watched;
   }
   
@@ -39,6 +41,12 @@ export class MovieEntry {
   @clv.IsDateString()
   @swg.ApiPropertyOptional()
   readonly lastPlayed?: string;
+
+  @clv.IsOptional()
+  @clv.ValidateNested()
+  @clt.Type(() => MediaResume)
+  @swg.ApiPropertyOptional()
+  readonly resume?: MediaResume;
 
   @clv.IsOptional()
   @clv.IsBoolean()

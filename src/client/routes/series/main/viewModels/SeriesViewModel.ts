@@ -36,7 +36,7 @@ export class SeriesViewModel {
       .waitAsync(() => core.api.series.itemAsync(this.sectionId, this.source.id))
       .then(x => x.value && mobx.makeAutoObservable(new api.models.Series(x.value)));
     if (series) {
-      const disposer = mobx.autorun(() => updateUnwatchedCount(this.source, series));
+      const disposer = mobx.autorun(() => updateState(this.source, series));
       await this.mvm.playAsync(series);
       disposer();
     } else {
@@ -48,12 +48,19 @@ export class SeriesViewModel {
   get posterUrl() {
     return core.image.series(this.sectionId, this.source, 'poster');
   }
+
+  @mobx.computed
+  get watchProgress() {
+    const maximum = Number(this.source.totalCount);
+    const current = maximum - Number(this.source.unwatchedCount);
+    return current / maximum * 100;
+  }
   
   @mobx.observable
   source: api.models.SeriesEntry;
 }
 
-function updateUnwatchedCount(source: Writeable<api.models.SeriesEntry>, series: api.models.Series) {
+function updateState(source: Writeable<api.models.SeriesEntry>, series: api.models.Series) {
   source.unwatchedCount = series.episodes
     .filter(x => !x.watched)
     .length || undefined;

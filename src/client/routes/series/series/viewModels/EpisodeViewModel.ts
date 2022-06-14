@@ -40,6 +40,13 @@ export class EpisodeViewModel {
       ? core.image.episode(this.sectionId, this.mvm.source.id, this.source, 'thumb')
       : undefined;
   }
+  
+  @mobx.computed
+  get watchProgress() {
+    const maximum = Number(this.source.resume?.total);
+    const current = Number(this.source.resume?.position);
+    return current / maximum * 100;
+  }
 
   @mobx.observable
   source: api.models.Episode;

@@ -6,6 +6,7 @@ export async function resumeAsync(sectionId: string, seriesId: string, episodes:
   const response = await core.api.series.patchAsync(sectionId, seriesId, patch);
   if (response.status !== 204) return;
   episodes.forEach(x => x.resume = resume);
+  episodes.forEach(x => x.watched = false);
 }
 
 export async function watchedAsync(sectionId: string, seriesId: string, episodes: Array<Writeable<api.models.Episode>>, watched: boolean) {

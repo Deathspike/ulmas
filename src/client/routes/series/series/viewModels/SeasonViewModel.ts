@@ -55,6 +55,13 @@ export class SeasonViewModel {
     return this.episodes.filter(x => !x.source.watched).length;
   }
   
+  @mobx.computed
+  get watchProgress() {
+    const maximum = this.episodes.length;
+    const current = maximum - this.unwatchedCount;
+    return current / maximum * 100;
+  }
+  
   @mobx.observable
   episodes: Array<app.EpisodeViewModel>;
 

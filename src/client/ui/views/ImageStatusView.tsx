@@ -1,14 +1,14 @@
 import * as React from 'react';
 import * as ui from 'client/ui';
 
-export const WatchView = ui.createView<Props>(({children, value, ...props}) => (
+export const ImageStatusView = ui.createView<Props>(({children, value, ...props}) => (
   <ui.material.Grid sx={styles.rootContainer} {...props}>
     {typeof value === 'number'
       && value
       && <ui.material.Typography sx={styles.unwatchedCount}>{value}</ui.material.Typography>}
     {typeof value === 'boolean'
       && !value
-      && <ui.material.Typography sx={styles.watched} />}
+      && <ui.material.Typography sx={styles.unwatched} />}
     {children}
   </ui.material.Grid>
 ));
@@ -32,7 +32,7 @@ const styles = {
     padding: '0 0.5vw',
     textAlign: 'center'
   },
-  watched: {
+  unwatched: {
     background: `linear-gradient(to top right, transparent 0%, transparent 50%, ${ui.theme.palette.primary.dark} 50%, ${ui.theme.palette.primary.dark} 100%)`,
     height: '2vw',
     width: '2vw'

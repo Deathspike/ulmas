@@ -91,6 +91,7 @@ export class Service {
       images, episodes,
       dateEpisodeAdded: fun.fetchEpisodeAdded(episodes),
       lastPlayed: fun.fetchLastPlayed(episodes),
+      totalCount: episodes.length || undefined,
       unwatchedCount: fun.fetchUnwatchedCount(episodes),
       dateAdded: seriesInfo.dateAdded ?? DateTime.fromJSDate(seriesStats.birthtime).toUTC().toISO()
     });

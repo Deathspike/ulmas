@@ -10,10 +10,8 @@ export const EpisodeView = ui.createView<{vm: app.EpisodeViewModel}>(({vm}) => (
     onMouseDown={core.input.mouseRestore()}>
     <ui.material.Grid sx={styles.imageContainer}>
       <ui.ImageView imageHeight={18} imageUrl={vm.thumbUrl}>
-        {vm.source.resume && <ui.material.LinearProgress sx={styles.progress}
-          variant="determinate"
-          value={vm.source.resume.position / vm.source.resume.total * 100} />}
-        <ui.WatchView value={Boolean(vm.source.resume || vm.source.watched)} />
+        <ui.ImageProgressView value={vm.watchProgress} />
+        <ui.ImageStatusView value={vm.source.watched ?? false} />
       </ui.ImageView>
       <ui.material.Button sx={styles.button}
         color="secondary"
@@ -51,11 +49,6 @@ const styles = {
   },
   imageContainer: {
     width: '30vw'
-  },
-  progress: {
-    bottom: 0,
-    width: '100%',
-    position: 'absolute'
   },
   button: {
     borderRadius: 0,

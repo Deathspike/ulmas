@@ -11,7 +11,8 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.sour
     <ui.material.Grid sx={styles.rootContainer}>
       <ui.material.Grid sx={styles.imageContainer}>
         <ui.ImageView imageHeight={36} imageUrl={vm.posterUrl}>
-          <ui.WatchView value={vm.unwatchedCount ?? 0} />
+          <ui.ImageProgressView value={vm.watchProgress} />
+          <ui.ImageStatusView value={vm.unwatchedCount ?? 0} />
         </ui.ImageView>
       </ui.material.Grid>
       <ui.material.Grid sx={styles.infoContainer}>
@@ -32,7 +33,7 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.sour
             variant="contained"
             onClick={core.input.click(() => vm.markAsync())}
             onKeyDown={core.input.keyRestore()}>
-            {vm.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
+            {vm.unwatchedCount ? <ui.icons.CheckCircleOutlined /> : <ui.icons.CheckCircle />}
           </ui.material.Button>
           <ui.material.Button sx={styles.buttonSecondary} tabIndex={1}
             color="secondary"

@@ -48,7 +48,8 @@ export class MainViewModel {
         ? this.currentSeason.episodes
         : this.seasons?.flatMap(x => x.episodes);
       if (episodes) {
-        await app.core.watchedAsync(this.sectionId, this.seriesId, episodes.map(x => x.source), !this.watched);
+        const watched = !!this.unwatchedCount;
+        await app.core.watchedAsync(this.sectionId, this.seriesId, episodes.map(x => x.source), watched);
       }
     });
   }
@@ -99,14 +100,14 @@ export class MainViewModel {
   
   @mobx.computed
   get unwatchedCount() {
-    return this.currentSeason
-      ? this.currentSeason.unwatchedCount
-      : this.source?.episodes.filter(x => !x.watched).length;
+    return this.source?.episodes.filter(x => !x.watched).length;
   }
 
   @mobx.computed
-  get watched() {
-    return !this.unwatchedCount;
+  get watchProgress() {
+    const maximum = Number(this.source?.totalCount);
+    const current = maximum - Number(this.unwatchedCount);
+    return current / maximum * 100;
   }
 
   @mobx.observable

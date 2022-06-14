@@ -66,6 +66,13 @@ export class MainViewModel {
       : undefined;
   }
 
+  @mobx.computed
+  get watchProgress() {
+    const maximum = Number(this.source?.resume?.total);
+    const current = Number(this.source?.resume?.position);
+    return current / maximum * 100;
+  }
+
   @mobx.observable
   currentPlayer?: app.core.PlayerViewModel;
 

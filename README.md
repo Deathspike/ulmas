@@ -34,6 +34,7 @@ Based on https://kodi.wiki/view/NFO_files/TV_shows.
 | episodes [1]         | -         | -        | -         | Collection of `Episode`            |
 | dateEpisodeAdded [1] | -         | -        | -         | Derived from `episodes.dateAdded`  |
 | lastPlayed [1]       | -         | -        | -         | Derived from `episodes.lastPlayed` |
+| totalCount [1]       | -         | -        | -         | Derived from `episodes`            |
 | unwatchedCount [1]   | -         | -        | -         | Derived from `episodes.watched`    |
 | title                | title     | Yes      | No        |                                    |
 | dateAdded            | dateadded | No       | No        | Uses `btime` if not in `.nfo`      |

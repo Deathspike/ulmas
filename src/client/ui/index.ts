@@ -8,5 +8,6 @@ export * from './views/HeaderView';
 export * from './views/ImageLinkGridView';
 export * from './views/ImageLinkIconView';
 export * from './views/ImageLinkView';
+export * from './views/ImageProgressView';
+export * from './views/ImageStatusView';
 export * from './views/ImageView';
-export * from './views/WatchView';

@@ -11,10 +11,8 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.sour
     <ui.material.Grid sx={styles.rootContainer}>
       <ui.material.Grid sx={styles.imageContainer}>
         <ui.ImageView imageHeight={36} imageUrl={vm.posterUrl}>
-          {vm.source.resume && <ui.material.LinearProgress sx={styles.progress}
-            variant="determinate"
-            value={vm.source.resume.position / vm.source.resume.total * 100} />}
-          <ui.WatchView value={Boolean(vm.source.resume || vm.source.watched)} />
+          <ui.ImageProgressView value={vm.watchProgress} />
+          <ui.ImageStatusView value={vm.source.watched ?? false} />
         </ui.ImageView>
       </ui.material.Grid>
       <ui.material.Grid sx={styles.infoContainer}>
@@ -64,11 +62,6 @@ const styles = {
     marginRight: '1.5vw',
     marginBottom: '1.5vw',
     width: '24vw'
-  },
-  progress: {
-    bottom: 0,
-    width: '100%',
-    position: 'absolute'
   },
   infoContainer: {
     flex: 1,

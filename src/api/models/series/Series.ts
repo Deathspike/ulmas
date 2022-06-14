@@ -12,6 +12,7 @@ export class Series {
     this.episodes = source?.episodes ?? [];
     this.dateEpisodeAdded = source?.dateEpisodeAdded;
     this.lastPlayed = source?.lastPlayed;
+    this.totalCount = source?.totalCount;
     this.unwatchedCount = source?.unwatchedCount;
     this.title = source?.title ?? '';
     this.dateAdded = source?.dateAdded ?? '';
@@ -51,6 +52,12 @@ export class Series {
   @clv.IsDateString()
   @swg.ApiPropertyOptional()
   readonly lastPlayed?: string;
+
+  @clv.IsOptional()
+  @clv.IsNumber()
+  @clv.Min(1)
+  @swg.ApiPropertyOptional()
+  readonly totalCount?: number;
 
   @clv.IsOptional()
   @clv.IsNumber()

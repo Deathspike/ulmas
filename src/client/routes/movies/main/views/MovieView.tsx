@@ -12,7 +12,8 @@ export const MovieView = ui.createView<{vm: app.MovieViewModel}>(({vm}) => (
     <ui.ImageLinkIconView onButton={core.input.click(() => vm.playAsync())}>
       <ui.icons.PlayArrow sx={styles.playIcon} />
     </ui.ImageLinkIconView>
-    <ui.WatchView value={vm.source.watched ?? false} />
+    <ui.ImageProgressView value={vm.watchProgress} />
+    <ui.ImageStatusView value={vm.source.watched ?? false} />
   </ui.ImageLinkView>
 ));
 

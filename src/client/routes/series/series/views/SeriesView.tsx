@@ -18,7 +18,8 @@ export const SeriesView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.se
           <ui.ImageLinkIconView onButton={core.input.click(() => x.playAsync())}>
             <ui.icons.PlayArrow sx={styles.playIcon} />
           </ui.ImageLinkIconView>
-          <ui.WatchView value={x.unwatchedCount} />
+          <ui.ImageProgressView value={x.watchProgress} />
+          <ui.ImageStatusView value={x.unwatchedCount} />
         </ui.ImageLinkView>
       ))}
     </ui.ImageLinkGridView>

@@ -36,7 +36,7 @@ export class MovieViewModel {
       .waitAsync(() => core.api.movies.itemAsync(this.sectionId, this.source.id))
       .then(x => x.value && mobx.makeAutoObservable(new api.models.Movie(x.value)));
     if (movie) {
-      const disposer = mobx.autorun(() => updateWatched(this.source, movie));
+      const disposer = mobx.autorun(() => updateState(this.source, movie));
       await this.mvm.playAsync(movie);
       disposer();
     } else {
@@ -48,11 +48,19 @@ export class MovieViewModel {
   get posterUrl() {
     return core.image.movie(this.sectionId, this.source, 'poster');
   }
+
+  @mobx.computed
+  get watchProgress() {
+    const maximum = Number(this.source.resume?.total);
+    const current = Number(this.source.resume?.position);
+    return current / maximum * 100;
+  }
   
   @mobx.observable
   source: api.models.MovieEntry;
 }
 
-function updateWatched(source: Writeable<api.models.MovieEntry>, movie: api.models.Movie) {
+function updateState(source: Writeable<api.models.MovieEntry>, movie: api.models.Movie) {
+  source.resume = movie.resume;
   source.watched = movie.watched;
 }
