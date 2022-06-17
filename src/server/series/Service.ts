@@ -15,7 +15,16 @@ export class Service {
   constructor(
     private readonly cacheService: app.core.CacheService,
     private readonly contextService: app.core.ContextService,
-    private readonly lockService: app.core.LockService) {}
+    private readonly lockService: app.core.LockService) {
+
+
+    (async () => {
+      const sectionCache = new SectionCache('anime-series');
+      const entries = await sectionCache.loadAsync();
+      await sectionCache.writeExperimentAsync(entries);
+    })();
+
+  }
   
   async inspectAsync(sectionId: string, rootPaths: Array<string>) {
     await this.lockService.lockAsync(sectionId, async () => {
