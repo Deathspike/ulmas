@@ -1,14 +1,14 @@
 import * as clt from 'class-transformer';
 import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
-import {Media} from '../Media';
 import {MediaResume} from '../MediaResume';
+import {MediaSource} from '../MediaSource';
 
 export class Episode {
   constructor(source?: Episode) {
     this.id = source?.id ?? '';
     this.path = source?.path ?? '';
-    this.media = source?.media ?? new Media();
+    this.media = source?.media ?? new MediaSource();
     this.episode = source?.episode ?? NaN;
     this.season = source?.season ?? NaN;
     this.title = source?.title ?? '';
@@ -31,9 +31,9 @@ export class Episode {
   readonly path: string;
 
   @clv.IsObject()
-  @clt.Type(() => Media)
-  @swg.ApiProperty({type: [Media]})
-  readonly media: Media;
+  @clt.Type(() => MediaSource)
+  @swg.ApiProperty({type: [MediaSource]})
+  readonly media: MediaSource;
 
   @clv.IsNumber()
   @clv.Min(1)

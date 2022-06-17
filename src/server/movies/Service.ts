@@ -23,7 +23,7 @@ export class Service {
       await Promise.all(rootPaths.map(async (rootPath) => {
         for await (const movie of this.inspectRootAsync(rootPath)) {
           await new MovieCache(sectionId, movie.id).saveAsync(movie);
-          section.push(new app.api.models.MovieEntry({...movie, images: movie.media.images}));
+          section.push(app.api.models.MovieEntry.from(movie));
         }
       }));
       await sectionCache.saveAsync(section);
@@ -40,7 +40,7 @@ export class Service {
         const movieCache = new MovieCache(sectionId, movieId);
         const movie = await movieCache.loadAsync();
         const movieUpdate = this.patchMovie(movie, moviePatch);
-        section[movieIndex] = new app.api.models.MovieEntry({...movieUpdate, images: movie.media.images});
+        section[movieIndex] = app.api.models.MovieEntry.from(movieUpdate);
         await MovieInfo.saveAsync(movie.path, movieUpdate);
         await Promise.all([sectionCache.saveAsync(section), movieCache.saveAsync(movieUpdate)]);
         return true;
@@ -76,18 +76,18 @@ export class Service {
       .every(x => x.fullPath === movieStats.fullPath);
     const images = Object.entries(context.images)
       .filter(([x]) => x.startsWith(`${name}-`) || hasPrivateRoot)
-      .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
+      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
     const subtitles = Object.entries(context.subtitles)
       .filter(([x]) => x.startsWith(`${name}.`))
-      .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
+      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
     const videos = Object.entries(context.videos)
       .filter(([x]) => x.startsWith(`${name}.`))
-      .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
+      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
     return new app.api.models.Movie({
       ...movieInfo,
       id: app.id(movieStats.fullPath),
       path: movieStats.fullPath,
-      media: new app.api.models.Media({images, subtitles, videos}),
+      media: new app.api.models.MediaSource({images, subtitles, videos}),
       dateAdded: movieInfo.dateAdded ?? DateTime.fromJSDate(movieStats.birthtime).toUTC().toISO({suppressMilliseconds: true})
     });
   }

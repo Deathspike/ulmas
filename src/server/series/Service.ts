@@ -25,7 +25,7 @@ export class Service {
       await Promise.all(rootPaths.map(async (rootPath) => {
         for await (const series of this.inspectRootAsync(rootPath)) {
           await new SeriesCache(sectionId, series.id).saveAsync(series);
-          section.push(new app.api.models.SeriesEntry(series));
+          section.push(app.api.models.SeriesEntry.from(series));
         }
       }));
       await sectionCache.saveAsync(section);
@@ -42,7 +42,7 @@ export class Service {
         const seriesCache = new SeriesCache(sectionId, seriesId);
         const series = await seriesCache.loadAsync();
         const seriesUpdate = this.patchSeries(series, seriesPatch);
-        section[seriesIndex] = new app.api.models.SeriesEntry(seriesUpdate);
+        section[seriesIndex] = app.api.models.SeriesEntry.from(seriesUpdate);
         await Promise.all(series.episodes.map(x => x instanceof app.api.models.Episode && EpisodeInfo.saveAsync(x.path, x)));
         await Promise.all([sectionCache.saveAsync(section), seriesCache.saveAsync(seriesUpdate)]);
         return true;
@@ -83,7 +83,7 @@ export class Service {
       .sort((a, b) => a.season - b.season || a.episode - b.episode);
     const images = Object.entries(context.images)
       .filter(([_, x]) => episodes.every(y => !y.media.images?.some(z => z.path === x.fullPath)))
-      .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
+      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
     return new app.api.models.Series({
       ...seriesInfo,
       id: app.id(seriesStats.fullPath),
@@ -103,18 +103,18 @@ export class Service {
       .loadAsync(episodeStats.fullPath);
     const images = Object.entries(context.images)
       .filter(([x]) => x.startsWith(`${name}-`))
-      .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
+      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
     const subtitles = Object.entries(context.subtitles)
       .filter(([x]) => x.startsWith(`${name}.`))
-      .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
+      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
     const videos = Object.entries(context.videos)
       .filter(([x]) => x.startsWith(`${name}.`))
-      .map(([_, x]) => new app.api.models.MediaFile({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
+      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
     return new app.api.models.Episode({
       ...episodeInfo,
       id: app.id(episodeStats.fullPath),
       path: episodeStats.fullPath,
-      media: new app.api.models.Media({images, subtitles, videos}),
+      media: new app.api.models.MediaSource({images, subtitles, videos}),
       dateAdded: episodeInfo.dateAdded ?? DateTime.fromJSDate(episodeStats.birthtime).toUTC().toISO({suppressMilliseconds: true})
     });
   }

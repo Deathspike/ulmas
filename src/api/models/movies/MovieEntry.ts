@@ -1,8 +1,9 @@
 import * as clt from 'class-transformer';
 import * as clv from 'class-validator';
 import * as swg from '@nestjs/swagger';
-import {MediaFile} from '../MediaFile';
+import {MediaEntry} from '../MediaEntry';
 import {MediaResume} from '../MediaResume';
+import {Movie} from './Movie';
 
 export class MovieEntry {
   constructor(source?: MovieEntry) {
@@ -14,6 +15,11 @@ export class MovieEntry {
     this.resume = source?.resume;
     this.watched = source?.watched;
   }
+
+  static from(source: Movie) {
+    const images = source.media.images?.map(MediaEntry.from);
+    return new MovieEntry({...source, images});
+  }
   
   @clv.IsString()
   @clv.IsNotEmpty()
@@ -24,9 +30,9 @@ export class MovieEntry {
   @clv.IsArray()
   @clv.ArrayNotEmpty()
   @clv.ValidateNested({each: true})
-  @clt.Type(() => MediaFile)
-  @swg.ApiPropertyOptional({type: [MediaFile]})
-  readonly images?: Array<MediaFile>;
+  @clt.Type(() => MediaEntry)
+  @swg.ApiPropertyOptional({type: [MediaEntry]})
+  readonly images?: Array<MediaEntry>;
   
   @clv.IsString()
   @clv.IsNotEmpty()
