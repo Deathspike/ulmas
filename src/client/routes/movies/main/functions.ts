@@ -13,18 +13,7 @@ export function createFilter(menu: app.MenuViewModel) {
 
 export function createSort(menu: app.MenuViewModel) {
   return (a: api.models.MovieEntry, b: api.models.MovieEntry) => {
-    switch (menu.sort.value) {
-      case 'dateAdded':
-        return a.dateAdded.localeCompare(b.dateAdded);
-      case 'lastPlayed':
-        if (a.lastPlayed && b.lastPlayed) return a.lastPlayed.localeCompare(b.lastPlayed);
-        if (a.lastPlayed || b.lastPlayed) return a.lastPlayed ? 1 : -1;
-        return a.dateAdded.localeCompare(b.dateAdded);
-      case 'title':
-        return a.title.localeCompare(b.title);
-      default:
-        throw new Error();
-    }
+    return api.sortMovies(a, b, menu.sort.value);
   };
 }
 

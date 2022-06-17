@@ -1,4 +1,4 @@
-export * as core from '../core';
+export * as core from 'client/shared/movies';
 export * from './language';
 export * from './router';
 export * from './viewModels/MainViewModel';

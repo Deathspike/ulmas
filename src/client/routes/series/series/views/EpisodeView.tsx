@@ -4,7 +4,7 @@ import * as ui from 'client/ui';
 import {core} from 'client/core';
 
 export const EpisodeView = ui.createView<{vm: app.EpisodeViewModel}>(({vm}) => (
-  <ui.material.Grid key={vm.source.id} sx={styles.rootContainer} tabIndex={0}
+  <ui.material.Grid key={vm.source.id} sx={styles.rootContainer} tabIndex={0} data-capture-y
     onClick={core.input.click(() => vm.playAsync())}
     onKeyDown={core.input.keyDown(k => vm.handleKey(k))}
     onMouseDown={core.input.mouseRestore()}>
@@ -13,19 +13,23 @@ export const EpisodeView = ui.createView<{vm: app.EpisodeViewModel}>(({vm}) => (
         <ui.ImageProgressView value={vm.watchProgress} />
         <ui.ImageStatusView value={vm.source.watched ?? false} />
       </ui.ImageView>
-      <ui.material.Button sx={styles.button}
-        color="secondary"
-        variant="contained"
-        onClick={core.input.click(() => vm.markAsync())}
-        onKeyDown={core.input.keyRestore()}>
-        {vm.source.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
-      </ui.material.Button>
-      <ui.material.Button sx={styles.button}
-        color="secondary"
-        variant="contained"
-        onKeyDown={core.input.keyRestore()}>
-        <ui.icons.InfoOutlined />
-      </ui.material.Button>
+      <ui.ExclusiveView sx={styles.buttonContainer}>
+        <ui.material.Button sx={styles.button}
+          color="secondary"
+          variant="contained"
+          onClick={core.input.click(() => vm.markAsync())}
+          onKeyDown={core.input.keyRestore()}>
+          {vm.source.watched ? <ui.icons.CheckCircle /> : <ui.icons.CheckCircleOutlined />}
+        </ui.material.Button>
+      </ui.ExclusiveView>
+      <ui.ExclusiveView sx={styles.buttonContainer}>
+        <ui.material.Button sx={styles.button}
+          color="secondary"
+          variant="contained"
+          onKeyDown={core.input.keyRestore()}>
+          <ui.icons.InfoOutlined />
+        </ui.material.Button>
+      </ui.ExclusiveView>
     </ui.material.Grid>
     <ui.material.Grid sx={styles.infoContainer}>
       <ui.material.Typography variant="h3" sx={styles.title}>
@@ -44,15 +48,20 @@ const styles = {
     cursor: 'pointer',
     display: 'flex',
     marginBottom: '1.5vw',
-    '&:focus': {borderColor: ui.theme.palette.primary.light},
-    '&:hover': {borderColor: ui.theme.palette.primary.main}
+    transition: 'all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    '&:focus:not(.unfocus)': {borderColor: ui.theme.palette.primary.light},
+    '&:hover:not(.unfocus)': {borderColor: ui.theme.palette.primary.main}
   },
   imageContainer: {
     width: '30vw'
   },
+  buttonContainer: {
+    display: 'inline-block',
+    width: '50%'
+  },
   button: {
     borderRadius: 0,
-    width: '50%'
+    width: '100%'
   },
   infoContainer: {
     flex: 1,

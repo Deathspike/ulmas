@@ -5,14 +5,14 @@ import * as routes from 'client/routes';
 import {core} from 'client/core';
 
 export class MovieViewModel {
-  constructor(private readonly mvm: app.MainViewModel, private readonly sectionId: string, source: api.models.MovieEntry) {
+  constructor(private readonly controller: app.IController, private readonly sectionId: string, source: api.models.MovieEntry) {
     this.source = source;
     mobx.makeObservable(this);
   }
 
   @mobx.action
   handleKey(keyName: string) {
-    if (this.mvm.currentPlayer?.isActive) {
+    if (this.controller.currentPlayer?.isActive) {
       return false;
     } else if (keyName === 'enter') {
       this.open();
@@ -27,7 +27,8 @@ export class MovieViewModel {
 
   @mobx.action
   open() {
-    routes.movies.movie(this.sectionId, this.source.id, this.mvm.viewState);
+    const viewState = this.controller.viewState;
+    routes.movies.movie(this.sectionId, this.source.id, viewState);
   }
 
   @mobx.action
@@ -37,7 +38,7 @@ export class MovieViewModel {
       .then(x => x.value && mobx.makeAutoObservable(new api.models.Movie(x.value)));
     if (movie) {
       const disposer = mobx.autorun(() => updateState(this.source, movie));
-      await this.mvm.playAsync(movie);
+      await this.controller.playAsync(movie);
       disposer();
     } else {
       // TODO: Handle error.

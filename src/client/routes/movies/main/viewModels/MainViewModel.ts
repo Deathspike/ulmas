@@ -4,7 +4,7 @@ import * as mobx from 'mobx';
 import * as ui from 'client/ui';
 import {core} from 'client/core';
 
-export class MainViewModel {
+export class MainViewModel implements app.core.IController {
   constructor(private readonly sectionId: string, viewState?: app.ViewState) {
     this.menu = new app.MenuViewModel(this, viewState);
     mobx.makeObservable(this);
@@ -62,7 +62,7 @@ export class MainViewModel {
     const movies = this.source
       .filter(app.createFilter(this.menu))
       .sort(app.createSort(this.menu))
-      .map(x => new app.MovieViewModel(this, this.sectionId, x));
+      .map(x => new app.core.MovieViewModel(this, this.sectionId, x));
     return Array.from(ui.createPages(24, this.menu.ascending
       ? movies
       : movies.reverse()));

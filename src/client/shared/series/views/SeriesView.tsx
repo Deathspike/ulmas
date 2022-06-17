@@ -3,8 +3,8 @@ import * as React from 'react';
 import * as ui from 'client/ui';
 import {core} from 'client/core';
 
-export const SeriesView = ui.createView<{vm: app.SeriesViewModel}>(({vm}) => (
-  <ui.ImageLinkView id={`series-${vm.source.id}`} title={vm.source.title}
+export const SeriesView = ui.createView<{id: string, vm: app.SeriesViewModel}>(({id, vm}) => (
+  <ui.ImageLinkView id={id} title={vm.source.title}
     imageHeight={21} imageUrl={vm.posterUrl}
     onClick={core.input.click(() => vm.open())}
     onKeyDown={core.input.keyDown(k => vm.handleKey(k))}

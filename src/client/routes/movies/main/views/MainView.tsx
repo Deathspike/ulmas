@@ -11,7 +11,7 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.titl
     <ui.material.Grid sx={styles.moviesContainer}>
       {vm.pages?.map((x, i) => (
         <ui.ImageLinkGridView key={i} imageHeight={21} columns={6} columnGap={2} rowGap={1}>
-          {x.map(x => <app.MovieView key={x.source.id} vm={x} />)}
+          {x.map(x => <app.core.MovieView key={x.source.id} id={`movie-${x.source.id}`} vm={x} />)}
         </ui.ImageLinkGridView>
       ))}
     </ui.material.Grid>
@@ -24,6 +24,6 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.titl
 const styles = {
   moviesContainer: {
     minHeight: '100%',
-    padding: '1.5vw'
+    padding: '1.5vw 1.5vw 0 1.5vw'
   }
 };

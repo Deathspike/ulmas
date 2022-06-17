@@ -1,6 +1,10 @@
+export * as movies from 'client/shared/movies';
+export * as series from 'client/shared/series';
 export * from './language';
 export * from './router';
 export * from './viewModels/MainViewModel';
-export * from './viewModels/SectionViewModel';
+export * from './viewModels/SectionMoviesViewModel';
+export * from './viewModels/SectionSeriesViewModel';
 export * from './views/MainView';
+export * from './views/MenuView';
 export * from './views/SectionView';

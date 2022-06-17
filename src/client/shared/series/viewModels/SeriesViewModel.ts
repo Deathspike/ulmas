@@ -5,14 +5,14 @@ import * as routes from 'client/routes';
 import {core} from 'client/core';
 
 export class SeriesViewModel {
-  constructor(private readonly mvm: app.MainViewModel, private readonly sectionId: string, source: api.models.SeriesEntry) {
+  constructor(private readonly controller: app.IController, private readonly sectionId: string, source: api.models.SeriesEntry) {
     this.source = source;
     mobx.makeObservable(this);
   }
 
   @mobx.action
   handleKey(keyName: string) {
-    if (this.mvm.currentPlayer?.isActive) {
+    if (this.controller.currentPlayer?.isActive) {
       return false;
     } else if (keyName === 'enter') {
       this.open();
@@ -27,7 +27,8 @@ export class SeriesViewModel {
 
   @mobx.action
   open() {
-    routes.series.series(this.sectionId, this.source.id, this.mvm.viewState);
+    const viewState = this.controller.viewState;
+    routes.series.series(this.sectionId, this.source.id, viewState);
   }
 
   @mobx.action
@@ -37,7 +38,7 @@ export class SeriesViewModel {
       .then(x => x.value && mobx.makeAutoObservable(new api.models.Series(x.value)));
     if (series) {
       const disposer = mobx.autorun(() => updateState(this.source, series));
-      await this.mvm.playAsync(series);
+      await this.controller.playAsync(series);
       disposer();
     } else {
       // TODO: Handle error.

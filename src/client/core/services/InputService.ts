@@ -113,11 +113,13 @@ function createFilter(current: ReturnType<typeof fetchBox>, dirX: number, dirY: 
 
 function createSorter(current: ReturnType<typeof fetchBox>, dirX: number) {
   return (a: ReturnType<typeof fetchBox>, b: ReturnType<typeof fetchBox>) => {
+    const ap = a.element.hasAttribute(dirX ? 'data-capture-x' : 'data-capture-y');
+    const bp = b.element.hasAttribute(dirX ? 'data-capture-x' : 'data-capture-y');
     const ax = Math.abs(current.x - a.x);
     const ay = Math.abs(current.y - a.y);
     const bx = Math.abs(current.x - b.x);
     const by = Math.abs(current.y - b.y);
-    return dirX ? ay - by || ax - bx : ax - bx || ay - by;
+    return (ap ? (bp ? 0 : -1) : (bp ? 1 : 0)) || (dirX ? ay - by || ax - bx : ax - bx || ay - by);
   };
 }
 
@@ -134,7 +136,7 @@ function focusParent(element: Element | null) {
     if (!element.getAttribute('tabindex')) {
       element = element.parentElement;
     } else if (element instanceof HTMLElement) {
-      element.focus();
+      element.focus({preventScroll: true});
       element = element.parentElement;
     }
   }

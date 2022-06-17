@@ -1,3 +1,5 @@
 export const language = {
-  title: 'Sections'
+  continueWatching: 'Continue Watching',
+  missingMedia: 'No media available.',
+  title: 'My Media'
 };
