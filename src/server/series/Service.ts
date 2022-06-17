@@ -93,7 +93,7 @@ export class Service {
       lastPlayed: fun.fetchLastPlayed(episodes),
       totalCount: episodes.length || undefined,
       unwatchedCount: fun.fetchUnwatchedCount(episodes),
-      dateAdded: seriesInfo.dateAdded ?? DateTime.fromJSDate(seriesStats.birthtime).toUTC().toISO()
+      dateAdded: seriesInfo.dateAdded ?? DateTime.fromJSDate(seriesStats.birthtime).toUTC().toISO({suppressMilliseconds: true})
     });
   }
   
@@ -115,7 +115,7 @@ export class Service {
       id: app.id(episodeStats.fullPath),
       path: episodeStats.fullPath,
       media: new app.api.models.Media({images, subtitles, videos}),
-      dateAdded: episodeInfo.dateAdded ?? DateTime.fromJSDate(episodeStats.birthtime).toUTC().toISO()
+      dateAdded: episodeInfo.dateAdded ?? DateTime.fromJSDate(episodeStats.birthtime).toUTC().toISO({suppressMilliseconds: true})
     });
   }
 
@@ -136,7 +136,7 @@ export class Service {
     return new app.api.models.Episode({
       ...episode,
       ...episodePatch,
-      lastPlayed: episodePatch.watched || episodePatch.resume ? DateTime.utc().toISO() : episode.lastPlayed,
+      lastPlayed: episodePatch.watched || episodePatch.resume ? DateTime.utc().toISO({suppressMilliseconds: true}) : episode.lastPlayed,
       playCount: episodePatch.watched ? (episode.playCount ?? 0) + 1 : episode.playCount
     });
   }

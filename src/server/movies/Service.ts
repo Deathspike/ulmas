@@ -88,7 +88,7 @@ export class Service {
       id: app.id(movieStats.fullPath),
       path: movieStats.fullPath,
       media: new app.api.models.Media({images, subtitles, videos}),
-      dateAdded: movieInfo.dateAdded ?? DateTime.fromJSDate(movieStats.birthtime).toUTC().toISO()
+      dateAdded: movieInfo.dateAdded ?? DateTime.fromJSDate(movieStats.birthtime).toUTC().toISO({suppressMilliseconds: true})
     });
   }
 
@@ -96,7 +96,7 @@ export class Service {
     return new app.api.models.Movie({
       ...movie,
       ...moviePatch,
-      lastPlayed: moviePatch.watched || moviePatch.resume ? DateTime.utc().toISO() : movie.lastPlayed,
+      lastPlayed: moviePatch.watched || moviePatch.resume ? DateTime.utc().toISO({suppressMilliseconds: true}) : movie.lastPlayed,
       playCount: moviePatch.watched ? (movie.playCount ?? 0) + 1 : movie.playCount
     });
   }
