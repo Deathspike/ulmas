@@ -96,7 +96,7 @@ export class Service {
     return new app.api.models.Movie({
       ...movie,
       ...moviePatch,
-      lastPlayed: DateTime.utc().toISO(),
+      lastPlayed: moviePatch.watched || moviePatch.resume ? DateTime.utc().toISO() : movie.lastPlayed,
       playCount: moviePatch.watched ? (movie.playCount ?? 0) + 1 : movie.playCount
     });
   }
