@@ -3,7 +3,12 @@ import * as React from 'react';
 import {core} from 'client/core';
 import {GamepadManager} from 'client/core';
 
+class SoundGenerator {
+
+}
+
 export class InputService {
+
   constructor() {
     const manager = new GamepadManager();
     document.addEventListener('keydown', x => this.onKeyDown(x));
@@ -25,7 +30,9 @@ export class InputService {
   @mobx.action
   keyDown(handler: (keyName: string) => boolean) {
     return (ev: React.KeyboardEvent) => {
-      if (!core.screen.waitCount && !handler(ev.code.toLowerCase())) return;
+      const keyName = ev.code.toLowerCase();
+      if (!core.screen.waitCount && !handler(keyName)) return;
+      this.playSound(keyName);
       ev.preventDefault();
       ev.stopPropagation();
     };
@@ -34,7 +41,9 @@ export class InputService {
   @mobx.action
   keyRestore(keys = ['enter', 'space']) {
     return (ev: React.KeyboardEvent) => {
-      if (!core.screen.waitCount && !keys.includes(ev.code.toLowerCase())) return;
+      const keyName = ev.code.toLowerCase();
+      if (!core.screen.waitCount && !keys.includes(keyName)) return;
+      this.playSound(keyName);
       ev.stopPropagation();
     };
   }
@@ -51,19 +60,49 @@ export class InputService {
   @mobx.observable
   keyboardMode = false;
   
+  private playSound(keyname: string) {
+    
+    var context = new AudioContext()
+    
+    var o = context.createOscillator()
+    var g = context.createGain()
+    o.connect(g)
+    g.gain.exponentialRampToValueAtTime(0.00001, context.currentTime + 0.1);
+    g.connect(context.destination);
+
+    o.frequency.value = 261.4; // C4
+    switch(keyname) {
+      case 'enter':
+        o.frequency.value = 392.0; // G4
+        break;
+      case 'escape':
+        o.frequency.value = 523.3; // C5
+        break;
+    }
+    g.gain.value = 0.5;
+
+    // o.stop();
+    o.start(0);
+
+  }
+
   private handleKey(keyName: string) {
     switch (keyName) {
       case 'arrowleft':
         this.handleNavigation(-1, 0);
+        this.playSound(keyName);
         return true;
       case 'arrowright':
         this.handleNavigation(1, 0);
+        this.playSound(keyName);
         return true;
       case 'arrowdown':
         this.handleNavigation(0, 1);
+        this.playSound(keyName);
         return true;
       case 'arrowup':
         this.handleNavigation(0, -1);
+        this.playSound(keyName);
         return true;
       default:
         return false;
