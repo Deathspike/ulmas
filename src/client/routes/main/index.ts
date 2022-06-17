@@ -1,5 +1,4 @@
-export * as movies from 'client/shared/movies';
-export * as series from 'client/shared/series';
+export * from 'client/shared';
 export * from './language';
 export * from './router';
 export * from './viewModels/MainViewModel';
