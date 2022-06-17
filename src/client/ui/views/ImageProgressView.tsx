@@ -22,6 +22,7 @@ const styles = {
   },
   progress: {
     transition: 'all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    transitionProperty: 'opacity',
     '&[aria-valuenow="0"]': {opacity: 0},
     '&[aria-valuenow="100"]': {opacity: 0}
   }

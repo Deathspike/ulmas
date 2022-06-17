@@ -38,6 +38,7 @@ const styles = {
     cursor: 'pointer',
     padding: '1vw 1.5vw 0 1.25vw',
     transition: 'all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    transitionProperty: 'border-color',
     '&:focus:not(.unfocus)': {borderColor: ui.theme.palette.primary.light},
     '&:hover:not(.unfocus)': {borderColor: ui.theme.palette.primary.main},
     '&:focus:not(.unfocus) > h3': {color: ui.theme.palette.primary.light},
@@ -45,6 +46,7 @@ const styles = {
   },
   title: {
     paddingBottom: '1vw',
-    transition: 'all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
+    transition: 'all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    transitionProperty: 'color'
   }
 };

@@ -29,6 +29,7 @@ const styles = {
     backgroundColor: 'rgba(0, 0, 0, 0.5) !important',
     opacity: 0,
     transition: 'all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    transitionProperty: 'opacity',
     position: 'absolute',
     left: '50%',
     top: '50%',

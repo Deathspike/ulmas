@@ -28,7 +28,8 @@ const styles = {
   },
   imageContainer: {
     border: '0.25vw solid transparent',
-    transition: 'all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms'
+    transition: 'all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    transitionProperty: 'border-color'
   },
   title: {
     height: '1.75vw',

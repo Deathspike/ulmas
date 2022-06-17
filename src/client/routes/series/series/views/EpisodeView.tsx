@@ -49,6 +49,7 @@ const styles = {
     display: 'flex',
     marginBottom: '1.5vw',
     transition: 'all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    transitionProperty: 'border-color',
     '&:focus:not(.unfocus)': {borderColor: ui.theme.palette.primary.light},
     '&:hover:not(.unfocus)': {borderColor: ui.theme.palette.primary.main}
   },

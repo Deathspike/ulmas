@@ -42,6 +42,7 @@ const styles = {
     opacity: 0,
     height: '100%',
     transition: 'all 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+    transitionProperty: 'opacity',
     width: '100%'
   }
 };
