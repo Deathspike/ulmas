@@ -62,7 +62,7 @@ export class SeriesViewModel {
 }
 
 function updateState(source: Writeable<api.models.SeriesEntry>, series: api.models.Series) {
-  source.unwatchedCount = series.episodes
-    .filter(x => !x.watched)
-    .length || undefined;
+  source.lastPlayed = series.lastPlayed;
+  source.totalCount = series.episodes.length;
+  source.unwatchedCount = series.episodes.filter(x => !x.watched).length || undefined;
 }

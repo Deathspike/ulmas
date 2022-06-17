@@ -45,11 +45,11 @@ export class MainViewModel {
   async markAsync() {
     await core.screen.waitAsync(async () => {
       const episodes = this.currentSeason
-        ? this.currentSeason.episodes
-        : this.seasons?.flatMap(x => x.episodes);
-      if (episodes) {
+      ? this.currentSeason.episodes
+      : this.seasons?.flatMap(x => x.episodes);
+      if (episodes && this.source) {
         const watched = !!this.unwatchedCount;
-        await app.core.watchedAsync(this.sectionId, this.seriesId, episodes.map(x => x.source), watched);
+        await app.core.watchedAsync(this.sectionId, this.source, episodes.map(x => x.source), watched);
       }
     });
   }
@@ -123,7 +123,8 @@ export class MainViewModel {
   source?: Omit<api.models.Series, 'unwatchedCount'>;
 
   private async loadAsync(episodes: Array<api.models.Episode>, current?: api.models.Episode) {
-    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.seriesId, episodes, current);
+    if (!this.source) return;
+    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.source, episodes, current);
     this.currentPlayer.load();
     await this.currentPlayer.waitAsync();
   }

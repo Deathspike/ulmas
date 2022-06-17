@@ -9,7 +9,7 @@ export class PlayerViewModel {
   private counterCallback?: () => void;
   private counterInterval?: NodeJS.Timeout;
 
-  constructor(private readonly sectionId: string, private readonly seriesId: string, episodes: Array<api.models.Episode>, current?: api.models.Episode) {
+  constructor(private readonly sectionId: string, private readonly series: api.models.Series, episodes: Array<api.models.Episode>, current?: api.models.Episode) {
     this.episodes = episodes
       .slice()
       .sort((a, b) => a.season - b.season || a.episode - b.episode);
@@ -37,9 +37,9 @@ export class PlayerViewModel {
   @mobx.action
   load() {
     const subtitleUrls = this.current.media.subtitles
-      ?.map(x => core.api.series.mediaUrl(this.sectionId, this.seriesId, x.id)) ?? [];
+      ?.map(x => core.api.series.mediaUrl(this.sectionId, this.series.id, x.id)) ?? [];
     const videoUrl = this.current.media.videos
-      ?.map(x => core.api.series.mediaUrl(this.sectionId, this.seriesId, x.id))
+      ?.map(x => core.api.series.mediaUrl(this.sectionId, this.series.id, x.id))
       ?.find(Boolean);
     if (videoUrl) {
       this.state = 'playing';
@@ -63,7 +63,7 @@ export class PlayerViewModel {
 
   @mobx.computed
   get thumbUrl() {
-    return core.image.episode(this.sectionId, this.seriesId, this.current, 'thumb');
+    return core.image.episode(this.sectionId, this.series.id, this.current, 'thumb');
   }
 
   @mobx.observable
@@ -102,10 +102,10 @@ export class PlayerViewModel {
     } else if (!resume.value || !resume.value.total) {
       this.onError();
     } else if (resume.value.position / resume.value.total < 0.9) {
-      await app.resumeAsync(this.sectionId, this.seriesId, [this.current], resume.value);
+      await app.resumeAsync(this.sectionId, this.series, [this.current], resume.value);
       this.isActive = false;
     } else {
-      await app.watchedAsync(this.sectionId, this.seriesId, [this.current], true);
+      await app.watchedAsync(this.sectionId, this.series, [this.current], true);
       if (!this.moveToNext()) return;
       this.state = 'pending';
       this.startCounter(() => this.load());

@@ -25,7 +25,7 @@ export class EpisodeViewModel {
   async markAsync() {
     await core.screen.waitAsync(async () => {
       if (!this.mvm.source) return;
-      await app.core.watchedAsync(this.sectionId, this.mvm.source.id, [this.source], !this.source.watched);
+      await app.core.watchedAsync(this.sectionId, this.mvm.source, [this.source], !this.source.watched);
     });
   }
 

@@ -62,6 +62,7 @@ export class MovieViewModel {
 }
 
 function updateState(source: Writeable<api.models.MovieEntry>, movie: api.models.Movie) {
+  source.lastPlayed = movie.lastPlayed;
   source.resume = movie.resume;
   source.watched = movie.watched;
 }
