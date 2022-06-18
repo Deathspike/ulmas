@@ -2,6 +2,8 @@ import * as app from '../..';
 import * as clv from 'class-validator';
 import fs from 'fs';
 import path from 'path';
+import {DateTime} from 'luxon';
+import zlib from 'zlib';
 
 class BinaryWriter {
   constructor(
@@ -23,6 +25,26 @@ class BinaryWriter {
     }
     this.writeByte(value);
   }
+
+  writeDateStringAsUInt32(value?: string) {
+    const seconds = value
+      ? DateTime.fromISO(value).toSeconds()
+      : 0;
+    if (seconds < 0 || seconds > 4294967295)
+      throw new Error();
+    this.writeLeb128(seconds);
+    /*const ab = new ArrayBuffer(4);
+    const db = new DataView(ab);
+    db.setUint32(0, seconds);
+    this.stream.write(new Uint8Array(ab));*/
+  }
+
+  writeIdAsBuffer(value: string) {
+    const buffer = Buffer.from(value, 'base64url');
+    this.writeLeb128(buffer.byteLength);
+    this.stream.write(buffer);
+  }
+
   writeString(value?: string) {
     if (!value) {
       this.writeLeb128(0);
@@ -55,26 +77,34 @@ export class SectionCache {
   }
 
   async writeExperimentAsync(section: Array<app.api.models.SeriesEntry>) {
-    const writeStream = fs.createWriteStream(`${this.fullPath}.packed`);
-    const binaryWriter = new BinaryWriter(writeStream);
+    const brotli = zlib.createBrotliCompress();
+    brotli.on('error', function(err){    console.log(err.stack);   });
 
+    const f = fs.createWriteStream(`${this.fullPath}.packed.br`);
+    f.on('error', function(err){    console.log(err.stack);       });
+    f.on('finish', function() {    console.log("Write success.");   });
+    
+    brotli.pipe(f);
+
+    const binaryWriter = new BinaryWriter(brotli);
     binaryWriter.writeLeb128(section.length);
     for (const series of section) {
-      binaryWriter.writeString(series.id);
+      binaryWriter.writeIdAsBuffer(series.id);
       binaryWriter.writeLeb128(series.images?.length ?? 0);
       for (const image of series.images ?? []) {
-        binaryWriter.writeString(image.id);
+        binaryWriter.writeIdAsBuffer(image.id);
         binaryWriter.writeString(image.name);
       }
-      binaryWriter.writeString(series.dateEpisodeAdded);
-      binaryWriter.writeString(series.lastPlayed);
+      binaryWriter.writeDateStringAsUInt32(series.dateEpisodeAdded);
+      binaryWriter.writeDateStringAsUInt32(series.lastPlayed);
       binaryWriter.writeLeb128(series.totalCount ?? 0);
       binaryWriter.writeLeb128(series.unwatchedCount ?? 0);
       binaryWriter.writeString(series.title);
-      binaryWriter.writeString(series.dateAdded);
+      binaryWriter.writeDateStringAsUInt32(series.dateAdded);
     }
 
-    writeStream.end();
+    brotli.flush();
+    brotli.end();
   }
 
   @clv.IsString()
