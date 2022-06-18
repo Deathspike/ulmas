@@ -1,3 +1,22 @@
+[ ] search on dashboard
+[x] update lastPlayed dates via player and refresh ui for that... what are the problems?
+      on overviews, it can snap to the top/bottom (if filtering on lastPlayed) and you lose sight/focus of it.
+      on details->play->back and sort lastPlayed.bottom, you lose sight/focus of it
+
+Unifying path:
+- api creates proper instances
+- sorter
+- player
+- section vms
+
+mvm->controller
+
+tv series STARTED on first episode SHOULD show a resume state... not sure how yet...
+  perhaps add a resume item onto the entry for the last played entry? or an aggregation of all resume state %
+  this is necessary to show appropriate progress on the overview page...
+navigation audio ques
+autoselect ui initial elements in keyboard mode (preserve keyboard mode in localStorage for next run, too)
+
 # Ulmas
 
 Unopinionated Local Media Asset Server. **Currently in development**.

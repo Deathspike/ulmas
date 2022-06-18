@@ -24,7 +24,9 @@ export class MenuViewModel {
   changeSearch(search: string) {
     if (this.search.value === search) return;
     this.search.change(search);
-    requestAnimationFrame(() => window.scrollTo(0, 0));
+
+    mobx.when(() => this.search.debounceValue === search,
+      () => requestAnimationFrame(() => window.scrollTo(0, 0)));
   }
 
   @mobx.action

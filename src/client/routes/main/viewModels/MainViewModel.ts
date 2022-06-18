@@ -4,7 +4,8 @@ import * as mobx from 'mobx';
 import {core} from 'client/core';
 
 export class MainViewModel {
-  constructor() {
+  constructor(viewState?: app.ViewState) {
+    this.menu = new app.MenuViewModel(this, viewState);
     mobx.makeObservable(this);
   }
     
@@ -51,6 +52,9 @@ export class MainViewModel {
   @mobx.observable
   currentPlayer?: app.movies.PlayerViewModel | app.series.PlayerViewModel;
 
+  @mobx.observable
+  menu: app.MenuViewModel;
+  
   @mobx.observable
   sections?: Array<app.SectionMoviesViewModel | app.SectionSeriesViewModel>;
 
