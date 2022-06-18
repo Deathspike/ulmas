@@ -8,7 +8,7 @@ export const MenuView = ui.createView<{vm: app.MenuViewModel}>(({vm}) => (
     <ui.material.Grid sx={styles.inputContainer}>
       <ui.material.Input sx={styles.input} disableUnderline inputProps={{tabIndex: 1}}
         value={vm.search.value}
-        onChange={x => vm.changeSearch(x.currentTarget.value)}
+        onChange={x => vm.search.change(x.currentTarget.value)}
         onKeyDown={core.input.keyRestore()} />
       <ui.icons.Search sx={styles.inputIcon} />
     </ui.material.Grid>

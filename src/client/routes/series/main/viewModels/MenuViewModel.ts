@@ -1,14 +1,14 @@
 import * as app from '..';
 import * as mobx from 'mobx';
 import {core} from 'client/core';
-import {Debounce} from 'client/core';
+import {DebounceSearch} from 'client/core';
 import {LocalStorage} from 'client/core';
 
 export class MenuViewModel {
   constructor(private readonly mvm: app.MainViewModel, viewState?: app.ViewState) {
     this.filter = new LocalStorage('series.filter', 'all');
     this.order = new LocalStorage('series.order', 'descending');
-    this.search = new Debounce(viewState?.search);
+    this.search = new DebounceSearch(viewState?.search);
     this.sort = new LocalStorage('series.sort', 'dateEpisodeAdded');
     mobx.makeObservable(this);
   }
@@ -17,13 +17,6 @@ export class MenuViewModel {
   changeFilter(filter: MenuViewModel['filter']['value']) {
     if (this.filter.value === filter) return;
     this.filter.change(filter);
-    requestAnimationFrame(() => window.scrollTo(0, 0));
-  }
-
-  @mobx.action
-  changeSearch(search: string) {
-    if (this.search.value === search) return;
-    this.search.change(search);
     requestAnimationFrame(() => window.scrollTo(0, 0));
   }
 
@@ -63,7 +56,7 @@ export class MenuViewModel {
   order: LocalStorage<'ascending' | 'descending'>;
 
   @mobx.observable
-  search: Debounce;
+  search: DebounceSearch;
 
   @mobx.observable
   sort: LocalStorage<'dateAdded' | 'dateEpisodeAdded' | 'lastPlayed' | 'premieredDate' | 'title'>;

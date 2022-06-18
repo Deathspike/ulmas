@@ -1,6 +1,6 @@
 import * as mobx from 'mobx';
 
-export class Debounce {
+export class DebounceSearch {
   private debounceTimeout?: NodeJS.Timeout;
   
   constructor(value = '') {
@@ -18,6 +18,7 @@ export class Debounce {
 
   @mobx.action
   change(value: string) {
+    if (this.value === value) return;
     this.value = value;
     this.startDebounce();
   }
@@ -36,6 +37,9 @@ export class Debounce {
 
   private startDebounce() {
     this.stopDebounce();
-    this.debounceTimeout = setTimeout(() => this.debounceValue = this.value, 500);
+    this.debounceTimeout = setTimeout(() => {
+      this.debounceValue = this.value;
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    }, 500);
   }
 }
