@@ -19,28 +19,28 @@ Based on https://kodi.wiki/view/NFO_files/Movies.
 | resume      | resume     | No       | Yes       |                               |
 | watched [2] | watched    | No       | Yes       | Must be `true` or `false`     |
 
-- [1] Field is a *derived field*. It is **not persisted** in your `.nfo` file.
+- [1] Field is a *derived field*. It is *not persisted* in your `.nfo` file.
 - [2] Field is a *custom field*. It **is persisted** in your `.nfo` file.
 
 # Series
 
 Based on https://kodi.wiki/view/NFO_files/TV_shows.
 
-| API Field            | NFO Field | Required | Patchable | Notes                              |
-|----------------------|-----------|----------|-----------|------------------------------------|
-| id [1]               | -         | -        | -         | Hash of path to `.nfo` file        |
-| path [1]             | -         | -        | -         | Path to `.nfo` file                |
-| images [1]           | -         | -        | -         | Matched images for `tvshow`        |
-| episodes [1]         | -         | -        | -         | Collection of `Episode`            |
-| dateEpisodeAdded [1] | -         | -        | -         | Derived from `episodes.dateAdded`  |
-| lastPlayed [1]       | -         | -        | -         | Derived from `episodes.lastPlayed` |
-| totalCount [1]       | -         | -        | -         | Derived from `episodes`            |
-| unwatchedCount [1]   | -         | -        | -         | Derived from `episodes.watched`    |
-| title                | title     | Yes      | No        |                                    |
-| dateAdded            | dateadded | No       | No        | Uses `btime` if not in `.nfo`      |
-| plot                 | plot      | No       | No        |                                    |
+| API Field            | NFO Field  | Required | Patchable | Notes                              |
+|----------------------|------------|----------|-----------|------------------------------------|
+| id [1]               | -          | -        | -         | Hash of path to `.nfo` file        |
+| path [1]             | -          | -        | -         | Path to `.nfo` file                |
+| images [1]           | -          | -        | -         | Matched images for `tvshow`        |
+| episodes [1]         | -          | -        | -         | Array of `Episode`                 |
+| dateEpisodeAdded [1] | -          | -        | -         | Derived from `episodes.dateAdded`  |
+| totalCount [1]       | -          | -        | -         | Derived from `episodes`            |
+| unwatchedCount [1]   | -          | -        | -         | Derived from `episodes.watched`    |
+| title                | title      | Yes      | No        |                                    |
+| dateAdded            | dateadded  | No       | No        | Uses `btime` if not in `.nfo`      |
+| lastPlayed           | lastplayed | No       | Yes       |                                    |
+| plot                 | plot       | No       | No        |                                    |
 
-- [1] Field is a *derived field*. It is **not persisted** in your `.nfo` file.
+- [1] Field is a *derived field*. It is *not persisted* in your `.nfo` file.
 
 # Episode
 
@@ -61,5 +61,5 @@ Based on https://kodi.wiki/view/NFO_files/Episodes.
 | resume      | resume     | No       | Yes       |                               |
 | watched [2] | watched    | No       | Yes       | Must be `true` or `false`     |
 
-- [1] Field is a *derived field*. It is **not persisted** in your `.nfo` file.
+- [1] Field is a *derived field*. It is *not persisted* in your `.nfo` file.
 - [2] Field is a *custom field*. It **is persisted** in your `.nfo` file.

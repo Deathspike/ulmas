@@ -44,6 +44,7 @@ export class Service {
         const seriesUpdate = this.patchSeries(series, seriesPatch);
         section[seriesIndex] = app.api.models.SeriesEntry.from(seriesUpdate);
         await Promise.all(series.episodes.map(x => x instanceof app.api.models.Episode && EpisodeInfo.saveAsync(x.path, x)));
+        await SeriesInfo.saveAsync(series.path, series);
         await Promise.all([sectionCache.saveAsync(section), seriesCache.saveAsync(seriesUpdate)]);
         return true;
       } else {
@@ -90,7 +91,6 @@ export class Service {
       path: seriesStats.fullPath,
       images, episodes,
       dateEpisodeAdded: fun.fetchEpisodeAdded(episodes),
-      lastPlayed: fun.fetchLastPlayed(episodes),
       totalCount: episodes.length || undefined,
       unwatchedCount: fun.fetchUnwatchedCount(episodes),
       dateAdded: seriesInfo.dateAdded ?? DateTime.fromJSDate(seriesStats.birthtime).toUTC().toISO({suppressMilliseconds: true})
@@ -120,23 +120,22 @@ export class Service {
   }
 
   private patchSeries(series: app.api.models.Series, seriesPatch: app.api.models.SeriesPatch) {
-    seriesPatch.episodes
-      .map(x => ({i: series.episodes.findIndex(y => y.id === x.id), x}))
-      .filter(({i}) => i !== -1)
-      .forEach(({x, i}) => series.episodes[i] = this.patchEpisode(series.episodes[i], x));
+    const now = DateTime.utc().toISO({suppressMilliseconds: true});
+    const patch = seriesPatch.episodes.map(x => ({i: series.episodes.findIndex(y => y.id === x.id), x})).filter(({i}) => i !== -1);
+    patch.forEach(({x, i}) => series.episodes[i] = this.patchEpisode(series.episodes[i], x, now));
     return new app.api.models.Series({
       ...series,
+      lastPlayed: patch.some(({x}) => x.watched || x.resume) ? now : series.lastPlayed,
       dateEpisodeAdded: fun.fetchEpisodeAdded(series.episodes),
-      lastPlayed: fun.fetchLastPlayed(series.episodes),
       unwatchedCount: fun.fetchUnwatchedCount(series.episodes)
     });
   }
 
-  private patchEpisode(episode: app.api.models.Episode, episodePatch: app.api.models.EpisodePatch) {
+  private patchEpisode(episode: app.api.models.Episode, episodePatch: app.api.models.EpisodePatch, now: string) {
     return new app.api.models.Episode({
       ...episode,
       ...episodePatch,
-      lastPlayed: episodePatch.watched || episodePatch.resume ? DateTime.utc().toISO({suppressMilliseconds: true}) : episode.lastPlayed,
+      lastPlayed: episodePatch.watched || episodePatch.resume ? now : episode.lastPlayed,
       playCount: episodePatch.watched ? (episode.playCount ?? 0) + 1 : episode.playCount
     });
   }

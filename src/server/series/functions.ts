@@ -10,12 +10,6 @@ export function fetchEpisodeAdded(episodes: Array<app.api.models.Episode>) {
   return datesAdded.length ? datesAdded[0] : undefined;
 }
 
-export function fetchLastPlayed(episodes: Array<app.api.models.Episode>) {
-  const lastPlayed = ensure(episodes.map(x => x.lastPlayed));
-  lastPlayed.sort((a, b) => b.localeCompare(a));
-  return lastPlayed.length ? lastPlayed[0] : undefined;
-}
-
 export function fetchUnwatchedCount(episodes: Array<app.api.models.Episode>) {
   const watchedCount = episodes.filter(x => x.watched).length;
   const unwatchedCount = episodes.length - watchedCount;
