@@ -40,6 +40,7 @@ export class ScreenService {
   waitCount = 0;
 
   private async buildAsync() {
+    window.stop();
     await this.waitAsync(async () => {
       const builder = this.views.length
         ? this.views[this.views.length - 1]
