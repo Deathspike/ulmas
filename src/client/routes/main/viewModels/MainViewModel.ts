@@ -1,10 +1,12 @@
 import * as api from 'api';
 import * as app from '..';
 import * as mobx from 'mobx';
+import * as ui from 'client/ui';
 import {core} from 'client/core';
 
 export class MainViewModel {
-  constructor() {
+  constructor(viewState?: app.ViewState) {
+    this.menu = new app.MenuViewModel(this, viewState);
     mobx.makeObservable(this);
   }
     
@@ -12,6 +14,9 @@ export class MainViewModel {
   handleKey(keyName: string) {
     if (keyName.startsWith('arrow')) {
       return Boolean(this.currentPlayer?.isActive);
+    } else if (keyName === 'escape' && this.menu.search.value && !this.currentPlayer?.isActive) {
+      this.menu.search.clear();
+      return true;
     } else if (keyName === 'escape') {
       this.currentPlayer?.close();
       return true;
@@ -44,13 +49,29 @@ export class MainViewModel {
   }
 
   @mobx.computed
+  get searchResults() {
+    if (!this.menu.search.debounceValue) return;
+    const result = this.sections
+      ?.flatMap(x => x.viewModels as Array<app.movies.MovieViewModel | app.series.SeriesViewModel>)
+      ?.filter(app.createFilter(this.menu))
+      ?.sort((a, b) => api.sortMovies(a.source, b.source, 'lastPlayed'))
+      ?.reverse();
+    return result
+      ? Array.from(ui.createPages(24, result))
+      : undefined;
+  }
+
+  @mobx.computed
   get viewState() {
-    return undefined;
+    return new app.ViewState(this.menu.search.value);
   }
 
   @mobx.observable
   currentPlayer?: app.movies.PlayerViewModel | app.series.PlayerViewModel;
 
+  @mobx.observable
+  menu: app.MenuViewModel;
+  
   @mobx.observable
   sections?: Array<app.SectionMoviesViewModel | app.SectionSeriesViewModel>;
 

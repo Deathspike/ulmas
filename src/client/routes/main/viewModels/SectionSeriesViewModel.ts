@@ -23,7 +23,8 @@ export class SectionSeriesViewModel implements app.series.IController {
   
   @mobx.action
   open() {
-    routes.series.main(this.id);
+    const viewState = this.mvm.viewState;
+    routes.series.main(this.id, viewState);
   }
 
   @mobx.action
@@ -35,12 +36,11 @@ export class SectionSeriesViewModel implements app.series.IController {
 
   @mobx.computed
   get continueWatching() {
-    return this.source
-      .filter(x => x.lastPlayed && x.unwatchedCount)
-      .sort((a, b) => api.sortSeries(a, b, 'lastPlayed'))
+    return this.viewModels
+      .filter(x => x.source.lastPlayed && x.source.unwatchedCount)
+      .sort((a, b) => api.sortSeries(a.source, b.source, 'lastPlayed'))
       .reverse()
-      .slice(0, 6)
-      .map(x => new app.series.SeriesViewModel(this, this.id, x));
+      .slice(0, 6);
   }
 
   @mobx.computed
@@ -52,12 +52,16 @@ export class SectionSeriesViewModel implements app.series.IController {
 
   @mobx.computed
   get latest() {
-    return this.source
+    return this.viewModels
       .slice()
-      .sort((a, b) => api.sortSeries(a, b, 'dateEpisodeAdded'))
+      .sort((a, b) => api.sortSeries(a.source, b.source, 'dateEpisodeAdded'))
       .reverse()
-      .slice(0, 6)
-      .map(x => new app.series.SeriesViewModel(this, this.id, x));
+      .slice(0, 6);
+  }
+
+  @mobx.computed
+  get viewModels() {
+    return this.source.map(x => new app.series.SeriesViewModel(this, this.id, x));
   }
 
   @mobx.computed

@@ -23,7 +23,8 @@ export class SectionMoviesViewModel implements app.movies.IController {
 
   @mobx.action
   open() {
-    routes.movies.main(this.id);
+    const viewState = this.mvm.viewState;
+    routes.movies.main(this.id, viewState);
   }
 
   @mobx.action
@@ -35,12 +36,11 @@ export class SectionMoviesViewModel implements app.movies.IController {
 
   @mobx.computed
   get continueWatching() {
-    return this.source
-      .filter(x => x.lastPlayed && !x.watched)
-      .sort((a, b) => api.sortMovies(a, b, 'lastPlayed'))
+    return this.viewModels
+      .filter(x => x.source.lastPlayed && !x.source.watched)
+      .sort((a, b) => api.sortMovies(a.source, b.source, 'lastPlayed'))
       .reverse()
-      .slice(0, 6)
-      .map(x => new app.movies.MovieViewModel(this, this.id, x));
+      .slice(0, 6);
   }
 
   @mobx.computed
@@ -52,12 +52,16 @@ export class SectionMoviesViewModel implements app.movies.IController {
 
   @mobx.computed
   get latest() {
-    return this.source
+    return this.viewModels
       .slice()
-      .sort((a, b) => api.sortMovies(a, b, 'dateAdded'))
+      .sort((a, b) => api.sortMovies(a.source, b.source, 'dateAdded'))
       .reverse()
-      .slice(0, 6)
-      .map(x => new app.movies.MovieViewModel(this, this.id, x));
+      .slice(0, 6);
+  }
+
+  @mobx.computed
+  get viewModels() {
+    return this.source.map(x => new app.movies.MovieViewModel(this, this.id, x));
   }
 
   @mobx.computed
