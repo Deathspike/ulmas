@@ -7,7 +7,7 @@ export class SeriesInfoXml {
     private readonly $: cheerio.CheerioAPI) {}
 
   static async parseAsync(xml: string) {
-    const $ = cheerio.load(xml, {xml: true});
+    const $ = cheerio.load(xml, {xml: {decodeEntities: false}});
     return new SeriesInfoXml($);
   }
 
