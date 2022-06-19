@@ -43,7 +43,7 @@ export class MainViewModel {
   get continueWatching() {
     const result = this.sections
       ?.flatMap(x => x.continueWatching as Array<app.movies.MovieViewModel | app.series.SeriesViewModel>)
-      ?.sort((a, b) => api.sortMovies(a.source, b.source, 'lastPlayed'))
+      ?.sort((a, b) => api.sortBy(a.source, b.source, 'lastPlayed'))
       ?.reverse()
       ?.slice(0, 6);
     return result?.length
@@ -57,8 +57,7 @@ export class MainViewModel {
     const result = this.sections
       ?.flatMap(x => x.viewModels as Array<app.movies.MovieViewModel | app.series.SeriesViewModel>)
       ?.filter(app.createFilter(this.menu))
-      ?.sort((a, b) => api.sortMovies(a.source, b.source, 'lastPlayed'))
-      ?.reverse();
+      ?.sort((a, b) => api.sortBy(a.source, b.source, 'title'));
     return result
       ? Array.from(ui.createPages(24, result))
       : undefined;

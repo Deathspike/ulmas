@@ -13,7 +13,7 @@ export function createFilter(menu: app.MenuViewModel) {
 
 export function createSort(menu: app.MenuViewModel) {
   return (a: api.models.MovieEntry, b: api.models.MovieEntry) => {
-    return api.sortMovies(a, b, menu.sort.value);
+    return api.sortBy(a, b, menu.sort.value);
   };
 }
 

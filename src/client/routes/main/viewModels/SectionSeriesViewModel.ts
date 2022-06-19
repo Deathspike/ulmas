@@ -38,7 +38,7 @@ export class SectionSeriesViewModel implements app.series.IController {
   get continueWatching() {
     return this.viewModels
       .filter(x => x.source.lastPlayed && x.source.unwatchedCount)
-      .sort((a, b) => api.sortSeries(a.source, b.source, 'lastPlayed'))
+      .sort((a, b) => api.sortBy(a.source, b.source, 'lastPlayed'))
       .reverse()
       .slice(0, 6);
   }
@@ -54,7 +54,7 @@ export class SectionSeriesViewModel implements app.series.IController {
   get latest() {
     return this.viewModels
       .slice()
-      .sort((a, b) => api.sortSeries(a.source, b.source, 'dateEpisodeAdded'))
+      .sort((a, b) => api.sortBy(a.source, b.source, 'dateEpisodeAdded'))
       .reverse()
       .slice(0, 6);
   }

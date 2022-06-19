@@ -38,7 +38,7 @@ export class SectionMoviesViewModel implements app.movies.IController {
   get continueWatching() {
     return this.viewModels
       .filter(x => x.source.lastPlayed && !x.source.watched)
-      .sort((a, b) => api.sortMovies(a.source, b.source, 'lastPlayed'))
+      .sort((a, b) => api.sortBy(a.source, b.source, 'lastPlayed'))
       .reverse()
       .slice(0, 6);
   }
@@ -54,7 +54,7 @@ export class SectionMoviesViewModel implements app.movies.IController {
   get latest() {
     return this.viewModels
       .slice()
-      .sort((a, b) => api.sortMovies(a.source, b.source, 'dateAdded'))
+      .sort((a, b) => api.sortBy(a.source, b.source, 'dateAdded'))
       .reverse()
       .slice(0, 6);
   }
