@@ -2,31 +2,29 @@ import * as api from '..';
 
 export class Sections {
   constructor(
-    private readonly baseUrl: string) {}
+    readonly baseUrl: URL) {}
 
   async readAsync() {
-    const url = this.baseUrl;
-    return await api.ServerResponse.jsonAsync<Array<api.models.Section>>(url);
+    const url = new URL(`/api/sections`, this.baseUrl);
+    const request = new api.ServerRequest(url);
+    return await request.arrayAsync(api.models.Section);
   }
   
   async createAsync(model: api.models.SectionCreate) {
-    const body = JSON.stringify(model);
-    const headers = {'Content-Type': 'application/json'};
-    const method = 'POST';
-    return await api.ServerResponse.emptyAsync(this.baseUrl, {body, method, headers});
+    const url = new URL(`/api/sections`, this.baseUrl);
+    const request = api.ServerRequest.withJson(url, model, {method: 'POST'});
+    return await request.emptyAsync();
   }
 
   async deleteAsync(sectionId: string) {
-    const method = 'DELETE';
-    const url = new URL(`${sectionId}`, this.baseUrl).toString();
-    return await api.ServerResponse.emptyAsync(url, {method});
+    const url = new URL(`/api/sections/${sectionId}`, this.baseUrl);
+    const request = new api.ServerRequest(url, {method: 'DELETE'});
+    return await request.emptyAsync();
   }
   
   async updateAsync(sectionId: string, model: api.models.SectionUpdate) {
-    const body = JSON.stringify(model);
-    const headers = {'Content-Type': 'application/json'};
-    const method = 'PUT';
-    const url = new URL(`${sectionId}`, this.baseUrl).toString();
-    return await api.ServerResponse.emptyAsync(url, {body, method, headers});
+    const url = new URL(`/api/sections/${sectionId}`, this.baseUrl);
+    const request = api.ServerRequest.withJson(url, model, {method: 'PUT'});
+    return await request.emptyAsync();
   }
 }

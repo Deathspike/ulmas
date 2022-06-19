@@ -1,21 +1,21 @@
-import * as api from 'api';
+import * as observers from './observers';
 
 export class ApiService {
-  private readonly server = new api.Server(`${window.location.protocol}//${window.location.hostname}:6877/`);
+  private readonly baseUrl = new URL(`${window.location.protocol}//${window.location.hostname}:6877/`);
 
   get media() {
-    return this.server.media;
+    return new observers.Media();
   }
 
   get movies() {
-    return this.server.movies;
+    return new observers.Movies(this.baseUrl);
   }
 
   get sections() {
-    return this.server.sections;
+    return new observers.Sections(this.baseUrl);
   }
 
   get series() {
-    return this.server.series;
+    return new observers.Series(this.baseUrl);
   }
 }

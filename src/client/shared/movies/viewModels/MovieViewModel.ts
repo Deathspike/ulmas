@@ -35,7 +35,7 @@ export class MovieViewModel {
   async playAsync() {
     const movie = await core.screen
       .waitAsync(() => core.api.movies.itemAsync(this.sectionId, this.source.id))
-      .then(x => x.value && mobx.makeAutoObservable(new api.models.Movie(x.value)));
+      .then(x => x.value);
     if (movie) {
       const disposer = mobx.autorun(() => updateState(this.source, movie));
       await this.controller.playAsync(movie);
