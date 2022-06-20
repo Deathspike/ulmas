@@ -13,8 +13,11 @@ export class Service {
   constructor(
     private readonly cacheService: app.core.CacheService,
     private readonly contextService: app.core.ContextService,
-    private readonly lockService: app.core.LockService) {}
-
+    private readonly lockService: app.core.LockService,
+    private readonly eventService: app.core.EventService) {
+    this.eventService.addEventListener(x => this.handleEvent(x));
+  }
+  
   async inspectAsync(sectionId: string, rootPaths: Array<string>) {
     await this.lockService.lockAsync(sectionId, async () => {
       const purgeAsync = this.cacheService.createPurgeable(`movies.${sectionId}`);
@@ -24,9 +27,11 @@ export class Service {
         for await (const movie of this.inspectRootAsync(rootPath)) {
           await new MovieCache(sectionId, movie.id).saveAsync(movie);
           section.push(app.api.models.MovieEntry.from(movie));
+          this.eventService.send('movies', 'update', sectionId, movie.id);
         }
       }));
       await sectionCache.saveAsync(section);
+      this.eventService.send('movies', 'update', sectionId);
       await purgeAsync();
     });
   }
@@ -42,12 +47,20 @@ export class Service {
         const movieUpdate = this.patchMovie(movie, moviePatch);
         section[movieIndex] = app.api.models.MovieEntry.from(movieUpdate);
         await MovieInfo.saveAsync(movie.path, movieUpdate);
+        this.eventService.send('movies', 'update', sectionId, movie.id);
         await Promise.all([sectionCache.saveAsync(section), movieCache.saveAsync(movieUpdate)]);
+        this.eventService.send('movies', 'update', sectionId);
         return true;
       } else {
         return false;
       }
     });
+  }
+
+  private handleEvent(event: ReturnType<app.core.EventService['send']>) {
+    if (event.source !== 'sections' || event.reason !== 'delete') return;
+    const purgeAsync = this.cacheService.createPurgeable(`movies.${event.sectionId}`);
+    purgeAsync().catch(x => logger.error(x));
   }
 
   private async *inspectRootAsync(rootPath: string) {

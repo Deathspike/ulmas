@@ -15,7 +15,10 @@ export class Service {
   constructor(
     private readonly cacheService: app.core.CacheService,
     private readonly contextService: app.core.ContextService,
-    private readonly lockService: app.core.LockService) {}
+    private readonly lockService: app.core.LockService,
+    private readonly eventService: app.core.EventService) {
+    this.eventService.addEventListener(x => this.handleEvent(x));
+  }
   
   async inspectAsync(sectionId: string, rootPaths: Array<string>) {
     await this.lockService.lockAsync(sectionId, async () => {
@@ -26,9 +29,11 @@ export class Service {
         for await (const series of this.inspectRootAsync(rootPath)) {
           await new SeriesCache(sectionId, series.id).saveAsync(series);
           section.push(app.api.models.SeriesEntry.from(series));
+          this.eventService.send('series', 'update', sectionId, series.id);
         }
       }));
       await sectionCache.saveAsync(section);
+      this.eventService.send('series', 'update', sectionId);
       await purgeAsync();
     });
   }
@@ -45,12 +50,20 @@ export class Service {
         section[seriesIndex] = app.api.models.SeriesEntry.from(seriesUpdate);
         await Promise.all(series.episodes.map(x => x instanceof app.api.models.Episode && EpisodeInfo.saveAsync(x.path, x)));
         await SeriesInfo.saveAsync(series.path, series);
+        this.eventService.send('series', 'update', sectionId, series.id);
         await Promise.all([sectionCache.saveAsync(section), seriesCache.saveAsync(seriesUpdate)]);
+        this.eventService.send('series', 'update', sectionId);
         return true;
       } else {
         return false;
       }
     });
+  }
+
+  private handleEvent(event: ReturnType<app.core.EventService['send']>) {
+    if (event.source !== 'sections' || event.reason !== 'delete') return;
+    const purgeAsync = this.cacheService.createPurgeable(`series.${event.sectionId}`);
+    purgeAsync().catch(x => logger.error(x));
   }
 
   private async *inspectRootAsync(rootPath: string) {
