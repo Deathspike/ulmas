@@ -60,7 +60,7 @@ export class Service {
     });
   }
 
-  private handleEvent(event: ReturnType<app.core.EventService['send']>) {
+  private handleEvent(event: app.api.models.Event) {
     if (event.source !== 'sections' || event.reason !== 'delete') return;
     const purgeAsync = this.cacheService.createPurgeable(`series.${event.sectionId}`);
     purgeAsync().catch(x => logger.error(x));

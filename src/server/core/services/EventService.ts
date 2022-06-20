@@ -1,33 +1,26 @@
+import * as app from '../..';
 import * as nst from '@nestjs/common';
 
 @nst.Injectable()
 export class EventService {
-  private readonly handlers: Array<(event: Event) => void>;
+  private readonly handlers: Array<(event: app.api.models.Event) => void>;
 
   constructor() {
     this.handlers = [];
   }
 
-  addEventListener(handler: (event: Event) => void) {
+  addEventListener(handler: (event: app.api.models.Event) => void) {
     this.handlers.push(handler);
   }
 
-  removeEventListener(handler: (event: Event) => void) {
+  removeEventListener(handler: (event: app.api.models.Event) => void) {
     const index = this.handlers.indexOf(handler);
     if (index === -1) return;
     this.handlers.splice(index, 1);
   }
   
-  send(source: Event['source'], reason: Event['reason'], sectionId: string, resourceId?: string) {
-    const event = {source, reason, sectionId, resourceId} as Event;
+  send(source: string, reason: string, sectionId: string, resourceId?: string) {
+    const event = new app.api.models.Event({source, reason, sectionId, resourceId});
     this.handlers.forEach(x => x(event));
-    return event;
   }
-}
-
-type Event = {
-  source: 'movies' | 'sections' | 'series';
-  reason: 'delete' | 'update';
-  sectionId: string;
-  resourceId?: string;
 }
