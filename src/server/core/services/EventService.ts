@@ -14,7 +14,8 @@ export class EventService {
 
   removeEventListener(handler: (event: Event) => void) {
     const index = this.handlers.indexOf(handler);
-    if (index !== -1) this.handlers.splice(index, 1);
+    if (index === -1) return;
+    this.handlers.splice(index, 1);
   }
   
   send(source: Event['source'], reason: Event['reason'], sectionId: string, resourceId?: string) {

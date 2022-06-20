@@ -18,7 +18,9 @@
     "@nestjs/common": "8.4.4",
     "@nestjs/core": "8.4.4",
     "@nestjs/platform-express": "8.4.4",
+    "@nestjs/platform-ws": "8.4.4",
     "@nestjs/swagger": "5.2.1",
+    "@nestjs/websockets": "8.4.4",
     "cheerio": "1.0.0-rc.10",
     "class-transformer": "0.5.1",
     "class-validator": "0.13.2",
@@ -57,7 +59,7 @@
     "webpack-dev-server": "4.8.1"
   },
   "scripts": {
-    "electron:build": "electron-builder --publish always",
+    "electron:build": "electron-builder",
     "electron:serve": "electron dist/shell/app.js",
     "prepare": "npm run repository:prune && npm run repository:build && npm run webpack:build",
     "repository:build": "tsc",

@@ -2,6 +2,7 @@ import * as app from '.';
 import * as nst from '@nestjs/common';
 import * as swg from '@nestjs/swagger';
 import {NestFactory} from '@nestjs/core';
+import {WsAdapter} from '@nestjs/platform-ws';
 import compression from 'compression';
 import express from 'express';
 import path from 'path';
@@ -19,7 +20,7 @@ export class Server {
 
   async runAsync() {
     this.attachMiddleware();
-    this.attachRequestValidation();
+    this.attachOptions();
     this.attachSwagger();
     await this.server.listen(process.env.PORT || 6877).catch(() => {});
   }
@@ -30,9 +31,10 @@ export class Server {
     this.server.use(express.static(publicPath));
   }
 
-  private attachRequestValidation() {
+  private attachOptions() {
     const options = {forbidNonWhitelisted: true, forbidUnknownValues: true, transform: true, whitelist: true};
     this.server.useGlobalPipes(new nst.ValidationPipe(options));
+    this.server.useWebSocketAdapter(new WsAdapter(this.server));
   }
 
   private attachSwagger() {
