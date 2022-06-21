@@ -16,7 +16,7 @@ export class SeriesInfoXml {
       .first()
       .text();
     return value.length
-      ? value
+      ? cheerio.load(value).text()
       : '';
   }
 
@@ -55,7 +55,7 @@ export class SeriesInfoXml {
       .first()
       .text();
     return value.length
-      ? value
+      ? cheerio.load(value).text()
       : undefined;
   }
 

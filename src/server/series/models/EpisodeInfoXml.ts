@@ -34,7 +34,7 @@ export class EpisodeInfoXml {
       .first()
       .text();
     return value.length
-      ? value
+      ? cheerio.load(value).text()
       : '';
   }
 
@@ -93,7 +93,7 @@ export class EpisodeInfoXml {
       .first()
       .text();
     return value.length
-      ? value
+      ? cheerio.load(value).text()
       : undefined;
   }
 

@@ -16,7 +16,7 @@ export class MovieInfoXml {
       .first()
       .text();
     return value.length
-      ? value
+      ? cheerio.load(value).text()
       : '';
   }
 
@@ -75,7 +75,7 @@ export class MovieInfoXml {
       .first()
       .text();
     return value.length
-      ? value
+      ? cheerio.load(value).text()
       : undefined;
   }
 
