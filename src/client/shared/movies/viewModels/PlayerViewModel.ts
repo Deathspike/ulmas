@@ -1,5 +1,4 @@
 import * as api from 'api';
-import * as app from '..';
 import * as mobx from 'mobx';
 import {core} from 'client/core';
 
@@ -63,10 +62,10 @@ export class PlayerViewModel {
     } else if (!resume.value || !resume.value.total) {
       this.state = 'error';
     } else if (resume.value.position / resume.value.total < 0.9) {
-      await app.resumeAsync(this.sectionId, this.movie, resume.value);
+      await core.api.movies.patchAsync(this.sectionId, this.movie.id, new api.models.MoviePatch({resume: resume.value}));
       this.isActive = false;
     } else {
-      await app.watchedAsync(this.sectionId, this.movie, true);
+      await core.api.movies.patchAsync(this.sectionId, this.movie.id, new api.models.MoviePatch({watched: true}));
       this.isActive = false;
     }
   }

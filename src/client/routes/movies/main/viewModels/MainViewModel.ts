@@ -26,6 +26,20 @@ export class MainViewModel implements app.core.IController {
   }
 
   @mobx.action
+  handleEvent(event: api.models.Event) {
+    if (event.source === 'movies'
+      && event.reason === 'update'
+      && !event.resourceId) {
+      this.refreshAsync();
+    } else if (event.source === 'sections'
+      && event.reason === 'delete'
+      && event.sectionId === this.sectionId) {
+      core.screen.backAsync();
+      this.currentPlayer?.close();
+    }
+  }
+
+  @mobx.action
   async onBackAsync() {
     if (this.currentPlayer?.isActive) {
       this.currentPlayer.close();
@@ -37,16 +51,19 @@ export class MainViewModel implements app.core.IController {
   @mobx.action
   async refreshAsync() {
     // TODO: Handle section not found.
-    const sectionsPromise = core.api.sections.readAsync();
-    const moviesPromise = core.api.movies.entriesAsync(this.sectionId);
-    const sections = await sectionsPromise;
-    const movies = await moviesPromise;
-    if (sections.value && movies.value) {
-      this.source = movies.value;
-      this.title = sections.value.find(x => x.id === this.sectionId)?.title;
-    } else {
-      // TODO: Handle error.
-    }
+    await core.screen.waitAsync(async () => {
+      const sectionsPromise = core.api.sections.readAsync();
+      const moviesPromise = core.api.movies.entriesAsync(this.sectionId);
+      const sections = await sectionsPromise;
+      const movies = await moviesPromise;
+      if (sections.value && movies.value) {
+        this.source = movies.value;
+        this.title = sections.value.find(x => x.id === this.sectionId)?.title;
+        requestAnimationFrame(() => window.scrollTo(0, 0));
+      } else {
+        // TODO: Handle error.
+      }
+    });
   }
 
   @mobx.action

@@ -8,6 +8,7 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.sour
     additionalContent={<app.MenuView vm={vm} />}
     onButton={core.input.click(() => vm.onBackAsync())}
     onKeyDown={core.input.keyDown(k => vm.handleKey(k))}>
+    <ui.EventListener onEvent={x => vm.handleEvent(x)} />
     <ui.material.Grid sx={styles.rootContainer}>
       <ui.material.Grid sx={styles.imageContainer}>
         <ui.ImageView imageHeight={36} imageUrl={vm.posterUrl}>

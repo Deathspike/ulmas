@@ -2,6 +2,7 @@ export * as material from '@mui/material';
 export * from './functions';
 export * from './common/icons';
 export * from './common/theme';
+export * from './utilities/EventListener';
 export * from './views/ExclusiveView';
 export * from './views/HeaderMenuItemView';
 export * from './views/HeaderMenuView';

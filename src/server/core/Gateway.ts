@@ -18,8 +18,7 @@ export class Gateway implements nws.OnGatewayConnection<ws.WebSocket>, nws.OnGat
 
   handleDisconnect(client: ws.WebSocket) {
     const index = this.clients.indexOf(client);
-    if (index === -1) return;
-    this.clients.splice(index, 1);
+    if (index !== -1) this.clients.splice(index, 1);
   }
 
   private send(event: app.api.models.Event) {

@@ -8,11 +8,11 @@ export function *createPages<T>(maxPerPage: number, items: Array<T>) {
   }
 }
 
-export function createView<T>(fn: (props: T) => boolean | '' | JSX.Element | undefined) {
+export function createView<T>(fn: (props: T) => any) {
   return mobxReact.observer((props: T) => {
     const element = fn(props);
     requestForceCheck();
-    return typeof element === 'object' && element || null;
+    return element || null;
   });
 }
 

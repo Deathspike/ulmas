@@ -25,6 +25,20 @@ export class MainViewModel {
   }
 
   @mobx.action
+  handleEvent(event: api.models.Event) {
+    if (event.source === 'movies'
+      && event.reason === 'delete'
+      && event.resourceId === this.movieId) {
+      core.screen.backAsync();
+      this.currentPlayer?.close();
+    } else if (event.source === 'movies'
+      && event.reason === 'update'
+      && event.resourceId === this.movieId) {
+      this.refreshAsync();
+    }
+  }
+
+  @mobx.action
   async onBackAsync() {
     if (this.currentPlayer?.isActive) {
       this.currentPlayer.close();
@@ -37,7 +51,7 @@ export class MainViewModel {
   async markAsync() {
     await core.screen.waitAsync(async () => {
       if (!this.source) return;
-      await app.core.watchedAsync(this.sectionId, this.source, !this.source.watched);
+      await core.api.movies.patchAsync(this.sectionId, this.source.id, new api.models.MoviePatch({watched: !this.source.watched}));
     });
   }
 
@@ -51,12 +65,14 @@ export class MainViewModel {
 
   @mobx.action
   async refreshAsync() {
-    const movie = await core.api.movies.itemAsync(this.sectionId, this.movieId);
-    if (movie.value) {
-      this.source = movie.value;
-    } else {
-      // TODO: Handle error.
-    }
+    await core.screen.waitAsync(async () => {
+      const movie = await core.api.movies.itemAsync(this.sectionId, this.movieId);
+      if (movie.value) {
+        this.source = movie.value;
+      } else {
+        // TODO: Handle error.
+      }
+    });
   }
 
   @mobx.computed

@@ -1,4 +1,3 @@
-export * from './functions';
 export * from './language';
 export * from './types';
 export * from './viewModels/MovieViewModel';

@@ -4,6 +4,7 @@ export * from './classes/GamepadManager';
 export * from './classes/GamepadObserver';
 export * from './classes/LocalStorage';
 export * from './services/ApiService';
+export * from './services/EventService';
 export * from './services/ImageService';
 export * from './services/InputService';
 export * from './services/ScreenService';
