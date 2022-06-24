@@ -25,6 +25,7 @@ export class InputService {
   @mobx.action
   keyDown(handler: (keyName: string) => boolean) {
     return (ev: React.KeyboardEvent) => {
+      this.keyboardMode = true;
       if (!core.screen.waitCount && !handler(ev.code.toLowerCase())) return;
       ev.preventDefault();
       ev.stopPropagation();
@@ -34,6 +35,7 @@ export class InputService {
   @mobx.action
   keyRestore(keys = ['enter', 'space']) {
     return (ev: React.KeyboardEvent) => {
+      this.keyboardMode = true;
       if (!core.screen.waitCount && !keys.includes(ev.code.toLowerCase())) return;
       ev.stopPropagation();
     };
