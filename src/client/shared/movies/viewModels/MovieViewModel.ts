@@ -33,16 +33,9 @@ export class MovieViewModel {
 
   @mobx.action
   async playAsync() {
-    const movie = await core.screen
+    await core.screen
       .waitAsync(() => core.api.movies.itemAsync(this.sectionId, this.source.id))
-      .then(x => x.value);
-    if (movie) {
-      const disposer = mobx.autorun(() => updateState(this.source, movie));
-      await this.controller.playAsync(movie);
-      disposer();
-    } else {
-      // TODO: Handle error.
-    }
+      .then(x => x.value && this.controller.playAsync(x.value));
   }
 
   @mobx.computed
@@ -59,10 +52,4 @@ export class MovieViewModel {
   
   @mobx.observable
   source: api.models.MovieEntry;
-}
-
-function updateState(source: Writeable<api.models.MovieEntry>, movie: api.models.Movie) {
-  source.lastPlayed = movie.lastPlayed;
-  source.resume = movie.resume;
-  source.watched = movie.watched;
 }

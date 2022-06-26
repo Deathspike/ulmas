@@ -33,16 +33,9 @@ export class SeriesViewModel {
 
   @mobx.action
   async playAsync() {
-    const series = await core.screen
+    await core.screen
       .waitAsync(() => core.api.series.itemAsync(this.sectionId, this.source.id))
-      .then(x => x.value);
-    if (series) {
-      const disposer = mobx.autorun(() => updateState(this.source, series));
-      await this.controller.playAsync(series);
-      disposer();
-    } else {
-      // TODO: Handle error.
-    }
+      .then(x => x.value && this.controller.playAsync(x.value));
   }
 
   @mobx.computed
@@ -59,10 +52,4 @@ export class SeriesViewModel {
   
   @mobx.observable
   source: api.models.SeriesEntry;
-}
-
-function updateState(source: Writeable<api.models.SeriesEntry>, series: api.models.Series) {
-  source.lastPlayed = series.lastPlayed;
-  source.totalCount = series.episodes.length;
-  source.unwatchedCount = series.episodes.filter(x => !x.watched).length || undefined;
 }

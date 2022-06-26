@@ -29,6 +29,20 @@ export class MainViewModel implements app.core.IController {
   }
 
   @mobx.action
+  handleEvent(event: api.models.Event) {
+    if (event.source === 'series'
+      && event.reason === 'update'
+      && !event.resourceId) {
+      this.refreshAsync();
+    } else if (event.source === 'sections'
+      && event.reason === 'delete'
+      && event.sectionId === this.sectionId) {
+      core.screen.backAsync();
+      this.currentPlayer?.close();
+    }
+  }
+
+  @mobx.action
   async onBackAsync() {
     if (this.currentPlayer?.isActive) {
       this.currentPlayer.close();
@@ -54,7 +68,7 @@ export class MainViewModel implements app.core.IController {
 
   @mobx.action
   async playAsync(series: api.models.Series) {
-    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, series, series.episodes);
+    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, series.id, series.episodes);
     this.currentPlayer.load();
     await this.currentPlayer.waitAsync();
   }

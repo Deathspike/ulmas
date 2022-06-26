@@ -29,6 +29,19 @@ export class MainViewModel {
   }
 
   @mobx.action
+  handleEvent(event: api.models.Event) {
+    if (event.source === 'movies'
+      && event.reason === 'update'
+      && !event.resourceId) {
+      this.refreshAsync();
+    } else if (event.source === 'series'
+      && event.reason === 'update'
+      && !event.resourceId) {
+      this.refreshAsync();
+    }
+  }
+
+  @mobx.action
   async refreshAsync() {
     const response = await core.api.sections.readAsync();
     const sections = response.value && await this.fetchSectionsAsync(response.value);

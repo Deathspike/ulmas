@@ -8,7 +8,13 @@ export class MoviePatch {
     this.resume = source?.resume;
     this.watched = source?.watched;
   }
-  
+
+  static create(value: MediaResume | boolean) {
+    return value instanceof MediaResume
+      ? new MoviePatch({resume: value})
+      : new MoviePatch({watched: value});
+  }
+
   @clv.IsOptional()
   @clv.ValidateNested()
   @clt.Type(() => MediaResume)

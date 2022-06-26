@@ -51,7 +51,8 @@ export class MainViewModel {
   async markAsync() {
     await core.screen.waitAsync(async () => {
       if (!this.source) return;
-      await core.api.movies.patchAsync(this.sectionId, this.source.id, new api.models.MoviePatch({watched: !this.source.watched}));
+      const model = api.models.MoviePatch.create(!this.source.watched);
+      await core.api.movies.patchAsync(this.sectionId, this.source.id, model);
     });
   }
 

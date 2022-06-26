@@ -30,6 +30,20 @@ export class MainViewModel {
   }
 
   @mobx.action
+  handleEvent(event: api.models.Event) {
+    if (event.source === 'series'
+      && event.reason === 'delete'
+      && event.resourceId === this.seriesId) {
+      core.screen.backAsync();
+      this.currentPlayer?.close();
+    } else if (event.source === 'series'
+      && event.reason === 'update'
+      && event.resourceId === this.seriesId) {
+      this.refreshAsync();
+    }
+  }
+
+  @mobx.action
   async onBackAsync() {
     if (this.currentPlayer?.isActive) {
       this.currentPlayer.close();
@@ -45,11 +59,12 @@ export class MainViewModel {
   async markAsync() {
     await core.screen.waitAsync(async () => {
       const episodes = this.currentSeason
-      ? this.currentSeason.episodes
-      : this.seasons?.flatMap(x => x.episodes);
+        ? this.currentSeason.episodes
+        : this.seasons?.flatMap(x => x.episodes);
       if (episodes && this.source) {
         const watched = !!this.unwatchedCount;
-        await app.core.watchedAsync(this.sectionId, this.source, episodes.map(x => x.source), watched);
+        const model = api.models.SeriesPatch.create(episodes.map(x => x.source), watched);
+        await core.api.series.patchAsync(this.sectionId, this.source.id, model);
       }
     });
   }
@@ -124,7 +139,7 @@ export class MainViewModel {
 
   private async loadAsync(episodes: Array<api.models.Episode>, current?: api.models.Episode) {
     if (!this.source) return;
-    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.source, episodes, current);
+    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.source.id, episodes, current);
     this.currentPlayer.load();
     await this.currentPlayer.waitAsync();
   }
