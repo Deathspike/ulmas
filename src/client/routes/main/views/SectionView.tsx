@@ -23,12 +23,6 @@ export const SectionView = ui.createView<{vm: app.SectionMoviesViewModel | app.S
     {vm.latest.length
       ? undefined
       : <ui.material.Typography sx={styles.title}>{app.language.missingMedia}</ui.material.Typography>}
-    {vm.currentPlayer instanceof app.movies.PlayerViewModel
-      ? <app.movies.PlayerView vm={vm.currentPlayer} />
-      : undefined}
-    {vm.currentPlayer instanceof app.series.PlayerViewModel
-      ? <app.series.PlayerView vm={vm.currentPlayer} />
-      : undefined}
   </ui.material.Grid>
 ));
 

@@ -13,6 +13,12 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => (
         ? <app.SearchView vm={vm} />
         : <app.NormalView vm={vm} />}
     </ui.material.Grid>
+    {vm.currentPlayer instanceof app.movies.PlayerViewModel
+      ? <app.movies.PlayerView vm={vm.currentPlayer} />
+      : undefined}
+    {vm.currentPlayer instanceof app.series.PlayerViewModel
+      ? <app.series.PlayerView vm={vm.currentPlayer} />
+      : undefined}
   </ui.HeaderView>
 ));
 
