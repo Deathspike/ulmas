@@ -35,7 +35,7 @@ function onBlur(element: HTMLUListElement | null, onClose: () => void) {
 
 function onKeyDown(ev: React.KeyboardEvent, button: HTMLButtonElement | null) {
   if (ev.code.toLowerCase() === 'escape' && !core.screen.waitCount) {
-    button?.focus();
+    button?.focus({preventScroll: true});
     ev.preventDefault();
     ev.stopPropagation();
   } else {
