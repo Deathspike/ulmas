@@ -69,17 +69,24 @@ export class Router {
   async mediaAsync(
     @nst.Param() params: app.api.params.Media,
     @nst.Response() response: express.Response) {
-    const media = await this.findAsync(params).catch(() => {});
-    if (!media) throw new nst.NotFoundException();
-    response.attachment(media.path);
+    const filePath = await this.findAsync(params).catch(() => {});
+    if (!filePath) throw new nst.NotFoundException();
+    response.attachment(filePath);
     response.set('Cache-Control', 'max-age=31536000');
-    response.sendFile(media.path, () => response.status(404).end());
+    response.sendFile(filePath, () => response.status(404).end());
   }
 
   private async findAsync(params: app.api.params.Media) {
     const series = await new SeriesCache(params.sectionId, params.resourceId).loadAsync();
     const media = Array.from(mediaOf(series));
-    return media.find(x => x.id === params.mediaId);
+    if (/\.sub$/i.test(params.mediaId)) {
+      const mediaId = params.mediaId.replace(/\.sub$/i, '');
+      const result = media.find(x => x.id === mediaId);
+      return result?.path.replace(/\.idx$/i, '.sub');
+    } else {
+      const result = media.find(x => x.id === params.mediaId);
+      return result?.path;
+    }
   }
 }
 

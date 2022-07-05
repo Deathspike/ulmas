@@ -18,7 +18,7 @@ export class ContextService {
     if (stats.isDirectory()) context.directories[name] = stats;
     else if (/^\.(gif|jpg|png|webp)$/i.test(extname)) context.images[name] = stats;
     else if (/^\.(nfo)$/i.test(extname)) context.info[name] = stats;
-    else if (/^\.(ass|srt|vtt)$/i.test(extname)) context.subtitles[name] = stats;
+    else if (/^\.(ass|idx|srt|vtt)$/i.test(extname)) context.subtitles[name] = stats;
     else if (/^\.(avi|mp4|mkv|ogm|webm)$/i.test(extname)) context.videos[name] = stats;
   }
 
