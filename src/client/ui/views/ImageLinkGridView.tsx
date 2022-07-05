@@ -1,4 +1,3 @@
-import LazyLoad from 'react-lazyload';
 import * as React from 'react';
 import * as ui from 'client/ui';
 
@@ -13,11 +12,11 @@ export const ImageLinkGridView = ui.createView<Props>(({children, columns, colum
     .replace('{columns}', String(columns))
     .replace('{totalColumnGap}', String((columns - 1) * columnGap));
   return (
-    <LazyLoad style={{height: `${Math.ceil(count / columns) * (imageHeight + rowGap + 2.25)}vw`}} once resize unmountIfInvisible>
+    <ui.LazyView style={{height: `${Math.ceil(count / columns) * (imageHeight + rowGap + 2.25)}vw`}}>
       <ui.material.Grid sx={{...styles.page, gridGap, gridTemplateColumns}} {...props}>
         {children}
       </ui.material.Grid>
-    </LazyLoad>
+    </ui.LazyView>
   );
 });
 

@@ -1,15 +1,14 @@
-import LazyLoad from 'react-lazyload';
 import * as React from 'react';
 import * as ui from 'client/ui';
 
 export const ImageView = ui.createView<Props>(({children, imageHeight, imageUrl, ...props}) => (
-  <LazyLoad style={{...styles.imageContainer, height: `${imageHeight}vw`}} once resize>
+  <ui.LazyView style={{...styles.imageContainer, height: `${imageHeight}vw`}}>
     {imageUrl && <img {...props}
       ref={x => x && onReference(x, imageUrl)}
       onLoad={x => x.currentTarget.style.opacity = '1'}
       style={styles.image} />}
     {children}
-  </LazyLoad>
+  </ui.LazyView>
 ));
 
 interface Props extends React.HTMLAttributes<HTMLImageElement> {
