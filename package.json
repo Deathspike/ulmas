@@ -4,7 +4,7 @@
   "description": "Unopinionated Local Media Asset Server.",
   "license": "MIT",
   "repository": "git://github.com/Deathspike/ulmas",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.1",
   "main": "dist/server",
   "types": "dist/server",
   "bin": {
