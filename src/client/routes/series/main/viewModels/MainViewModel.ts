@@ -46,6 +46,8 @@ export class MainViewModel implements app.menu.IController, app.series.IControll
   async onBackAsync() {
     if (this.currentPlayer?.isActive) {
       this.currentPlayer.close();
+    } else if (this.menu.search.current.value) {
+      this.menu.search.clear();
     } else {
       await core.screen.backAsync();
     }
