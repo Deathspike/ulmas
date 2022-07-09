@@ -1,4 +1,4 @@
-export * from 'client/shared';
+export * from 'client/pieces';
 export * from './functions';
 export * from './language';
 export * from './router';
