@@ -8,8 +8,8 @@ export class Series {
   constructor(source?: Series) {
     this.id = source?.id ?? '';
     this.path = source?.path ?? '';
-    this.images = source?.images;
-    this.episodes = source?.episodes ?? [];
+    this.images = source?.images?.map(x => new Media(x));
+    this.episodes = source?.episodes.map(x => new Episode(x)) ?? [];
     this.dateEpisodeAdded = source?.dateEpisodeAdded;
     this.lastPlayed = source?.lastPlayed;
     this.totalCount = source?.totalCount;

@@ -5,7 +5,7 @@ import {MediaResume} from '../MediaResume';
 
 export class MoviePatch {
   constructor(source?: MoviePatch) {
-    this.resume = source?.resume;
+    this.resume = source?.resume && new MediaResume(source?.resume);
     this.watched = source?.watched;
   }
 

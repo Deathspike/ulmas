@@ -8,11 +8,11 @@ import {Movie} from './Movie';
 export class MovieEntry {
   constructor(source?: MovieEntry) {
     this.id = source?.id ?? '';
-    this.images = source?.images;
+    this.images = source?.images?.map(x => new MediaEntry(x));
     this.title = source?.title ?? '';
     this.dateAdded = source?.dateAdded ?? '';
     this.lastPlayed = source?.lastPlayed;
-    this.resume = source?.resume;
+    this.resume = source?.resume && new MediaResume(source?.resume);
     this.watched = source?.watched;
   }
 

@@ -5,9 +5,9 @@ import {Media} from './Media';
 
 export class MediaSource {
   constructor(source?: MediaSource) {
-    this.images = source?.images?.length ? source.images : undefined;
-    this.subtitles = source?.subtitles?.length ? source.subtitles : undefined;
-    this.videos = source?.videos?.length ? source.videos : undefined;
+    this.images = source?.images?.length ? source.images.map(x => new Media(x)) : undefined;
+    this.subtitles = source?.subtitles?.length ? source.subtitles.map(x => new Media(x)) : undefined;
+    this.videos = source?.videos?.length ? source.videos.map(x => new Media(x)) : undefined;
   }
 
   @clv.IsOptional()

@@ -37,6 +37,7 @@ export class Service {
   }
 
   async patchAsync(sectionId: string, movieId: string, moviePatch: app.api.models.MoviePatch) {
+    const now = DateTime.utc().toISO({suppressMilliseconds: true});
     return await this.lockService.lockAsync(sectionId, async () => {
       const sectionCache = new SectionCache(sectionId);
       const section = await sectionCache.loadAsync();
@@ -44,7 +45,7 @@ export class Service {
       if (movieIndex !== -1) {
         const movieCache = new MovieCache(sectionId, movieId);
         const movie = await movieCache.loadAsync();
-        const movieUpdate = this.patchMovie(movie, moviePatch);
+        const movieUpdate = this.patchMovie(movie, moviePatch, now);
         section[movieIndex] = app.api.models.MovieEntry.from(movieUpdate);
         await MovieInfo.saveAsync(movie.path, movieUpdate);
         this.eventService.send('movies', 'update', sectionId, movie.id);
@@ -105,11 +106,11 @@ export class Service {
     });
   }
 
-  private patchMovie(movie: app.api.models.Movie, moviePatch: app.api.models.MoviePatch) {
+  private patchMovie(movie: app.api.models.Movie, moviePatch: app.api.models.MoviePatch, now: string) {
     return new app.api.models.Movie({
       ...movie,
       ...moviePatch,
-      lastPlayed: moviePatch.watched || moviePatch.resume ? DateTime.utc().toISO({suppressMilliseconds: true}) : movie.lastPlayed,
+      lastPlayed: moviePatch.watched || moviePatch.resume ? now : movie.lastPlayed,
       playCount: moviePatch.watched ? (movie.playCount ?? 0) + 1 : movie.playCount
     });
   }

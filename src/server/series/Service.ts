@@ -39,6 +39,7 @@ export class Service {
   }
 
   async patchAsync(sectionId: string, seriesId: string, seriesPatch: app.api.models.SeriesPatch) {
+    const now = DateTime.utc().toISO({suppressMilliseconds: true});
     return await this.lockService.lockAsync(sectionId, async () => {
       const sectionCache = new SectionCache(sectionId);
       const section = await sectionCache.loadAsync();
@@ -46,9 +47,10 @@ export class Service {
       if (seriesIndex !== -1) {
         const seriesCache = new SeriesCache(sectionId, seriesId);
         const series = await seriesCache.loadAsync();
-        const seriesUpdate = this.patchSeries(series, seriesPatch);
+        const episodeUpdates = Array.from(this.patchSeriesEpisodes(series, seriesPatch, now));
+        const seriesUpdate = this.patchSeries(series, episodeUpdates, now);
         section[seriesIndex] = app.api.models.SeriesEntry.from(seriesUpdate);
-        await Promise.all(series.episodes.map(x => x instanceof app.api.models.Episode && EpisodeInfo.saveAsync(x.path, x)));
+        await Promise.all(episodeUpdates.map(x => EpisodeInfo.saveAsync(x.path, x)));
         await SeriesInfo.saveAsync(series.path, series);
         this.eventService.send('series', 'update', sectionId, series.id);
         await Promise.all([sectionCache.saveAsync(section), seriesCache.saveAsync(seriesUpdate)]);
@@ -132,16 +134,23 @@ export class Service {
     });
   }
 
-  private patchSeries(series: app.api.models.Series, seriesPatch: app.api.models.SeriesPatch) {
-    const now = DateTime.utc().toISO({suppressMilliseconds: true});
-    const patch = seriesPatch.episodes.map(x => ({i: series.episodes.findIndex(y => y.id === x.id), x})).filter(({i}) => i !== -1);
-    patch.forEach(({x, i}) => series.episodes[i] = this.patchEpisode(series.episodes[i], x, now));
+  private patchSeries(series: app.api.models.Series, episodeUpdates: Array<app.api.models.Episode>, now: string) {
     return new app.api.models.Series({
       ...series,
-      lastPlayed: patch.some(({x}) => x.watched || x.resume) ? now : series.lastPlayed,
+      lastPlayed: episodeUpdates.some(x => x.watched || x.resume) ? now : series.lastPlayed,
       dateEpisodeAdded: fun.fetchEpisodeAdded(series.episodes),
       unwatchedCount: fun.fetchUnwatchedCount(series.episodes)
     });
+  }
+
+  private *patchSeriesEpisodes(series: app.api.models.Series, seriesPatch: app.api.models.SeriesPatch, now: string) {
+    const episodePatches = seriesPatch.episodes
+      .map(x => ({i: series.episodes.findIndex(y => y.id === x.id), x}))
+      .filter(({i}) => i !== -1);
+    for (const {x, i} of episodePatches) {
+      series.episodes[i] = this.patchEpisode(series.episodes[i], x, now);
+      yield series.episodes[i];
+    }
   }
 
   private patchEpisode(episode: app.api.models.Episode, episodePatch: app.api.models.EpisodePatch, now: string) {

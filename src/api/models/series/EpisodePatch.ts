@@ -7,7 +7,7 @@ import {MediaResume} from '../MediaResume';
 export class EpisodePatch {
   constructor(source?: EpisodePatch) {
     this.id = source?.id ?? '';
-    this.resume = source?.resume;
+    this.resume = source?.resume && new MediaResume(source?.resume);
     this.watched = source?.watched;
   }
 

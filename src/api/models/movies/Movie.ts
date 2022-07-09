@@ -8,13 +8,13 @@ export class Movie {
   constructor(source?: Movie) {
     this.id = source?.id ?? '';
     this.path = source?.path ?? '';
-    this.media = source?.media ?? new MediaSource();
+    this.media = new MediaSource(source?.media);
     this.title = source?.title ?? '';
     this.dateAdded = source?.dateAdded ?? '';
     this.lastPlayed = source?.lastPlayed;
     this.playCount = source?.playCount;
     this.plot = source?.plot;
-    this.resume = source?.resume;
+    this.resume = source?.resume && new MediaResume(source?.resume);
     this.watched = source?.watched;
   }
   

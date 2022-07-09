@@ -8,7 +8,7 @@ export class Episode {
   constructor(source?: Episode) {
     this.id = source?.id ?? '';
     this.path = source?.path ?? '';
-    this.media = source?.media ?? new MediaSource();
+    this.media = new MediaSource(source?.media);
     this.episode = source?.episode ?? NaN;
     this.season = source?.season ?? NaN;
     this.title = source?.title ?? '';
@@ -16,7 +16,7 @@ export class Episode {
     this.lastPlayed = source?.lastPlayed;
     this.playCount = source?.playCount;
     this.plot = source?.plot;
-    this.resume = source?.resume;
+    this.resume = source?.resume && new MediaResume(source?.resume);
     this.watched = source?.watched;
   }
   

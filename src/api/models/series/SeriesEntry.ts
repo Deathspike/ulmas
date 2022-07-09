@@ -7,7 +7,7 @@ import {Series} from './Series';
 export class SeriesEntry {
   constructor(source?: SeriesEntry) {
     this.id = source?.id ?? '';
-    this.images = source?.images;
+    this.images = source?.images?.map(x => new MediaEntry(x));
     this.dateEpisodeAdded = source?.dateEpisodeAdded;
     this.lastPlayed = source?.lastPlayed;
     this.totalCount = source?.totalCount;

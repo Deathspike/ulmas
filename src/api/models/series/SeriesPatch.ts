@@ -7,7 +7,7 @@ import {MediaResume} from '../MediaResume';
 
 export class SeriesPatch {
   constructor(source?: SeriesPatch) {
-    this.episodes = source?.episodes ?? [];
+    this.episodes = source?.episodes.map(x => new EpisodePatch(x)) ?? [];
   }
   
   static create(source: Array<Episode> | Episode, value: MediaResume | boolean) {
@@ -18,6 +18,7 @@ export class SeriesPatch {
   }
 
   @clv.IsArray()
+  @clv.ArrayNotEmpty()
   @clv.ValidateNested({each: true})
   @clt.Type(() => EpisodePatch)
   @swg.ApiProperty({type: [EpisodePatch]})
