@@ -1,7 +1,7 @@
 import * as api from 'api';
 import * as app from '.';
 
-export function createFilter(menu: app.MenuViewModel) {
+export function createFilter(menu: app.MainViewModel) {
   const search = menu.search.debounceValue
     .toLowerCase()
     .split(' ');
@@ -11,7 +11,7 @@ export function createFilter(menu: app.MenuViewModel) {
   };
 }
 
-export function createSort(menu: app.MenuViewModel) {
+export function createSort(menu: app.MainViewModel) {
   return (a: api.models.MovieEntry | api.models.SeriesEntry, b: api.models.MovieEntry | api.models.SeriesEntry) => {
     return api.sortBy(a, b, menu.sort.value) * (menu.ascending ? 1 : -1);
   };

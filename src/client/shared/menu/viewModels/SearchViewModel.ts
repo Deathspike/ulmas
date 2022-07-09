@@ -1,35 +1,33 @@
+import * as app from '..';
 import * as mobx from 'mobx';
 
-export class DebounceSearch {
+export class SearchViewModel {
   private debounceTimeout?: NodeJS.Timeout;
   
-  constructor(private readonly key: string) {
-    this.debounceValue = sessionStorage.getItem(key) ?? '';
-    this.value = this.debounceValue;
+  constructor(key: string) {
+    this.current = new app.SessionStorage(key, '');
+    this.debounceValue = this.current.value;
     mobx.makeObservable(this);
   }
 
   @mobx.action
   clear() {
     this.debounceValue = '';
-    this.value = this.debounceValue;
+    this.current.change(this.debounceValue);
     this.stopDebounce();
-    sessionStorage.removeItem(this.key);
   }
 
   @mobx.action
   change(value: string) {
-    if (this.value === value) return;
-    this.value = value;
+    this.current.change(value);
     this.startDebounce();
-    sessionStorage.setItem(this.key, value);
   }
-  
-  @mobx.observable
-  debounceValue = '';
 
   @mobx.observable
-  value = '';
+  current: app.SessionStorage;
+
+  @mobx.observable
+  debounceValue = '';
 
   private stopDebounce() {
     if (!this.debounceTimeout) return;
@@ -40,7 +38,7 @@ export class DebounceSearch {
   private startDebounce() {
     this.stopDebounce();
     this.debounceTimeout = setTimeout(() => {
-      this.debounceValue = this.value;
+      this.debounceValue = this.current.value;
       requestAnimationFrame(() => window.scrollTo(0, 0));
     }, 500);
   }

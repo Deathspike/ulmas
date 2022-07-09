@@ -6,7 +6,7 @@ import {core} from 'client/core';
 
 export class MainViewModel implements app.menu.IController {
   constructor() {
-    this.menu = new app.menu.MenuViewModel(this);
+    this.menu = new app.menu.MainViewModel(this);
     mobx.makeObservable(this);
   }
     
@@ -17,7 +17,7 @@ export class MainViewModel implements app.menu.IController {
     } else if (keyName === 'enter' || keyName === 'space') {
       this.currentPlayer?.continue();
       return true;
-    } else if (keyName === 'escape' && this.menu.search.value && !this.currentPlayer?.isActive) {
+    } else if (keyName === 'escape' && this.menu.search.current.value && !this.currentPlayer?.isActive) {
       this.menu.search.clear();
       return true;
     } else if (keyName === 'escape') {
@@ -47,7 +47,9 @@ export class MainViewModel implements app.menu.IController {
       const response = await core.api.sections.readAsync();
       const sections = await this.fetchSectionsAsync(response.value);
       if (sections.every(Boolean)) {
-        this.source = sections.map(x => x!).sort((a, b) => a.title.localeCompare(b.title));
+        this.source = new Array<app.SectionMoviesViewModel | app.SectionSeriesViewModel>()
+          .concat(sections.map(x => x!))
+          .sort((a, b) => a.title.localeCompare(b.title));
       } else {
         // TODO: Handle error.
       }
@@ -79,7 +81,7 @@ export class MainViewModel implements app.menu.IController {
   currentPlayer?: app.movies.PlayerViewModel | app.series.PlayerViewModel;
 
   @mobx.observable
-  menu: app.menu.MenuViewModel;
+  menu: app.menu.MainViewModel;
   
   @mobx.observable
   source?: Array<app.SectionMoviesViewModel | app.SectionSeriesViewModel>;

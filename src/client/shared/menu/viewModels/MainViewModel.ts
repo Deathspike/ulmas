@@ -1,24 +1,24 @@
 import * as app from '..';
 import * as mobx from 'mobx';
 
-export class MenuViewModel {
+export class MainViewModel {
   constructor(private readonly controller: app.IController) {
     this.filter = new app.LocalStorage('menu.filter', 'all');
     this.order = new app.LocalStorage('menu.order', 'descending');
-    this.search = new app.DebounceSearch('menu.search');
+    this.search = new app.SearchViewModel('menu.search');
     this.sort = new app.LocalStorage('menu.sort', 'dateAdded');
     mobx.makeObservable(this);
   }
 
   @mobx.action
-  changeFilter(filter: MenuViewModel['filter']['value']) {
+  changeFilter(filter: MainViewModel['filter']['value']) {
     if (this.filter.value === filter) return;
     this.filter.change(filter);
     requestAnimationFrame(() => window.scrollTo(0, 0));
   }
 
   @mobx.action
-  changeSort(sort: MenuViewModel['sort']['value']) {
+  changeSort(sort: MainViewModel['sort']['value']) {
     if (this.sort.value === sort) {
       this.order.change(this.ascending ? 'descending' : 'ascending')
       requestAnimationFrame(() => window.scrollTo(0, 0));
@@ -51,7 +51,7 @@ export class MenuViewModel {
   order: app.LocalStorage<'ascending' | 'descending'>;
 
   @mobx.observable
-  search: app.DebounceSearch;
+  search: app.SearchViewModel;
 
   @mobx.observable
   sort: app.LocalStorage<'dateAdded' | 'lastPlayed' | 'premieredDate' | 'title'>;

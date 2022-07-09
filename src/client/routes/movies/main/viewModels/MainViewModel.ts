@@ -6,7 +6,7 @@ import {core} from 'client/core';
 
 export class MainViewModel implements app.menu.IController, app.movies.IController {
   constructor(private readonly sectionId: string) {
-    this.menu = new app.menu.MenuViewModel(this);
+    this.menu = new app.menu.MainViewModel(this);
     mobx.makeObservable(this);
   }
   
@@ -14,7 +14,7 @@ export class MainViewModel implements app.menu.IController, app.movies.IControll
   handleKey(keyName: string) {
     if (keyName.startsWith('arrow')) {
       return Boolean(this.currentPlayer?.isActive);
-    } else if (keyName === 'escape' && this.menu.search.value && !this.currentPlayer?.isActive) {
+    } else if (keyName === 'escape' && this.menu.search.current.value && !this.currentPlayer?.isActive) {
       this.menu.search.clear();
       return true;
     } else if (keyName === 'escape') {
@@ -87,7 +87,7 @@ export class MainViewModel implements app.menu.IController, app.movies.IControll
   currentPlayer?: app.movies.PlayerViewModel;
 
   @mobx.observable
-  menu: app.menu.MenuViewModel;
+  menu: app.menu.MainViewModel;
   
   @mobx.observable
   source?: Array<api.models.MovieEntry>;
