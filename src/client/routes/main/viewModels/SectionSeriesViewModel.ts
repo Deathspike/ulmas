@@ -44,13 +44,6 @@ export class SectionSeriesViewModel implements app.series.IController {
   }
 
   @mobx.computed
-  get currentPlayer() {
-    return this.mvm.currentPlayer instanceof app.series.PlayerViewModel
-      ? this.mvm.currentPlayer
-      : undefined;  
-  }
-
-  @mobx.computed
   get latest() {
     return this.viewModels
       .slice()

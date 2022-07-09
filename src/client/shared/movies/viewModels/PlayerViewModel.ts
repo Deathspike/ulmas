@@ -17,6 +17,11 @@ export class PlayerViewModel {
   }
 
   @mobx.action
+  continue() {
+    return;
+  }
+
+  @mobx.action
   load() {
     const subtitleUrls = this.movie.media.subtitles
       ?.map(x => core.api.movies.mediaUrl(this.sectionId, this.movie.id, x.id)) ?? [];
