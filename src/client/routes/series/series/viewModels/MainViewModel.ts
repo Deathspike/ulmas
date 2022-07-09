@@ -89,21 +89,23 @@ export class MainViewModel {
 
   @mobx.action
   async refreshAsync() {
-    const series = await core.api.series.itemAsync(this.sectionId, this.seriesId);
-    if (series.value) {
-      this.source = series.value;
-      const episodes = this.source.episodes
-        .sort((a, b) => a.season - b.season || a.episode - b.episode)
-        .map(x => new app.EpisodeViewModel(this, this.sectionId, x));
-      this.seasons = Array.from(new Set(this.source.episodes.map(x => x.season)))
-        .sort((a, b) => a - b)
-        .map(x => new app.SeasonViewModel(this, this.sectionId, x, episodes.filter(y => y.source.season === x)));
-      this.currentSeason = this.seasons.length !== 1
-        ? this.seasons.find(x => x.season === this.currentSeason?.season)
-        : this.seasons[0];
-    } else {
-      // TODO: Handle error.
-    }
+    await core.screen.waitAsync(async () => {
+      const series = await core.api.series.itemAsync(this.sectionId, this.seriesId);
+      if (series.value) {
+        this.source = series.value;
+        const episodes = this.source.episodes
+          .sort((a, b) => a.season - b.season || a.episode - b.episode)
+          .map(x => new app.EpisodeViewModel(this, this.sectionId, x));
+        this.seasons = Array.from(new Set(episodes.map(x => x.source.season)))
+          .sort((a, b) => a - b)
+          .map(x => new app.SeasonViewModel(this, this.sectionId, x, episodes.filter(y => y.source.season === x)));
+        this.currentSeason = this.seasons.length !== 1
+          ? this.seasons.find(x => x.season === this.currentSeason?.season)
+          : this.seasons[0];
+      } else {
+        // TODO: Handle error.
+      }
+    });
   }
 
   @mobx.computed

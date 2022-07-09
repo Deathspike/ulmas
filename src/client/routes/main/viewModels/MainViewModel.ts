@@ -43,13 +43,15 @@ export class MainViewModel {
 
   @mobx.action
   async refreshAsync() {
-    const response = await core.api.sections.readAsync();
-    const sections = response.value && await this.fetchSectionsAsync(response.value);
-    if (sections?.every(Boolean)) {
-      this.sections = sections.map(x => x!).sort((a, b) => a.title.localeCompare(b.title));
-    } else {
-      // TODO: Handle error.
-    }
+    await core.screen.waitAsync(async () => {
+      const response = await core.api.sections.readAsync();
+      const sections = response.value && await this.fetchSectionsAsync(response.value);
+      if (sections?.every(Boolean)) {
+        this.sections = sections.map(x => x!).sort((a, b) => a.title.localeCompare(b.title));
+      } else {
+        // TODO: Handle error.
+      }
+    });
   }
 
   @mobx.computed

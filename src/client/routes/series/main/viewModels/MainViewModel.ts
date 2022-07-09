@@ -53,17 +53,20 @@ export class MainViewModel implements app.core.IController {
 
   @mobx.action
   async refreshAsync() {
-    // TODO: Handle section not found.
-    const sectionsPromise = core.api.sections.readAsync();
-    const seriesPromise = core.api.series.entriesAsync(this.sectionId);
-    const sections = await sectionsPromise;
-    const series = await seriesPromise;
-    if (sections.value && series.value) {
-      this.source = series.value;
-      this.title = sections.value.find(x => x.id === this.sectionId)?.title;
-    } else {
-      // TODO: Handle error.
-    }
+    await core.screen.waitAsync(async () => {
+      const sectionsPromise = core.api.sections.readAsync();
+      const seriesPromise = core.api.series.entriesAsync(this.sectionId);
+      const section = await sectionsPromise.then(x => x.value?.find(x => x.id === this.sectionId));
+      const series = await seriesPromise;
+      if (section && series.value) {
+        this.source = series.value;
+        this.title = section.title;
+      } else if (section) {
+        // TODO: Handle error.
+      } else {
+        // TODO: Handle section not found.
+      }
+    });
   }
 
   @mobx.action

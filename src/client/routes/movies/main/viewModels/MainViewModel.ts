@@ -50,18 +50,19 @@ export class MainViewModel implements app.core.IController {
 
   @mobx.action
   async refreshAsync() {
-    // TODO: Handle section not found.
     await core.screen.waitAsync(async () => {
       const sectionsPromise = core.api.sections.readAsync();
       const moviesPromise = core.api.movies.entriesAsync(this.sectionId);
-      const sections = await sectionsPromise;
+      const section = await sectionsPromise.then(x => x.value?.find(x => x.id === this.sectionId));
       const movies = await moviesPromise;
-      if (sections.value && movies.value) {
+      if (section && movies.value) {
         this.source = movies.value;
-        this.title = sections.value.find(x => x.id === this.sectionId)?.title;
+        this.title = section.title;
         requestAnimationFrame(() => window.scrollTo(0, 0));
-      } else {
+      } else if (section) {
         // TODO: Handle error.
+      } else {
+        // TODO: Handle section not found.
       }
     });
   }
