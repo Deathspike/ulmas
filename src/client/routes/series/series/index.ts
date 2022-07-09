@@ -7,6 +7,6 @@ export * from './viewModels/MainViewModel';
 export * from './viewModels/SeasonViewModel';
 export * from './views/EpisodeView';
 export * from './views/MainView';
-export * from './views/MenuView';
+export * from './views/RefreshView';
 export * from './views/SeasonView';
 export * from './views/SeriesView';

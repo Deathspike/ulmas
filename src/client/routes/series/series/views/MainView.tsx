@@ -5,7 +5,7 @@ import {core} from 'client/core';
 
 export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.source && (
   <ui.HeaderView tabIndex={-1} title={vm.source.title}
-    additionalContent={<app.MenuView vm={vm} />}
+    additionalContent={<app.RefreshView vm={vm} />}
     onButton={core.input.click(() => vm.onBackAsync())}
     onKeyDown={core.input.keyDown(k => vm.handleKey(k))}>
     <ui.EventListener onEvent={x => vm.handleEvent(x)} />

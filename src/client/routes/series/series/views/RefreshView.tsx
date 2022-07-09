@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as ui from 'client/ui';
 import {core} from 'client/core';
 
-export const MenuView = ui.createView<{vm: app.MainViewModel}>(({vm}) => (
+export const RefreshView = ui.createView<{vm: app.MainViewModel}>(({vm}) => (
   <ui.material.Grid sx={styles.rootContainer}>
     <ui.material.Grid>
       <ui.material.IconButton tabIndex={1}
