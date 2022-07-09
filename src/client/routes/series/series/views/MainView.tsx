@@ -51,7 +51,7 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.sour
           : <app.SeriesView vm={vm} />}
       </ui.material.Grid>
       {vm.currentPlayer
-        ? <app.core.PlayerView vm={vm.currentPlayer} />
+        ? <app.series.PlayerView vm={vm.currentPlayer} />
         : undefined}
     </ui.material.Grid>
   </ui.HeaderView>

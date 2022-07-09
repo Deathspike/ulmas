@@ -4,9 +4,9 @@ import * as mobx from 'mobx';
 import * as ui from 'client/ui';
 import {core} from 'client/core';
 
-export class MainViewModel implements app.core.IController {
-  constructor(private readonly sectionId: string, viewState?: app.ViewState) {
-    this.menu = new app.MenuViewModel(this, viewState);
+export class MainViewModel implements app.menu.IController, app.movies.IController {
+  constructor(private readonly sectionId: string) {
+    this.menu = new app.menu.MenuViewModel(this);
     mobx.makeObservable(this);
   }
   
@@ -69,7 +69,7 @@ export class MainViewModel implements app.core.IController {
 
   @mobx.action
   async playAsync(movie: api.models.Movie) {
-    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, movie);
+    this.currentPlayer = new app.movies.PlayerViewModel(this.sectionId, movie);
     this.currentPlayer.load();
     await this.currentPlayer.waitAsync();
   }
@@ -77,25 +77,17 @@ export class MainViewModel implements app.core.IController {
   @mobx.computed
   get pages() {
     if (!this.source) return;
-    const movies = this.source
-      .filter(app.createFilter(this.menu))
-      .sort(app.createSort(this.menu))
-      .map(x => new app.core.MovieViewModel(this, this.sectionId, x));
-    return Array.from(ui.createPages(24, this.menu.ascending
-      ? movies
-      : movies.reverse()));
+    return Array.from(ui.createPages(24, this.source
+      .filter(app.menu.createFilter(this.menu))
+      .sort(app.menu.createSort(this.menu))
+      .map(x => new app.movies.MovieViewModel(this, this.sectionId, x))));
   }
 
-  @mobx.computed
-  get viewState() {
-    return new app.ViewState(this.menu.search.value);
-  }
-  
   @mobx.observable
-  currentPlayer?: app.core.PlayerViewModel;
+  currentPlayer?: app.movies.PlayerViewModel;
 
   @mobx.observable
-  menu: app.MenuViewModel;
+  menu: app.menu.MenuViewModel;
   
   @mobx.observable
   source?: Array<api.models.MovieEntry>;

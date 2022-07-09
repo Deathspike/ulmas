@@ -1,4 +1,4 @@
-export * as core from 'client/shared/series';
+export * from 'client/shared';
 export * from './functions';
 export * from './language';
 export * from './router';

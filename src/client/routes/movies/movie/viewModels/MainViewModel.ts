@@ -59,7 +59,7 @@ export class MainViewModel {
   @mobx.action
   async playAsync() {
     if (!this.source) return;
-    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.source);
+    this.currentPlayer = new app.movies.PlayerViewModel(this.sectionId, this.source);
     this.currentPlayer.load();
     await this.currentPlayer.waitAsync();
   }
@@ -91,7 +91,7 @@ export class MainViewModel {
   }
 
   @mobx.observable
-  currentPlayer?: app.core.PlayerViewModel;
+  currentPlayer?: app.movies.PlayerViewModel;
 
   @mobx.observable
   source?: api.models.Movie;

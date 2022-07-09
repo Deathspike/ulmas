@@ -1,2 +1,2 @@
-export {main} from './main';
-export {movie} from './movie';
+export * as main from './main';
+export * as movie from './movie';

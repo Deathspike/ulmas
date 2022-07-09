@@ -4,9 +4,9 @@ import * as mobx from 'mobx';
 import * as ui from 'client/ui';
 import {core} from 'client/core';
 
-export class MainViewModel {
-  constructor(viewState?: app.ViewState) {
-    this.menu = new app.MenuViewModel(this, viewState);
+export class MainViewModel implements app.menu.IController {
+  constructor() {
+    this.menu = new app.menu.MenuViewModel(this);
     mobx.makeObservable(this);
   }
     
@@ -45,9 +45,9 @@ export class MainViewModel {
   async refreshAsync() {
     await core.screen.waitAsync(async () => {
       const response = await core.api.sections.readAsync();
-      const sections = response.value && await this.fetchSectionsAsync(response.value);
-      if (sections?.every(Boolean)) {
-        this.sections = sections.map(x => x!).sort((a, b) => a.title.localeCompare(b.title));
+      const sections = await this.fetchSectionsAsync(response.value);
+      if (sections.every(Boolean)) {
+        this.source = sections.map(x => x!).sort((a, b) => a.title.localeCompare(b.title));
       } else {
         // TODO: Handle error.
       }
@@ -56,7 +56,7 @@ export class MainViewModel {
 
   @mobx.computed
   get continueWatching() {
-    const result = this.sections
+    const result = this.source
       ?.flatMap(x => x.continueWatching as Array<app.movies.MovieViewModel | app.series.SeriesViewModel>)
       ?.sort((a, b) => api.sortBy(a.source, b.source, 'lastPlayed'))
       ?.reverse()
@@ -68,32 +68,24 @@ export class MainViewModel {
 
   @mobx.computed
   get searchResults() {
-    if (!this.menu.search.debounceValue) return;
-    const result = this.sections
-      ?.flatMap(x => x.viewModels as Array<app.movies.MovieViewModel | app.series.SeriesViewModel>)
-      ?.filter(app.createFilter(this.menu))
-      ?.sort((a, b) => api.sortBy(a.source, b.source, 'title'));
-    return result
-      ? Array.from(ui.createPages(24, result))
-      : undefined;
-  }
-
-  @mobx.computed
-  get viewState() {
-    return new app.ViewState(this.menu.search.value);
+    if (!this.source || !this.menu.search.debounceValue) return;
+    return Array.from(ui.createPages(24, this.source
+      .flatMap(x => x.source as Array<app.movies.MovieViewModel | app.series.SeriesViewModel>)
+      .filter(app.createFilter(this.menu))
+      .sort(app.createSort(this.menu))));
   }
 
   @mobx.observable
   currentPlayer?: app.movies.PlayerViewModel | app.series.PlayerViewModel;
 
   @mobx.observable
-  menu: app.MenuViewModel;
+  menu: app.menu.MenuViewModel;
   
   @mobx.observable
-  sections?: Array<app.SectionMoviesViewModel | app.SectionSeriesViewModel>;
+  source?: Array<app.SectionMoviesViewModel | app.SectionSeriesViewModel>;
 
-  async fetchSectionsAsync(sections: Array<api.models.Section>) {
-    return await Promise.all(sections.map(async (section) => {
+  async fetchSectionsAsync(sections?: Array<api.models.Section>) {
+    return await Promise.all(sections?.map(async (section) => {
       switch (section.type) { 
         case 'movies':
           const movie = await core.api.movies.entriesAsync(section.id);
@@ -104,6 +96,6 @@ export class MainViewModel {
         default:
           throw new Error();
       }
-    }));
+    }) ?? []);
   }
 }

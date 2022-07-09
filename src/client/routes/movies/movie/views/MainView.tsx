@@ -46,7 +46,7 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.sour
         </ui.material.Typography>
       </ui.material.Grid>
       {vm.currentPlayer
-        ? <app.core.PlayerView vm={vm.currentPlayer} />
+        ? <app.movies.PlayerView vm={vm.currentPlayer} />
         : undefined}
     </ui.material.Grid>
   </ui.HeaderView>

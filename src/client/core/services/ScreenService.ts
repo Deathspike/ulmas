@@ -14,9 +14,8 @@ export class ScreenService {
   }
 
   @mobx.action
-  async openAsync(createAsync: ViewBuilder['createAsync'], viewState?: any) {
+  async openAsync(createAsync: ViewBuilder['createAsync']) {
     core.state.save();
-    this.viewState(viewState);
     this.views.push({createAsync});
     await this.buildAsync();
     requestAnimationFrame(() => window.scrollTo(0, 0));
@@ -46,23 +45,15 @@ export class ScreenService {
         ? this.views[this.views.length - 1]
         : undefined;
       const element = builder
-        ? await builder.createAsync(builder.viewState)
+        ? await builder.createAsync()
         : undefined;
       this.currentView = element
         ? element
         : this.currentView;
     });
   }
-
-  private viewState(viewState?: any) {
-    const view = this.views.length 
-      ? this.views[this.views.length - 1]
-      : undefined;
-    if (view) view.viewState = viewState;
-  }
 }
 
 type ViewBuilder = {
-  createAsync: (viewState?: any) => Promise<JSX.Element> | JSX.Element;
-  viewState?: any;
+  createAsync: () => Promise<JSX.Element> | JSX.Element;
 };

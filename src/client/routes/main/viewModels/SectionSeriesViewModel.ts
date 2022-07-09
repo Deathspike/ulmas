@@ -6,7 +6,7 @@ import * as routes from 'client/routes';
 export class SectionSeriesViewModel implements app.series.IController {
   constructor(private readonly mvm: app.MainViewModel, section: api.models.Section, source: Array<api.models.SeriesEntry>) {
     this.id = section.id;
-    this.source = source;
+    this.source = source.map(x => new app.series.SeriesViewModel(this, this.id, x));
     this.title = section.title;
     mobx.makeObservable(this);
   }
@@ -23,8 +23,7 @@ export class SectionSeriesViewModel implements app.series.IController {
   
   @mobx.action
   open() {
-    const viewState = this.mvm.viewState;
-    routes.series.main(this.id, viewState);
+    routes.series.main.router(this.id);
   }
 
   @mobx.action
@@ -36,7 +35,7 @@ export class SectionSeriesViewModel implements app.series.IController {
 
   @mobx.computed
   get continueWatching() {
-    return this.viewModels
+    return this.source
       .filter(x => x.source.lastPlayed && x.source.unwatchedCount)
       .sort((a, b) => api.sortBy(a.source, b.source, 'lastPlayed'))
       .reverse()
@@ -44,29 +43,18 @@ export class SectionSeriesViewModel implements app.series.IController {
   }
 
   @mobx.computed
-  get latest() {
-    return this.viewModels
-      .slice()
-      .sort((a, b) => api.sortBy(a.source, b.source, 'dateEpisodeAdded'))
-      .reverse()
+  get previewItems() {
+    return this.source
+      .filter(app.createFilter(this.mvm.menu))
+      .sort(app.createSort(this.mvm.menu))
       .slice(0, 6);
-  }
-
-  @mobx.computed
-  get viewModels() {
-    return this.source.map(x => new app.series.SeriesViewModel(this, this.id, x));
-  }
-
-  @mobx.computed
-  get viewState() {
-    return this.mvm.viewState;
   }
 
   @mobx.observable
   id: string;
 
   @mobx.observable
-  source: Array<api.models.SeriesEntry>;
+  source: Array<app.series.SeriesViewModel>;
 
   @mobx.observable
   title: string;

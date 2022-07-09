@@ -27,8 +27,7 @@ export class SeriesViewModel {
 
   @mobx.action
   open() {
-    const viewState = this.controller.viewState;
-    routes.series.series(this.sectionId, this.source.id, viewState);
+    routes.series.series.router(this.sectionId, this.source.id);
   }
 
   @mobx.action

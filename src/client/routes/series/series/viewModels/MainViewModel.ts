@@ -128,7 +128,7 @@ export class MainViewModel {
   }
 
   @mobx.observable
-  currentPlayer?: app.core.PlayerViewModel;
+  currentPlayer?: app.series.PlayerViewModel;
 
   @mobx.observable
   currentSeason?: app.SeasonViewModel;
@@ -141,7 +141,7 @@ export class MainViewModel {
 
   private async loadAsync(episodes: Array<api.models.Episode>, current?: api.models.Episode) {
     if (!this.source) return;
-    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, this.source.id, episodes, current);
+    this.currentPlayer = new app.series.PlayerViewModel(this.sectionId, this.source.id, episodes, current);
     this.currentPlayer.load();
     await this.currentPlayer.waitAsync();
   }

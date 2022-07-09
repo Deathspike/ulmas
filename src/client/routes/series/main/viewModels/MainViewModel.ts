@@ -4,9 +4,9 @@ import * as mobx from 'mobx';
 import * as ui from 'client/ui';
 import {core} from 'client/core';
 
-export class MainViewModel implements app.core.IController {
-  constructor(private readonly sectionId: string, viewState?: app.ViewState) {
-    this.menu = new app.MenuViewModel(this, viewState);
+export class MainViewModel implements app.menu.IController, app.series.IController {
+  constructor(private readonly sectionId: string) {
+    this.menu = new app.menu.MenuViewModel(this);
     mobx.makeObservable(this);
   }
   
@@ -71,7 +71,7 @@ export class MainViewModel implements app.core.IController {
 
   @mobx.action
   async playAsync(series: api.models.Series) {
-    this.currentPlayer = new app.core.PlayerViewModel(this.sectionId, series.id, series.episodes);
+    this.currentPlayer = new app.series.PlayerViewModel(this.sectionId, series.id, series.episodes);
     this.currentPlayer.load();
     await this.currentPlayer.waitAsync();
   }
@@ -79,25 +79,17 @@ export class MainViewModel implements app.core.IController {
   @mobx.computed
   get pages() {
     if (!this.source) return;
-    const series = this.source
-      .filter(app.createFilter(this.menu))
-      .sort(app.createSort(this.menu))
-      .map(x => new app.core.SeriesViewModel(this, this.sectionId, x));
-    return Array.from(ui.createPages(24, this.menu.ascending
-      ? series
-      : series.reverse()));
+    return Array.from(ui.createPages(24, this.source
+      .filter(app.menu.createFilter(this.menu))
+      .sort(app.menu.createSort(this.menu))
+      .map(x => new app.series.SeriesViewModel(this, this.sectionId, x))));
   }
 
-  @mobx.computed
-  get viewState() {
-    return new app.ViewState(this.menu.search.value);
-  }
-  
   @mobx.observable
-  currentPlayer?: app.core.PlayerViewModel;
+  currentPlayer?: app.series.PlayerViewModel;
 
   @mobx.observable
-  menu: app.MenuViewModel;
+  menu: app.menu.MenuViewModel;
   
   @mobx.observable
   source?: Array<api.models.SeriesEntry>;

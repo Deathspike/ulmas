@@ -8,6 +8,7 @@ export class LocalStorage<T extends string> {
 
   @mobx.action
   change(value: T) {
+    if (this.value === value) return;
     this.value = value;
     localStorage.setItem(this.key, value);
   }

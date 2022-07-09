@@ -5,19 +5,19 @@ import {core} from 'client/core';
 
 export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.title && (
   <ui.HeaderView tabIndex={-1} title={vm.title}
-    additionalContent={<app.MenuView vm={vm.menu} />}
+    additionalContent={<app.menu.MenuView vm={vm.menu} />}
     onButton={core.input.click(() => vm.onBackAsync())}
     onKeyDown={core.input.keyDown(k => vm.handleKey(k))}>
     <ui.EventListener onEvent={x => vm.handleEvent(x)} />
     <ui.material.Grid sx={styles.moviesContainer}>
       {vm.pages?.map((x, i) => (
         <ui.ImageLinkGridView key={i} imageHeight={21} columns={6} columnGap={2} rowGap={1}>
-          {x.map(x => <app.core.MovieView key={x.source.id} id={`movie-${x.source.id}`} vm={x} />)}
+          {x.map(x => <app.movies.MovieView key={x.source.id} id={`movie-${x.source.id}`} vm={x} />)}
         </ui.ImageLinkGridView>
       ))}
     </ui.material.Grid>
     {vm.currentPlayer
-      ? <app.core.PlayerView vm={vm.currentPlayer} />
+      ? <app.movies.PlayerView vm={vm.currentPlayer} />
       : undefined}
   </ui.HeaderView>
 ));

@@ -3,17 +3,18 @@ import * as mobx from 'mobx';
 export class DebounceSearch {
   private debounceTimeout?: NodeJS.Timeout;
   
-  constructor(value = '') {
-    this.debounceValue = value;
-    this.value = value;
+  constructor(private readonly key: string) {
+    this.debounceValue = sessionStorage.getItem(key) ?? '';
+    this.value = this.debounceValue;
     mobx.makeObservable(this);
   }
 
   @mobx.action
   clear() {
     this.debounceValue = '';
-    this.value = '';
+    this.value = this.debounceValue;
     this.stopDebounce();
+    sessionStorage.removeItem(this.key);
   }
 
   @mobx.action
@@ -21,6 +22,7 @@ export class DebounceSearch {
     if (this.value === value) return;
     this.value = value;
     this.startDebounce();
+    sessionStorage.setItem(this.key, value);
   }
   
   @mobx.observable

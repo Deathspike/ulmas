@@ -27,8 +27,7 @@ export class MovieViewModel {
 
   @mobx.action
   open() {
-    const viewState = this.controller.viewState;
-    routes.movies.movie(this.sectionId, this.source.id, viewState);
+    routes.movies.movie.router(this.sectionId, this.source.id);
   }
 
   @mobx.action

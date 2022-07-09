@@ -22,5 +22,5 @@ function App() {
   document.title = `${packageData.name} (${packageData.version})`;
   mobx.configure({enforceActions: 'never'});
   ReactDOM.render(<App />, document.getElementById('container'));
-  routes.main();
+  routes.main.router();
 })();

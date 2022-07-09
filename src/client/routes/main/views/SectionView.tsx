@@ -12,7 +12,7 @@ export const SectionView = ui.createView<{vm: app.SectionMoviesViewModel | app.S
       {vm.title}
     </ui.material.Typography>
     <ui.ImageLinkGridView imageHeight={21} columns={6} columnGap={2} rowGap={1}>
-      {vm.latest.map(x => (
+      {vm.previewItems.map(x => (
         <ui.ExclusiveView key={x.source.id}>
           {x instanceof app.movies.MovieViewModel
             ? <app.movies.MovieView id={`${vm.id}-${x.source.id}`} vm={x} />
@@ -20,7 +20,7 @@ export const SectionView = ui.createView<{vm: app.SectionMoviesViewModel | app.S
         </ui.ExclusiveView>
       ))}
     </ui.ImageLinkGridView>
-    {vm.latest.length
+    {vm.previewItems.length
       ? undefined
       : <ui.material.Typography sx={styles.title}>{app.language.missingMedia}</ui.material.Typography>}
   </ui.material.Grid>

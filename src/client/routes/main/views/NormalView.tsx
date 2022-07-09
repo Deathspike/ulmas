@@ -14,7 +14,7 @@ export const NormalView = ui.createView<{vm: app.MainViewModel}>(({vm}) => (
           : <app.series.SeriesView key={x.source.id} id={`continue-${x.source.id}`} vm={x} />)}
       </ui.ImageLinkGridView>
     </ui.material.Grid>}
-    {vm.sections?.map(x => <app.SectionView key={x.id} vm={x} />)}
+    {vm.source?.map(x => <app.SectionView key={x.id} vm={x} />)}
   </React.Fragment>
 ));
 

@@ -1,14 +1,12 @@
 import * as app from '..';
 import * as mobx from 'mobx';
-import {DebounceSearch} from 'client/core';
-import {LocalStorage} from 'client/core';
 
 export class MenuViewModel {
-  constructor(private readonly mvm: app.MainViewModel, viewState?: app.ViewState) {
-    this.filter = new LocalStorage('series.filter', 'all');
-    this.order = new LocalStorage('series.order', 'descending');
-    this.search = new DebounceSearch(viewState?.search);
-    this.sort = new LocalStorage('series.sort', 'dateEpisodeAdded');
+  constructor(private readonly controller: app.IController) {
+    this.filter = new app.LocalStorage('menu.filter', 'all');
+    this.order = new app.LocalStorage('menu.order', 'descending');
+    this.search = new app.DebounceSearch('menu.search');
+    this.sort = new app.LocalStorage('menu.sort', 'dateAdded');
     mobx.makeObservable(this);
   }
 
@@ -34,10 +32,10 @@ export class MenuViewModel {
       requestAnimationFrame(() => window.scrollTo(0, 0));
     }
   }
-
+  
   @mobx.action
   async refreshAsync() {
-    await this.mvm.refreshAsync();
+    await this.controller.refreshAsync();
     requestAnimationFrame(() => window.scrollTo(0, 0));
   }
 
@@ -47,14 +45,14 @@ export class MenuViewModel {
   }
   
   @mobx.observable
-  filter: LocalStorage<'all' | 'played' | 'unplayed'>;
+  filter: app.LocalStorage<'all' | 'played' | 'unplayed'>;
 
   @mobx.observable
-  order: LocalStorage<'ascending' | 'descending'>;
+  order: app.LocalStorage<'ascending' | 'descending'>;
 
   @mobx.observable
-  search: DebounceSearch;
+  search: app.DebounceSearch;
 
   @mobx.observable
-  sort: LocalStorage<'dateAdded' | 'dateEpisodeAdded' | 'lastPlayed' | 'premieredDate' | 'title'>;
+  sort: app.LocalStorage<'dateAdded' | 'lastPlayed' | 'premieredDate' | 'title'>;
 }

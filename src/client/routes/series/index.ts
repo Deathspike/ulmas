@@ -1,2 +1,2 @@
-export {main} from './main';
-export {series} from './series';
+export * as main from './main';
+export * as series from './series';
