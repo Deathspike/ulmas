@@ -70,6 +70,7 @@ export class MainViewModel {
       const movie = await core.api.movies.itemAsync(this.sectionId, this.movieId);
       if (movie.value) {
         this.source = movie.value;
+        requestAnimationFrame(() => window.scrollTo(0, 0));
       } else {
         // TODO: Handle error.
       }

@@ -102,6 +102,7 @@ export class MainViewModel {
         this.currentSeason = this.seasons.length !== 1
           ? this.seasons.find(x => x.season === this.currentSeason?.season)
           : this.seasons[0];
+        requestAnimationFrame(() => window.scrollTo(0, 0));
       } else {
         // TODO: Handle error.
       }

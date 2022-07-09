@@ -50,6 +50,7 @@ export class MainViewModel implements app.menu.IController {
         this.source = new Array<app.SectionMoviesViewModel | app.SectionSeriesViewModel>()
           .concat(sections.map(x => x!))
           .sort((a, b) => a.title.localeCompare(b.title));
+        requestAnimationFrame(() => window.scrollTo(0, 0));
       } else {
         // TODO: Handle error.
       }
