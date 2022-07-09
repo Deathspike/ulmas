@@ -23,7 +23,7 @@ export class SectionMoviesViewModel implements app.movies.IController {
 
   @mobx.action
   open() {
-    routes.movies.main.router(this.id);
+    routes.movies.main.open(this.id);
   }
 
   @mobx.action

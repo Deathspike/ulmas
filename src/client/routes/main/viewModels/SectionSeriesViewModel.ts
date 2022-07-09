@@ -23,7 +23,7 @@ export class SectionSeriesViewModel implements app.series.IController {
   
   @mobx.action
   open() {
-    routes.series.main.router(this.id);
+    routes.series.main.open(this.id);
   }
 
   @mobx.action

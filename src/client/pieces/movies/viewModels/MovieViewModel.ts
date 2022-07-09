@@ -27,7 +27,7 @@ export class MovieViewModel {
 
   @mobx.action
   open() {
-    routes.movies.movie.router(this.sectionId, this.source.id);
+    routes.movies.movie.open(this.sectionId, this.source.id);
   }
 
   @mobx.action
