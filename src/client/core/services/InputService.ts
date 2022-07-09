@@ -105,6 +105,7 @@ export class InputService {
 
 function createFilter(current: ReturnType<typeof fetchBox>, dirX: number, dirY: number) {
   return (x: ReturnType<typeof fetchBox>) => {
+    if (x.element.hasAttribute(dirX ? 'data-capture-x' : 'data-capture-y') && x.element.contains(current.element)) return false;
     if (dirX < 0 && current.x - x.x <= 0) return false;
     if (dirX > 0 && current.x - x.x >= 0) return false;
     if (dirY < 0 && current.y - x.y <= 0) return false;
