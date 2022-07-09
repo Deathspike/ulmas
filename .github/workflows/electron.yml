@@ -12,6 +12,6 @@ jobs:
         with:
           node-version: '18'
       - run: npm ci
-      - run: npm run electron:build
+      - run: npm run electron:build -- --publish always
         env:
           GH_TOKEN: ${{secrets.GH_TOKEN}}
