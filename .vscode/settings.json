@@ -1,11 +1,11 @@
 {
-    "editor.tabSize": 2,
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "files.exclude": {
-      "build": true,
-      "dist": true,
-      "node_modules": true,
-      "public/client.min.js": true
-    }
+  "git.pullTags": false,
+  "editor.tabSize": 2,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "files.exclude": {
+    "build": true,
+    "dist": true,
+    "node_modules": true,
+    "public/client.min.js": true
   }
-  
+}
