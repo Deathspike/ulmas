@@ -1,7 +1,7 @@
-name: electron
+name: electron-release
 on: workflow_dispatch
 jobs:
-  build:
+  release:
     runs-on: ${{matrix.os}}
     strategy:
       matrix:

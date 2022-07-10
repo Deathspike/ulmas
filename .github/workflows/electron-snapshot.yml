@@ -1,0 +1,34 @@
+name: electron-snapshot
+on:
+  push:
+    branches: [master]
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const script = require('./.github/scripts/electron-snapshot-prune.js')
+            await script(github, context)
+  release:
+    needs: prune
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const script = require('./.github/scripts/electron-snapshot-release.js')
+            await script()
+      - run: npm ci
+      - run: npm run electron:build -- --publish always
+        env:
+          GH_TOKEN: ${{secrets.GH_TOKEN}}

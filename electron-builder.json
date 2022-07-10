@@ -16,7 +16,8 @@
     "target": "AppImage",
     "publish": [{
       "provider": "github",
-      "publishAutoUpdate": false
+      "publishAutoUpdate": false,
+      "releaseType": "prerelease"
     }]
   },
   "mac": {
@@ -25,7 +26,8 @@
     "target": "dmg",
     "publish": [{
       "provider": "github",
-      "publishAutoUpdate": false
+      "publishAutoUpdate": false,
+      "releaseType": "prerelease"
     }]
   },
   "win": {
@@ -33,7 +35,8 @@
     "target": "nsis",
     "publish": [{
       "provider": "github",
-      "publishAutoUpdate": false
+      "publishAutoUpdate": false,
+      "releaseType": "prerelease"
     }]
   }
 }
