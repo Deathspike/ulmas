@@ -38,5 +38,11 @@
       "publishAutoUpdate": false,
       "releaseType": "prerelease"
     }]
+  },
+  "dmg": {
+    "writeUpdateInfo": false
+  },
+  "nsis": {
+    "differentialPackage": false
   }
 }
