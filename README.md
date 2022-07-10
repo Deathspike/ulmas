@@ -25,13 +25,13 @@ Ulmas is a *media solution*, akin to the likes of *Emby*, *Jellyfin*, *Kodi* or 
 
 ### Linux
 
-1. [Download the latest Linux image](https://github.com/Deathspike/ulmas/releases).
+1. [Download the latest Linux image](https://github.com/Deathspike/ulmas/releases/latest).
 2. Make the Ulmas *AppImage* executable.
 3. Run Ulmas. Enjoy!
 
 ### macOS
 
-1. [Download the latest Mac installer](https://github.com/Deathspike/ulmas/releases).
+1. [Download the latest Mac installer](https://github.com/Deathspike/ulmas/releases/latest).
 2. Run the installer. Drag Ulmas to *Applications*.
 3. Run Ulmas. *Mac* will block the application. Click on *Cancel*.
 4. Open *Security & Privacy*. Click on the *Lock* icon to make changes.
@@ -40,7 +40,7 @@ Ulmas is a *media solution*, akin to the likes of *Emby*, *Jellyfin*, *Kodi* or 
 
 ### Windows
 
-1. [Download the latest Windows installer](https://github.com/Deathspike/ulmas/releases).
+1. [Download the latest Windows installer](https://github.com/Deathspike/ulmas/releases/latest).
 2. Run the installer. *Windows* will block the installation.
 3. Click on *More Info* and then click on *Run anyway*.
 4. Enjoy Ulmas!
