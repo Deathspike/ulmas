@@ -9,7 +9,12 @@ export const SearchView = ui.createView<{vm: app.SearchViewModel}>(({vm}) => (
       value={vm.current.value}
       onChange={x => vm.change(x.currentTarget.value)}
       onKeyDown={core.input.keyRestore()} />
-    <ui.icons.Search sx={styles.inputIcon} />
+    {vm.current.value && <ui.material.IconButton sx={styles.inputClear}
+      onClick={() => vm.clear()}
+      onKeyDown={core.input.keyRestore()}>
+      <ui.icons.Clear />
+    </ui.material.IconButton>}
+    <ui.icons.Search sx={styles.inputSearch} />
   </ui.material.Grid>
 ));
 
@@ -20,14 +25,21 @@ const styles = {
     position: 'relative',
     width: '15vw'
   },
-  inputIcon: {
+  inputSearch: {
     height: '100%',
     pointerEvent: 'none',
     position: 'absolute',
     left: '0.5vw'
   },
+  inputClear: {
+    position: 'absolute',
+    right: '0.5vw',
+    top: '50%',
+    transform: 'translateY(-50%)',
+  },
   input: {
     paddingLeft: '2vw',
+    paddingRight: '2.5vw',
     height: '100%',
     width: '100%'
   }
