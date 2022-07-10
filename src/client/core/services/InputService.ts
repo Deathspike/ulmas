@@ -44,7 +44,7 @@ export class InputService {
   @mobx.action
   mouseRestore() {
     return (ev: React.MouseEvent) => {
-      focusParent(ev.currentTarget);
+      focusTabbableParent(ev.currentTarget);
       ev.preventDefault();
       ev.stopPropagation();
     };
@@ -85,8 +85,9 @@ export class InputService {
     const bestElement = validElements
       .map(x => x.element)
       .find(Boolean);
-    bestElement?.focus({preventScroll: true});
-    bestElement?.scrollIntoView({behavior: 'smooth', block: 'center'});
+    const element = fetchCaptureParent(dirX, bestElement) ?? bestElement;
+    element?.focus({preventScroll: true});
+    element?.scrollIntoView({behavior: 'smooth', block: 'center'});
   }
 
   private onKeyDown(ev: KeyboardEvent) {
@@ -105,7 +106,6 @@ export class InputService {
 
 function createFilter(current: ReturnType<typeof fetchBox>, dirX: number, dirY: number) {
   return (x: ReturnType<typeof fetchBox>) => {
-    if (x.element.hasAttribute(dirX ? 'data-capture-x' : 'data-capture-y') && x.element.contains(current.element)) return false;
     if (dirX < 0 && current.x - x.x <= 0) return false;
     if (dirX > 0 && current.x - x.x >= 0) return false;
     if (dirY < 0 && current.y - x.y <= 0) return false;
@@ -116,13 +116,11 @@ function createFilter(current: ReturnType<typeof fetchBox>, dirX: number, dirY: 
 
 function createSorter(current: ReturnType<typeof fetchBox>, dirX: number) {
   return (a: ReturnType<typeof fetchBox>, b: ReturnType<typeof fetchBox>) => {
-    const ap = a.element.hasAttribute(dirX ? 'data-capture-x' : 'data-capture-y');
-    const bp = b.element.hasAttribute(dirX ? 'data-capture-x' : 'data-capture-y');
     const ax = Math.abs(current.x - a.x);
     const ay = Math.abs(current.y - a.y);
     const bx = Math.abs(current.x - b.x);
     const by = Math.abs(current.y - b.y);
-    return (ap ? (bp ? 0 : -1) : (bp ? 1 : 0)) || (dirX ? ay - by || ax - bx : ax - bx || ay - by);
+    return (dirX ? ay - by || ax - bx : ax - bx || ay - by);
   };
 }
 
@@ -134,7 +132,19 @@ function fetchBox<T extends Element>(element: T) {
   return {element, index, x, y};
 }
 
-function focusParent(element: Element | null) {
+function fetchCaptureParent(dirX: number, element?: HTMLElement | null) {
+  while (true) {
+    if (!element) {
+      return element;
+    } else if (element.hasAttribute(dirX ? 'data-capture-x' : 'data-capture-y')) {
+      return element;
+    } else {
+      element = element.parentElement;
+    }
+  }
+}
+
+function focusTabbableParent(element: Element | null) {
   while (element) {
     if (!element.getAttribute('tabindex')) {
       element = element.parentElement;
