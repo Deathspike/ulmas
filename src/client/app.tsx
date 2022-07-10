@@ -12,8 +12,8 @@ function App() {
   return (
     <ui.material.ThemeProvider theme={ui.theme}>
       <ui.material.CssBaseline />
-      <InputView />
       <ScreenView />
+      <InputView />
     </ui.material.ThemeProvider>
   );
 }
