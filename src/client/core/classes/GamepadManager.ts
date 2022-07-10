@@ -4,6 +4,12 @@ export class GamepadManager {
   private readonly gamepads: Record<number, core.GamepadObserver> = [];
   private tickInterval?: NodeJS.Timer;
 
+  static createEmulator() {
+    const manager = new GamepadManager();
+    window.addEventListener('gamepadconnected', x => manager.connect(x.gamepad.index));
+    window.addEventListener('gamepaddisconnected', x => manager.disconnect(x.gamepad.index));
+  }
+
   connect(index: number) {
     this.gamepads[index] = new core.GamepadObserver(index);
     this.tickInterval ??= setInterval(() => this.onTick(), 100);

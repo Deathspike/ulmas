@@ -1,7 +1,6 @@
 export * from './functions';
 export * from './language';
 export * from './types';
-export * from './classes/LocalStorage';
 export * from './classes/SessionStorage';
 export * from './viewModels/MainViewModel';
 export * from './viewModels/SearchViewModel';

@@ -21,14 +21,14 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.sour
           {vm.source.title}
         </ui.material.Typography>
         <ui.material.Grid>
-          <ui.material.Button sx={styles.buttonPrimary} tabIndex={1}
+          <ui.material.Button sx={styles.buttonPrimary} tabIndex={0}
             disabled={!vm.source.episodes.length}
             variant="contained"
             onClick={core.input.click(() => vm.playAsync())}
             onKeyDown={core.input.keyRestore()}>
             <ui.icons.PlayArrow />
           </ui.material.Button>
-          <ui.material.Button sx={styles.buttonSecondary} tabIndex={1}
+          <ui.material.Button sx={styles.buttonSecondary} tabIndex={0}
             color="secondary"
             disabled={!vm.source.episodes.length}
             variant="contained"
@@ -36,7 +36,7 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.sour
             onKeyDown={core.input.keyRestore()}>
             {vm.unwatchedCount ? <ui.icons.CheckCircleOutlined /> : <ui.icons.CheckCircle />}
           </ui.material.Button>
-          <ui.material.Button sx={styles.buttonSecondary} tabIndex={1}
+          <ui.material.Button sx={styles.buttonSecondary} tabIndex={0}
             color="secondary"
             variant="contained"
             onKeyDown={core.input.keyRestore()}>

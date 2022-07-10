@@ -2,14 +2,13 @@ import * as mobx from 'mobx';
 import * as React from 'react';
 import {core} from 'client/core';
 import {GamepadManager} from 'client/core';
+import {LocalStorage} from 'client/core';
 
 export class InputService {
   constructor() {
-    const manager = new GamepadManager();
+    GamepadManager.createEmulator();
     document.addEventListener('keydown', x => this.onKeyDown(x));
     document.addEventListener('mousemove', x => this.onMouseMove(x));
-    window.addEventListener('gamepadconnected', x => manager.connect(x.gamepad.index));
-    window.addEventListener('gamepaddisconnected', x => manager.disconnect(x.gamepad.index));
     mobx.makeObservable(this);
   }
 
@@ -25,7 +24,6 @@ export class InputService {
   @mobx.action
   keyDown(handler: (keyName: string) => boolean) {
     return (ev: React.KeyboardEvent) => {
-      this.keyboardMode = true;
       if (!core.screen.waitCount && !handler(ev.code.toLowerCase())) return;
       ev.preventDefault();
       ev.stopPropagation();
@@ -35,7 +33,6 @@ export class InputService {
   @mobx.action
   keyRestore(keys = ['enter', 'space']) {
     return (ev: React.KeyboardEvent) => {
-      this.keyboardMode = true;
       if (!core.screen.waitCount && !keys.includes(ev.code.toLowerCase())) return;
       ev.stopPropagation();
     };
@@ -50,9 +47,14 @@ export class InputService {
     };
   }
   
+  @mobx.action
+  tryFocus() {
+    return /^true$/i.test(this.keyboardMode.value) && this.handleKey('arrowdown');
+  }
+
   @mobx.observable
-  keyboardMode = false;
-  
+  keyboardMode = new LocalStorage<'true' | 'false'>('core.keyboard', 'false');
+
   private handleKey(keyName: string) {
     switch (keyName) {
       case 'arrowleft':
@@ -91,14 +93,15 @@ export class InputService {
   }
 
   private onKeyDown(ev: KeyboardEvent) {
-    this.keyboardMode = true;
     if (!core.screen.waitCount && !this.handleKey(ev.code.toLowerCase())) return;
+    this.keyboardMode.change('true');
     ev.preventDefault();
     ev.stopPropagation();
   }
   
   private onMouseMove(ev: MouseEvent) {
-    this.keyboardMode = false;
+    if (!ev.movementX && !ev.movementY) return;
+    this.keyboardMode.change('false');
     ev.preventDefault();
     ev.stopPropagation();
   }

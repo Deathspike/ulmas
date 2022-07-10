@@ -1,5 +1,6 @@
 import * as mobx from 'mobx';
-import {createSelector} from '..';
+import {core} from 'client/core';
+import {createSelector} from 'client/core';
 
 export class StateService {
   constructor() {
@@ -27,7 +28,12 @@ export class StateService {
     const element = selector
       ? document.querySelector<HTMLElement>(selector)
       : undefined;
-    if (element) {
+    const index = element
+      ? Number(element.getAttribute('tabindex'))
+      : undefined;
+    if (element && index === -1) {
+      core.input.tryFocus();
+    } else if (element) {
       element.focus();
     } else if (selector) {
       window.scrollTo(0, 0);

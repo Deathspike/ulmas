@@ -1,12 +1,13 @@
 import * as app from '..';
 import * as mobx from 'mobx';
+import {LocalStorage} from 'client/core';
 
 export class MainViewModel {
   constructor(private readonly controller: app.IController) {
-    this.filter = new app.LocalStorage('menu.filter', 'all');
-    this.order = new app.LocalStorage('menu.order', 'descending');
+    this.filter = new LocalStorage('menu.filter', 'all');
+    this.order = new LocalStorage('menu.order', 'descending');
     this.search = new app.SearchViewModel('menu.search');
-    this.sort = new app.LocalStorage('menu.sort', 'dateAdded');
+    this.sort = new LocalStorage('menu.sort', 'dateAdded');
     mobx.makeObservable(this);
   }
 
@@ -45,14 +46,14 @@ export class MainViewModel {
   }
   
   @mobx.observable
-  filter: app.LocalStorage<'all' | 'played' | 'unplayed'>;
+  filter: LocalStorage<'all' | 'played' | 'unplayed'>;
 
   @mobx.observable
-  order: app.LocalStorage<'ascending' | 'descending'>;
+  order: LocalStorage<'ascending' | 'descending'>;
 
   @mobx.observable
   search: app.SearchViewModel;
 
   @mobx.observable
-  sort: app.LocalStorage<'dateAdded' | 'lastPlayed' | 'premieredDate' | 'title'>;
+  sort: LocalStorage<'dateAdded' | 'lastPlayed' | 'premieredDate' | 'title'>;
 }
