@@ -80,7 +80,9 @@ export class PlayerViewModel {
   private loadExternalPlayer(subtitleUrls: Array<string>, videoUrl: string) {
     const position = this.current.resume ? this.current.resume.position : 0;
     const request = new api.models.MediaRequest({position, subtitleUrls, videoUrl});
-    core.api.media.mpvAsync(request, this.controller.signal).then(x => this.onCompleteAsync(x));
+    core.api.media.mpvAsync(request, this.controller.signal)
+      .then(x => this.onCompleteAsync(x))
+      .finally(() => window.postMessage('focus'));
   }
 
   private moveToNext() {

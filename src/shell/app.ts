@@ -1,4 +1,5 @@
-import * as electron from 'electron';
+import electron from 'electron';
+import path from 'path';
 import {Server} from '../server';
 import {StreamForwarder} from './classes/StreamForwarder';
 const stderrForwarder = StreamForwarder.create(process.stderr);
@@ -16,7 +17,7 @@ function createWindow() {
   if (!mainWindow) {
     const debugWindow = {width: 1280, height: 720, useContentSize: true};
     const isDebugging = electron.app.commandLine.hasSwitch('remote-debugging-port');
-    const webPreferences = {backgroundThrottling: false};
+    const webPreferences = {backgroundThrottling: false, preload: path.join(__dirname, 'preload.js')};
     mainWindow = new electron.BrowserWindow({...debugWindow, fullscreen: !isDebugging, icon: 'electron-icon.png', show: false, webPreferences});
     mainWindow.removeMenu();
     mainWindow.on('ready-to-show', () => mainWindow.show());
@@ -45,6 +46,16 @@ function onWebBeforeInputEvent(event: electron.Event, input: electron.Input) {
   }
 }
 
+function onWebMessage(_: electron.IpcMainEvent, type: string) {
+  switch (type) {
+    case 'focus':
+      if (mainWindow.isFocused()) break;
+      mainWindow?.minimize();
+      mainWindow?.focus();
+      break;
+  }
+}
+
 function onWindowClose() {
   if (process.platform !== 'darwin') electron.app.quit();
   stderrForwarder.unregister();
@@ -64,6 +75,7 @@ if (electron.app.requestSingleInstanceLock()) {
   electron.app.on('ready', startApplication);
   electron.app.on('second-instance', createWindow);
   electron.app.on('window-all-closed', onWindowClose);
+  electron.ipcMain.on('message', onWebMessage);
 } else {
   electron.app.quit();
 }
