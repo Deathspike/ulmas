@@ -1,7 +1,8 @@
 export const language = {
   filterAll: 'All',
-  filterPlayed: 'Played',
-  filterUnplayed: 'Unplayed',
+  filterEnded: 'Ended',
+  filterOngoing: 'Ongoing',
+  filterUnseen: 'Unseen',
   sortDateAdded: 'Date Added',
   sortLastPlayed: 'Last Played',
   sortPremieredDate: 'Premiered Date',

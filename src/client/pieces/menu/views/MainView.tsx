@@ -34,13 +34,17 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => (
         selected={vm.filter.value === 'all'}
         title={app.language.filterAll} />
       <ui.HeaderMenuItemView
-        onClick={() => vm.changeFilter('played')}
-        selected={vm.filter.value === 'played'}
-        title={app.language.filterPlayed} />
+        onClick={() => vm.changeFilter('ended')}
+        selected={vm.filter.value === 'ended'}
+        title={app.language.filterEnded} />
       <ui.HeaderMenuItemView
-        onClick={() => vm.changeFilter('unplayed')}
-        selected={vm.filter.value === 'unplayed'}
-        title={app.language.filterUnplayed} />
+        onClick={() => vm.changeFilter('ongoing')}
+        selected={vm.filter.value === 'ongoing'}
+        title={app.language.filterOngoing} />
+      <ui.HeaderMenuItemView
+        onClick={() => vm.changeFilter('unseen')}
+        selected={vm.filter.value === 'unseen'}
+        title={app.language.filterUnseen} />
     </ui.HeaderMenuView>
     <ui.material.Grid>
       <ui.material.IconButton tabIndex={1}

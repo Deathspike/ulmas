@@ -1,12 +1,14 @@
 import {MovieEntry} from './models';
 import {SeriesEntry} from './models';
 
-export function filterBy(a: MovieEntry | SeriesEntry, filter: 'all' | 'played' | 'unplayed') {
+export function filterBy(a: MovieEntry | SeriesEntry, filter: 'all' | 'ended' | 'ongoing' | 'unseen') {
   switch (filter) {
-    case 'played':
-      return a instanceof MovieEntry ? Boolean(a.watched) : !Boolean(a.unwatchedCount);
-    case 'unplayed':
-      return a instanceof MovieEntry ? !Boolean(a.watched) : Boolean(a.unwatchedCount);
+    case 'ended':
+      return Boolean(a instanceof MovieEntry ? a.watched : !a.unwatchedCount);
+    case 'ongoing':
+      return Boolean(a instanceof MovieEntry ? a.resume : a.unwatchedCount !== a.totalCount && a.unwatchedCount);
+    case 'unseen':
+      return Boolean(a instanceof MovieEntry ? !a.watched : a.unwatchedCount === a.totalCount);
     default:
       return true;
   }
