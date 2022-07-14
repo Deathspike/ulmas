@@ -30,7 +30,7 @@ export class SeasonViewModel {
   open() {
     core.state.save();
     this.mvm.currentSeason = this;
-    requestAnimationFrame(() => core.input.tryFocus() || window.scrollTo(0, 0));
+    requestAnimationFrame(() => Boolean(window.scrollTo(0, 0)) || core.input.tryFocus());
   }
 
   @mobx.action

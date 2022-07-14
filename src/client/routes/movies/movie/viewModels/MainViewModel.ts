@@ -5,6 +5,7 @@ import {core} from 'client/core';
 
 export class MainViewModel {
   constructor(private readonly sectionId: string, private readonly movieId: string) {
+    this.menu = new app.MenuViewModel(this);
     mobx.makeObservable(this);
   }
 
@@ -70,7 +71,6 @@ export class MainViewModel {
       const movie = await core.api.movies.itemAsync(this.sectionId, this.movieId);
       if (movie.value) {
         this.source = movie.value;
-        requestAnimationFrame(() => window.scrollTo(0, 0));
       } else {
         // TODO: Handle error.
       }
@@ -93,6 +93,9 @@ export class MainViewModel {
 
   @mobx.observable
   currentPlayer?: app.movies.PlayerViewModel;
+
+  @mobx.observable
+  menu: app.MenuViewModel;
 
   @mobx.observable
   source?: api.models.Movie;

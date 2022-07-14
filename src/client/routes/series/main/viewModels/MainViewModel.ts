@@ -63,7 +63,6 @@ export class MainViewModel implements app.menu.IController, app.series.IControll
       if (section && series.value) {
         this.source = series.value;
         this.title = section.title;
-        requestAnimationFrame(() => window.scrollTo(0, 0));
       } else if (section) {
         // TODO: Handle error.
       } else {

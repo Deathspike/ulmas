@@ -18,7 +18,7 @@ export class ScreenService {
     core.state.save();
     this.views.push({createAsync});
     await this.buildAsync();
-    requestAnimationFrame(() => core.input.tryFocus() || window.scrollTo(0, 0));
+    requestAnimationFrame(() => Boolean(window.scrollTo(0, 0)) || core.input.tryFocus());
   }
 
   @mobx.action
