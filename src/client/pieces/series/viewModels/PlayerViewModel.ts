@@ -81,7 +81,7 @@ export class PlayerViewModel {
     const position = this.current.resume ? this.current.resume.position : 0;
     const request = new api.models.MediaRequest({position, subtitleUrls, videoUrl});
     core.api.media.mpvAsync(request, this.controller.signal)
-      .then(x => this.onCompleteAsync(x))
+      .then(x => this.onComplete(x))
       .finally(() => window.postMessage('focus'));
   }
 
@@ -97,16 +97,16 @@ export class PlayerViewModel {
     }
   }
 
-  private async onCompleteAsync(resume: api.ServerResponse<api.models.MediaResume>) {
+  private onComplete(resume: api.ServerResponse<api.models.MediaResume>) {
     if (!resume.status) {
       this.isActive = false;
     } else if (!resume.value || !resume.value.total) {
       this.onError();
     } else if (resume.value.position / resume.value.total < 0.9) {
-      await core.api.series.patchAsync(this.sectionId, this.seriesId, api.models.SeriesPatch.create(this.current, resume.value));
+      core.api.series.patchAsync(this.sectionId, this.seriesId, api.models.SeriesPatch.create(this.current, resume.value));
       this.isActive = false;
     } else {
-      await core.api.series.patchAsync(this.sectionId, this.seriesId, api.models.SeriesPatch.create(this.current, true));
+      core.api.series.patchAsync(this.sectionId, this.seriesId, api.models.SeriesPatch.create(this.current, true));
       if (!this.moveToNext()) return;
       this.state = 'pending';
       this.startCounter(() => this.load());

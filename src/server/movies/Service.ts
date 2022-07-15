@@ -19,7 +19,7 @@ export class Service {
   }
   
   async inspectAsync(sectionId: string, rootPaths: Array<string>) {
-    await this.lockService.lockAsync(sectionId, async () => {
+    await this.lockService.lockAsync(sectionId, 'movies', async () => {
       const purgeAsync = this.cacheService.createPurgeable(`movies.${sectionId}`);
       const section: Array<app.api.models.MovieEntry> = [];
       const sectionCache = new SectionCache(sectionId);
@@ -38,7 +38,7 @@ export class Service {
 
   async patchAsync(sectionId: string, movieId: string, moviePatch: app.api.models.MoviePatch) {
     const now = DateTime.utc().toISO({suppressMilliseconds: true});
-    return await this.lockService.lockAsync(sectionId, async () => {
+    return await this.lockService.lockAsync(sectionId, undefined, async () => {
       const sectionCache = new SectionCache(sectionId);
       const section = await sectionCache.loadAsync();
       const movieIndex = section.findIndex(x => x.id === movieId);
