@@ -5,25 +5,30 @@ import {EventService} from './services/EventService';
 
 @nws.WebSocketGateway()
 export class Gateway implements nws.OnGatewayConnection<ws.WebSocket>, nws.OnGatewayDisconnect<ws.WebSocket> {
-  private readonly clients: Array<ws.WebSocket>;
+  private readonly clients: Array<Client> = [];
 
-  constructor(eventService: EventService) {
-    this.clients = [];
-    eventService.addEventListener(x => this.send(x));
+  constructor(
+    private readonly eventService: EventService) {}
+
+  handleConnection(ws: ws.WebSocket) {
+    const eventHandler = this.sendAsync.bind(ws);
+    this.eventService.addEventListener(eventHandler);
+    this.clients.push({ws, eventHandler});
   }
 
-  handleConnection(client: ws.WebSocket) {
-    this.clients.push(client);
+  handleDisconnect(ws: ws.WebSocket) {
+    const index = this.clients.findIndex(x => x.ws === ws);
+    if (index === -1) return;
+    this.clients.splice(index, 1).forEach(x => this.eventService.removeEventListener(x.eventHandler));
   }
 
-  handleDisconnect(client: ws.WebSocket) {
-    const index = this.clients.indexOf(client);
-    if (index !== -1) this.clients.splice(index, 1);
-  }
-
-  private send(event: app.api.models.Event) {
-    if (!this.clients.length) return;
-    const value = JSON.stringify(event);
-    this.clients.forEach(x => x.send(value));
+  private sendAsync(this: ws.WebSocket, event: app.api.models.Event) {
+    this.send(JSON.stringify(event))
+    return Promise.resolve();
   }
 }
+
+type Client = {
+  eventHandler: (event: app.api.models.Event) => Promise<void>;
+  ws: ws.WebSocket;
+};

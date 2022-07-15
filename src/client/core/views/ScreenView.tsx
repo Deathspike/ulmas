@@ -4,7 +4,7 @@ import {core} from 'client/core';
 
 export const ScreenView = ui.createView(() => (
   <React.Fragment>
-    {core.screen.currentView}
+    {core.screen.element}
     {Boolean(core.screen.waitCount) && (
       <ui.material.Backdrop invisible open>
         <ui.material.Fade in style={{transitionDelay: '300ms'}}>

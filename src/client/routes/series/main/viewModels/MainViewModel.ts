@@ -30,15 +30,15 @@ export class MainViewModel implements app.menu.IController, app.series.IControll
 
   @mobx.action
   handleEvent(event: api.models.Event) {
-    if (event.source === 'series'
-      && event.reason === 'update'
-      && !event.resourceId) {
-      this.refreshAsync();
-    } else if (event.source === 'sections'
+    if (event.source === 'sections'
       && event.reason === 'delete'
       && event.sectionId === this.sectionId) {
-      core.screen.backAsync();
-      this.currentPlayer?.close();
+      this.refreshAsync();
+    } else if (event.source === 'series'
+      && event.reason === 'update'
+      && event.sectionId === this.sectionId
+      && !event.resourceId) {
+      this.refreshAsync();
     }
   }
 
@@ -63,10 +63,11 @@ export class MainViewModel implements app.menu.IController, app.series.IControll
       if (section && series.value) {
         this.source = series.value;
         this.title = section.title;
-      } else if (section) {
-        // TODO: Handle error.
+      } else if (series.status === 404) {
+        this.currentPlayer?.close();
+        await core.screen.backAsync();
       } else {
-        // TODO: Handle section not found.
+        // TODO: Handle error.
       }
     });
   }

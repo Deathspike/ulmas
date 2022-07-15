@@ -29,8 +29,15 @@ export class ScreenService {
     });
   }
 
+  @mobx.computed
+  get currentView() {
+    return this.views.length
+      ? this.views[this.views.length - 1]
+      : undefined;
+  }
+
   @mobx.observable
-  currentView?: JSX.Element;
+  element?: JSX.Element;
 
   @mobx.observable
   views: Array<ViewBuilder> = [];
@@ -41,15 +48,13 @@ export class ScreenService {
   private async buildAsync() {
     window.stop();
     await this.waitAsync(async () => {
-      const builder = this.views.length
-        ? this.views[this.views.length - 1]
+      const view = this.currentView;
+      const element = view
+        ? await view.createAsync()
         : undefined;
-      const element = builder
-        ? await builder.createAsync()
-        : undefined;
-      this.currentView = element
-        ? element
-        : this.currentView;
+      if (view === this.currentView) {
+        this.element = element;  
+      }
     });
   }
 }

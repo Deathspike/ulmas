@@ -30,7 +30,10 @@ export class MainViewModel implements app.menu.IController {
 
   @mobx.action
   handleEvent(event: api.models.Event) {
-    if (event.source === 'movies'
+    if (event.source === 'sections'
+      && event.reason === 'delete') {
+      this.refreshAsync();
+    } else if (event.source === 'movies'
       && event.reason === 'update'
       && !event.resourceId) {
       this.refreshAsync();

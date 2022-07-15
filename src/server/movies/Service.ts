@@ -15,7 +15,7 @@ export class Service {
     private readonly contextService: app.core.ContextService,
     private readonly lockService: app.core.LockService,
     private readonly eventService: app.core.EventService) {
-    this.eventService.addEventListener(x => this.handleEvent(x));
+    this.eventService.addEventListener(x => this.handleEventAsync(x));
   }
   
   async inspectAsync(sectionId: string, rootPaths: Array<string>) {
@@ -27,11 +27,11 @@ export class Service {
         for await (const movie of this.inspectRootAsync(rootPath)) {
           await new MovieCache(sectionId, movie.id).saveAsync(movie);
           section.push(app.api.models.MovieEntry.from(movie));
-          this.eventService.send('movies', 'update', sectionId, movie.id);
+          await this.eventService.sendAsync('movies', 'update', sectionId, movie.id);
         }
       }));
       await sectionCache.saveAsync(section);
-      this.eventService.send('movies', 'update', sectionId);
+      await this.eventService.sendAsync('movies', 'update', sectionId);
       await purgeAsync();
     });
   }
@@ -48,9 +48,9 @@ export class Service {
         const movieUpdate = this.patchMovie(movie, moviePatch, now);
         section[movieIndex] = app.api.models.MovieEntry.from(movieUpdate);
         await MovieInfo.saveAsync(movie.path, movieUpdate);
-        this.eventService.send('movies', 'update', sectionId, movie.id);
+        await this.eventService.sendAsync('movies', 'update', sectionId, movie.id);
         await Promise.all([sectionCache.saveAsync(section), movieCache.saveAsync(movieUpdate)]);
-        this.eventService.send('movies', 'update', sectionId);
+        await this.eventService.sendAsync('movies', 'update', sectionId);
         return true;
       } else {
         return false;
@@ -58,10 +58,10 @@ export class Service {
     });
   }
 
-  private handleEvent(event: app.api.models.Event) {
+  private async handleEventAsync(event: app.api.models.Event) {
     if (event.source !== 'sections' || event.reason !== 'delete') return;
     const purgeAsync = this.cacheService.createPurgeable(`movies.${event.sectionId}`);
-    purgeAsync().catch(x => logger.error(x));
+    await purgeAsync();
   }
 
   private async *inspectRootAsync(rootPath: string) {

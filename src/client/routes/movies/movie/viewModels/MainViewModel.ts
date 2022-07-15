@@ -16,8 +16,10 @@ export class MainViewModel {
     } else if (keyName === 'escape') {
       this.onBackAsync();
       return true;
+    } else if (keyName === 'space' && this.currentPlayer?.isActive) {
+      this.currentPlayer.continue();
+      return true;
     } else if (keyName === 'space') {
-      if (this.currentPlayer?.isActive) return true;
       this.playAsync();
       return true;
     } else {
@@ -27,13 +29,18 @@ export class MainViewModel {
 
   @mobx.action
   handleEvent(event: api.models.Event) {
-    if (event.source === 'movies'
+    if (event.source === 'sections'
       && event.reason === 'delete'
-      && event.resourceId === this.movieId) {
-      core.screen.backAsync();
-      this.currentPlayer?.close();
+      && event.sectionId === this.sectionId) {
+      this.refreshAsync();
     } else if (event.source === 'movies'
       && event.reason === 'update'
+      && event.sectionId === this.sectionId
+      && !event.resourceId) {
+      this.refreshAsync();
+    } else if (event.source === 'movies'
+      && event.reason === 'update'
+      && event.sectionId === this.sectionId
       && event.resourceId === this.movieId) {
       this.refreshAsync();
     }
@@ -71,6 +78,9 @@ export class MainViewModel {
       const movie = await core.api.movies.itemAsync(this.sectionId, this.movieId);
       if (movie.value) {
         this.source = movie.value;
+      } else if (movie.status === 404) {
+        this.currentPlayer?.close();
+        await core.screen.backAsync();
       } else {
         // TODO: Handle error.
       }

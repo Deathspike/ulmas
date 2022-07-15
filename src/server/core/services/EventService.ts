@@ -1,25 +1,28 @@
 import * as app from '../..';
 import * as nst from '@nestjs/common';
+const logger = new nst.Logger('Core');
 
 @nst.Injectable()
 export class EventService {
-  private readonly handlers: Array<(event: app.api.models.Event) => void>;
+  private readonly handlers: Array<(event: app.api.models.Event) => Promise<void>>;
 
   constructor() {
     this.handlers = [];
   }
 
-  addEventListener(handler: (event: app.api.models.Event) => void) {
+  addEventListener(handler: (event: app.api.models.Event) => Promise<void>) {
     this.handlers.push(handler);
   }
 
-  removeEventListener(handler: (event: app.api.models.Event) => void) {
+  removeEventListener(handler: (event: app.api.models.Event) => Promise<void>) {
     const index = this.handlers.indexOf(handler);
     if (index !== -1) this.handlers.splice(index, 1);
   }
   
-  send(source: string, reason: string, sectionId: string, resourceId?: string) {
-    const event = new app.api.models.Event({source, reason, sectionId, resourceId});
-    this.handlers.forEach(x => x(event));
+  async sendAsync(source: string, reason: string, sectionId: string, resourceId?: string) {
+    for (const handler of this.handlers) {
+      const event = new app.api.models.Event({source, reason, sectionId, resourceId});
+      await handler(event).catch(x => logger.error(x));
+    }
   }
 }

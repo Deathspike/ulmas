@@ -32,13 +32,18 @@ export class MainViewModel {
 
   @mobx.action
   handleEvent(event: api.models.Event) {
-    if (event.source === 'series'
+    if (event.source === 'sections'
       && event.reason === 'delete'
-      && event.resourceId === this.seriesId) {
-      core.screen.backAsync();
-      this.currentPlayer?.close();
+      && event.sectionId === this.sectionId) {
+      this.refreshAsync();
     } else if (event.source === 'series'
       && event.reason === 'update'
+      && event.sectionId === this.sectionId
+      && !event.resourceId) {
+      this.refreshAsync();
+    } else if (event.source === 'series'
+      && event.reason === 'update'
+      && event.sectionId === this.sectionId
       && event.resourceId === this.seriesId) {
       this.refreshAsync();
     }
@@ -103,6 +108,9 @@ export class MainViewModel {
         this.currentSeason = this.seasons.length !== 1
           ? this.seasons.find(x => x.season === this.currentSeason?.season)
           : this.seasons[0];
+      } else if (series.status === 404) {
+        this.currentPlayer?.close();
+        await core.screen.backAsync();
       } else {
         // TODO: Handle error.
       }
