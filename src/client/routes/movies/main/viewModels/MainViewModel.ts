@@ -51,7 +51,7 @@ export class MainViewModel implements app.menu.IController, app.movies.IControll
   async refreshAsync() {
     await core.screen.waitAsync(async (exclusiveLock) => {
       const sectionsPromise = core.api.sections.readAsync();
-      const moviesPromise = core.api.movies.entriesAsync(this.sectionId);
+      const moviesPromise = core.api.movies.getListAsync(this.sectionId);
       const section = await sectionsPromise.then(x => x.value?.find(x => x.id === this.sectionId));
       const movies = await moviesPromise;
       if (section && movies.value) {

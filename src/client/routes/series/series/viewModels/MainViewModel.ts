@@ -62,7 +62,7 @@ export class MainViewModel {
       if (episodes && this.source) {
         const watched = !!this.unwatchedCount;
         const model = api.models.SeriesPatch.create(episodes.map(x => x.source), watched);
-        await core.api.series.patchAsync(this.sectionId, this.source.id, model);
+        await core.api.series.patchItemAsync(this.sectionId, this.source.id, model);
       }
     });
   }
@@ -88,7 +88,7 @@ export class MainViewModel {
   @mobx.action
   async refreshAsync() {
     await core.screen.waitAsync(async (exclusiveLock) => {
-      const series = await core.api.series.itemAsync(this.sectionId, this.seriesId);
+      const series = await core.api.series.getItemAsync(this.sectionId, this.seriesId);
       if (series.value) {
         this.source = series.value;
         const episodes = this.source.episodes

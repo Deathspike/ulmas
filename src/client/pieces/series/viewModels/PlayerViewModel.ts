@@ -103,10 +103,10 @@ export class PlayerViewModel {
     } else if (!resume.value || !resume.value.total) {
       this.onError();
     } else if (resume.value.position / resume.value.total < 0.9) {
-      core.api.series.patchAsync(this.sectionId, this.seriesId, api.models.SeriesPatch.create(this.current, resume.value));
+      core.api.series.patchItemAsync(this.sectionId, this.seriesId, api.models.SeriesPatch.create(this.current, resume.value));
       this.isActive = false;
     } else {
-      core.api.series.patchAsync(this.sectionId, this.seriesId, api.models.SeriesPatch.create(this.current, true));
+      core.api.series.patchItemAsync(this.sectionId, this.seriesId, api.models.SeriesPatch.create(this.current, true));
       if (!this.moveToNext()) return;
       this.state = 'pending';
       this.startCounter(() => this.load());

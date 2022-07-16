@@ -69,10 +69,10 @@ export class PlayerViewModel {
     } else if (!resume.value || !resume.value.total) {
       this.state = 'error';
     } else if (resume.value.position / resume.value.total < 0.9) {
-      core.api.movies.patchAsync(this.sectionId, this.movie.id, api.models.MoviePatch.create(resume.value));
+      core.api.movies.patchItemAsync(this.sectionId, this.movie.id, api.models.MoviePatch.create(resume.value));
       this.isActive = false;
     } else {
-      core.api.movies.patchAsync(this.sectionId, this.movie.id, api.models.MoviePatch.create(true));
+      core.api.movies.patchItemAsync(this.sectionId, this.movie.id, api.models.MoviePatch.create(true));
       this.isActive = false;
     }
   }

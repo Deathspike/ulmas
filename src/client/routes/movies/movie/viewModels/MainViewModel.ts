@@ -52,7 +52,7 @@ export class MainViewModel {
     await core.screen.waitAsync(async () => {
       if (!this.source) return;
       const model = api.models.MoviePatch.create(!this.source.watched);
-      await core.api.movies.patchAsync(this.sectionId, this.source.id, model);
+      await core.api.movies.patchItemAsync(this.sectionId, this.source.id, model);
     });
   }
 
@@ -67,7 +67,7 @@ export class MainViewModel {
   @mobx.action
   async refreshAsync() {
     await core.screen.waitAsync(async (exclusiveLock) => {
-      const movie = await core.api.movies.itemAsync(this.sectionId, this.movieId);
+      const movie = await core.api.movies.getItemAsync(this.sectionId, this.movieId);
       if (movie.value) {
         this.source = movie.value;
       } else if (movie.status === 404) {

@@ -33,7 +33,7 @@ export class MovieViewModel {
   @mobx.action
   async playAsync() {
     await core.screen
-      .waitAsync(() => core.api.movies.itemAsync(this.sectionId, this.source.id))
+      .waitAsync(() => core.api.movies.getItemAsync(this.sectionId, this.source.id))
       .then(x => x.value && this.controller.playAsync(x.value));
   }
 

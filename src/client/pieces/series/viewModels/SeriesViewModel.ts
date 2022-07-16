@@ -33,7 +33,7 @@ export class SeriesViewModel {
   @mobx.action
   async playAsync() {
     await core.screen
-      .waitAsync(() => core.api.series.itemAsync(this.sectionId, this.source.id))
+      .waitAsync(() => core.api.series.getItemAsync(this.sectionId, this.source.id))
       .then(x => x.value && this.controller.playAsync(x.value));
   }
 

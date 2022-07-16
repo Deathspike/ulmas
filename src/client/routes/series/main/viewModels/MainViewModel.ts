@@ -54,7 +54,7 @@ export class MainViewModel implements app.menu.IController, app.series.IControll
   async refreshAsync() {
     await core.screen.waitAsync(async (exclusiveLock) => {
       const sectionsPromise = core.api.sections.readAsync();
-      const seriesPromise = core.api.series.entriesAsync(this.sectionId);
+      const seriesPromise = core.api.series.getListAsync(this.sectionId);
       const section = await sectionsPromise.then(x => x.value?.find(x => x.id === this.sectionId));
       const series = await seriesPromise;
       if (section && series.value) {

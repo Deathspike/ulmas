@@ -17,12 +17,12 @@ export class Router {
   @nst.Get(':sectionId')
   @swg.ApiResponse({status: 200, type: [app.api.models.MovieEntry]})
   @swg.ApiResponse({status: 404})
-  async entriesAsync(
+  async getListAsync(
     @nst.Param() params: app.api.params.Section,
     @nst.Response() response: express.Response) {
     const cache = new SectionCache(params.sectionId);
     const stats = await fs.promises.stat(cache.fullPath).catch(() => {});
-    if (!stats) await this.inspectAsync(params);
+    if (!stats) await this.scanListAsync(params);
     response.type('json');
     response.sendFile(cache.fullPath, () => response.status(404).end());
   }
@@ -31,18 +31,18 @@ export class Router {
   @nst.HttpCode(204)
   @swg.ApiResponse({status: 204})
   @swg.ApiResponse({status: 404})
-  async inspectAsync(
+  async scanListAsync(
     @nst.Param() params: app.api.params.Section) {
     const sectionList = await this.sectionsService.readAsync('movies');
     const section = sectionList.find(x => x.id === params.sectionId);
     if (!section) throw new nst.NotFoundException();
-    await this.moviesService.inspectAsync(section.id, section.paths);
+    await this.moviesService.scanRootAsync(section.id, section.paths);
   }
 
   @nst.Get(':sectionId/:resourceId')
   @swg.ApiResponse({status: 200, type: app.api.models.Movie})
   @swg.ApiResponse({status: 404})
-  async itemAsync(
+  async getItemAsync(
     @nst.Param() params: app.api.params.Resource,
     @nst.Response() response: express.Response) {
     const cache = new MovieCache(params.sectionId, params.resourceId);
@@ -54,15 +54,26 @@ export class Router {
   @nst.HttpCode(204)
   @swg.ApiResponse({status: 204})
   @swg.ApiResponse({status: 404})
-  async patchAsync(
+  async patchItemAsync(
     @nst.Param() params: app.api.params.Resource,
     @nst.Body() body: app.api.models.MoviePatch) {
     const cache = new SectionCache(params.sectionId);
     const stats = await fs.promises.stat(cache.fullPath).catch(() => {});
-    if (!stats) await this.inspectAsync(params);
+    if (!stats) await this.scanListAsync(params);
     if (!await this.moviesService.patchAsync(params.sectionId, params.resourceId, body)) throw new nst.NotFoundException();
   }
   
+  @nst.Put(':sectionId/:resourceId')
+  @swg.ApiResponse({status: 200, type: app.api.models.Series})
+  @swg.ApiResponse({status: 404})
+  async scanItemAsync(
+    @nst.Param() params: app.api.params.Resource) {
+    const cache = new SectionCache(params.sectionId);
+    const stats = await fs.promises.stat(cache.fullPath).catch(() => {});
+    if (!stats) await this.scanListAsync(params);
+    if (!await this.moviesService.scanMovieAsync(params.sectionId, params.resourceId)) throw new nst.NotFoundException();
+  }
+
   @nst.Get(':sectionId/:resourceId/:mediaId')
   @swg.ApiResponse({status: 200})
   @swg.ApiResponse({status: 404})

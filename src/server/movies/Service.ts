@@ -18,7 +18,7 @@ export class Service {
     this.eventService.addEventListener(x => this.handleEventAsync(x));
   }
   
-  async inspectAsync(sectionId: string, rootPaths: Array<string>) {
+  async scanRootAsync(sectionId: string, rootPaths: Array<string>) {
     await this.lockService.lockAsync(sectionId, 'movies', async () => {
       const purgeAsync = this.cacheService.createPurgeable(`movies.${sectionId}`);
       const section: Array<app.api.models.MovieEntry> = [];
@@ -32,6 +32,32 @@ export class Service {
       await sectionCache.saveAsync(section);
       await this.eventService.sendAsync('movies', sectionId);
       await purgeAsync();
+    });
+  }
+  
+  async scanMovieAsync(sectionId: string, movieId: string) {
+    return await this.lockService.lockAsync(sectionId, undefined, async () => {
+      const sectionCache = new SectionCache(sectionId);
+      const section = await sectionCache.loadAsync();
+      const movieIndex = section.findIndex(x => x.id === movieId);
+      if (movieIndex !== -1) {
+        const movieCache = new MovieCache(sectionId, movieId);
+        const movie = await movieCache.loadAsync();
+        const context = await this.contextService.contextAsync(path.dirname(movie.path));
+        const movieInfo = context.info[path.basename(movie.path)];
+        if (movieInfo) {
+          const movieUpdate = await this
+            .inspectMovieAsync(context, movieInfo)
+            .catch(() => logger.error(`Invalid movie: ${movieInfo.fullPath}`));
+          if (movieUpdate) {
+            section[movieIndex] = app.api.models.MovieEntry.from(movieUpdate);
+            await Promise.all([sectionCache.saveAsync(section), movieCache.saveAsync(movieUpdate)]);
+            await this.eventService.sendAsync('movies', sectionId);
+            return true;
+          }
+        }
+      }
+      return false;
     });
   }
 

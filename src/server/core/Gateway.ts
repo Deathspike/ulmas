@@ -23,7 +23,7 @@ export class Gateway implements nws.OnGatewayConnection<ws.WebSocket>, nws.OnGat
   }
 
   private sendAsync(this: ws.WebSocket, event: app.api.models.Event) {
-    this.send(JSON.stringify(event))
+    this.send(JSON.stringify(event));
     return Promise.resolve();
   }
 }

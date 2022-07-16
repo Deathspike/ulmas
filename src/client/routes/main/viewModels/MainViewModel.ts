@@ -88,10 +88,10 @@ export class MainViewModel implements app.menu.IController {
     return await Promise.all(sections?.map(async (section) => {
       switch (section.type) { 
         case 'movies':
-          const movie = await core.api.movies.entriesAsync(section.id);
+          const movie = await core.api.movies.getListAsync(section.id);
           return movie.value && new app.SectionMoviesViewModel(this, section, movie.value);
         case 'series':
-          const series = await core.api.series.entriesAsync(section.id);
+          const series = await core.api.series.getListAsync(section.id);
           return series.value && new app.SectionSeriesViewModel(this, section, series.value);
         default:
           throw new Error();

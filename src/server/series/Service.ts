@@ -20,7 +20,7 @@ export class Service {
     this.eventService.addEventListener(x => this.handleEventAsync(x));
   }
   
-  async inspectAsync(sectionId: string, rootPaths: Array<string>) {
+  async scanRootAsync(sectionId: string, rootPaths: Array<string>) {
     await this.lockService.lockAsync(sectionId, 'series', async () => {
       const purgeAsync = this.cacheService.createPurgeable(`series.${sectionId}`);
       const section: Array<app.api.models.SeriesEntry> = [];
@@ -34,6 +34,32 @@ export class Service {
       await sectionCache.saveAsync(section);
       await this.eventService.sendAsync('series', sectionId);
       await purgeAsync();
+    });
+  }
+
+  async scanSeriesAsync(sectionId: string, seriesId: string) {
+    return await this.lockService.lockAsync(sectionId, undefined, async () => {
+      const sectionCache = new SectionCache(sectionId);
+      const section = await sectionCache.loadAsync();
+      const seriesIndex = section.findIndex(x => x.id === seriesId);
+      if (seriesIndex !== -1) {
+        const seriesCache = new SeriesCache(sectionId, seriesId);
+        const series = await seriesCache.loadAsync();
+        const context = await this.contextService.contextAsync(path.dirname(series.path));
+        const seriesInfo = context.info['tvshow.nfo'];
+        if (seriesInfo) {
+          const seriesUpdate = await this
+            .inspectSeriesAsync(context, seriesInfo)
+            .catch(() => logger.error(`Invalid series: ${seriesInfo.fullPath}`));
+          if (seriesUpdate) {
+            section[seriesIndex] = app.api.models.SeriesEntry.from(seriesUpdate);
+            await Promise.all([sectionCache.saveAsync(section), seriesCache.saveAsync(seriesUpdate)]);
+            await this.eventService.sendAsync('series', sectionId);
+            return true;
+          }
+        }
+      }
+      return false;
     });
   }
 
