@@ -88,8 +88,10 @@ export class Service {
 
   private async handleEventAsync(event: app.api.models.Event) {
     if (event.type !== 'sections') return;
-    const purgeAsync = this.cacheService.createPurgeable(`series.${event.sectionId}`);
-    await purgeAsync();
+    await this.lockService.lockAsync(event.sectionId, undefined, async () => {
+      const purgeAsync = this.cacheService.createPurgeable(`series.${event.sectionId}`);
+      await purgeAsync();
+    });
   }
 
   private async *inspectRootAsync(rootPath: string) {
