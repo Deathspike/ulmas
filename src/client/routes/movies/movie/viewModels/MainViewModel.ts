@@ -29,19 +29,11 @@ export class MainViewModel {
 
   @mobx.action
   handleEvent(event: api.models.Event) {
-    if (event.source === 'sections'
-      && event.reason === 'delete'
-      && event.sectionId === this.sectionId) {
+    if (event.sectionId !== this.sectionId) {
+      return;
+    } else if (event.type === 'sections') {
       this.refreshAsync();
-    } else if (event.source === 'movies'
-      && event.reason === 'update'
-      && event.sectionId === this.sectionId
-      && !event.resourceId) {
-      this.refreshAsync();
-    } else if (event.source === 'movies'
-      && event.reason === 'update'
-      && event.sectionId === this.sectionId
-      && event.resourceId === this.movieId) {
+    } else if (event.type === 'movies') {
       this.refreshAsync();
     }
   }

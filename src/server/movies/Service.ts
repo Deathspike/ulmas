@@ -27,11 +27,10 @@ export class Service {
         for await (const movie of this.inspectRootAsync(rootPath)) {
           await new MovieCache(sectionId, movie.id).saveAsync(movie);
           section.push(app.api.models.MovieEntry.from(movie));
-          await this.eventService.sendAsync('movies', 'update', sectionId, movie.id);
         }
       }));
       await sectionCache.saveAsync(section);
-      await this.eventService.sendAsync('movies', 'update', sectionId);
+      await this.eventService.sendAsync('movies', sectionId);
       await purgeAsync();
     });
   }
@@ -48,9 +47,8 @@ export class Service {
         const movieUpdate = this.patchMovie(movie, moviePatch, now);
         section[movieIndex] = app.api.models.MovieEntry.from(movieUpdate);
         await MovieInfo.saveAsync(movie.path, movieUpdate);
-        await this.eventService.sendAsync('movies', 'update', sectionId, movie.id);
         await Promise.all([sectionCache.saveAsync(section), movieCache.saveAsync(movieUpdate)]);
-        await this.eventService.sendAsync('movies', 'update', sectionId);
+        await this.eventService.sendAsync('movies', sectionId);
         return true;
       } else {
         return false;
@@ -59,7 +57,7 @@ export class Service {
   }
 
   private async handleEventAsync(event: app.api.models.Event) {
-    if (event.source !== 'sections' || event.reason !== 'delete') return;
+    if (event.type !== 'sections') return;
     const purgeAsync = this.cacheService.createPurgeable(`movies.${event.sectionId}`);
     await purgeAsync();
   }

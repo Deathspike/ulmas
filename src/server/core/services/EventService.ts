@@ -19,9 +19,9 @@ export class EventService {
     if (index !== -1) this.handlers.splice(index, 1);
   }
   
-  async sendAsync(source: string, reason: string, sectionId: string, resourceId?: string) {
+  async sendAsync(type: string, sectionId: string) {
     for (const handler of this.handlers) {
-      const event = new app.api.models.Event({source, reason, sectionId, resourceId});
+      const event = new app.api.models.Event({type, sectionId});
       await handler(event).catch(x => logger.error(x));
     }
   }

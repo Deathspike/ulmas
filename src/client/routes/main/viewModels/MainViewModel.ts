@@ -30,16 +30,11 @@ export class MainViewModel implements app.menu.IController {
 
   @mobx.action
   handleEvent(event: api.models.Event) {
-    if (event.source === 'sections'
-      && event.reason === 'delete') {
+    if (event.type === 'sections') {
       this.refreshAsync();
-    } else if (event.source === 'movies'
-      && event.reason === 'update'
-      && !event.resourceId) {
+    } else if (event.type === 'movies') {
       this.refreshAsync();
-    } else if (event.source === 'series'
-      && event.reason === 'update'
-      && !event.resourceId) {
+    } else if (event.type === 'series') {
       this.refreshAsync();
     }
   }

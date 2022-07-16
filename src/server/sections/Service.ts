@@ -15,14 +15,14 @@ export class Service {
     this.context ??= await Context.loadAsync(app.settings.sections);
     this.context.sections.push(new Section({id, paths, title, type}));
     await Context.saveAsync(app.settings.sections, this.context);
-    await this.eventService.sendAsync('sections', 'update', id);
+    await this.eventService.sendAsync('sections', id);
   }
 
   async deleteAsync(section: Section) {
     this.context ??= await Context.loadAsync(app.settings.sections);
     this.context.sections.splice(this.context.sections.findIndex(x => x.id === section.id), 1);
     await Context.saveAsync(app.settings.sections, this.context);
-    await this.eventService.sendAsync('sections', 'delete', section.id);
+    await this.eventService.sendAsync('sections', section.id);
   }
 
   async readAsync(sectionType?: string) {
@@ -35,6 +35,6 @@ export class Service {
     this.context ??= await Context.loadAsync(app.settings.sections);
     this.context.sections.splice(this.context.sections.findIndex(x => x.id === section.id), 1, section);
     await Context.saveAsync(app.settings.sections, this.context);
-    await this.eventService.sendAsync('sections', 'update', section.id);
+    await this.eventService.sendAsync('sections', section.id);
   }
 }

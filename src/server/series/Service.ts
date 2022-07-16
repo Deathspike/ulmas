@@ -29,11 +29,10 @@ export class Service {
         for await (const series of this.inspectRootAsync(rootPath)) {
           await new SeriesCache(sectionId, series.id).saveAsync(series);
           section.push(app.api.models.SeriesEntry.from(series));
-          await this.eventService.sendAsync('series', 'update', sectionId, series.id);
         }
       }));
       await sectionCache.saveAsync(section);
-      await this.eventService.sendAsync('series', 'update', sectionId);
+      await this.eventService.sendAsync('series', sectionId);
       await purgeAsync();
     });
   }
@@ -52,9 +51,8 @@ export class Service {
         section[seriesIndex] = app.api.models.SeriesEntry.from(seriesUpdate);
         await Promise.all(episodeUpdates.map(x => EpisodeInfo.saveAsync(x.path, x)));
         await SeriesInfo.saveAsync(series.path, series);
-        await this.eventService.sendAsync('series', 'update', sectionId, series.id);
         await Promise.all([sectionCache.saveAsync(section), seriesCache.saveAsync(seriesUpdate)]);
-        await this.eventService.sendAsync('series', 'update', sectionId);
+        await this.eventService.sendAsync('series', sectionId);
         return true;
       } else {
         return false;
@@ -63,7 +61,7 @@ export class Service {
   }
 
   private async handleEventAsync(event: app.api.models.Event) {
-    if (event.source !== 'sections' || event.reason !== 'delete') return;
+    if (event.type !== 'sections') return;
     const purgeAsync = this.cacheService.createPurgeable(`series.${event.sectionId}`);
     await purgeAsync();
   }
