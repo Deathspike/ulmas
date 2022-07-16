@@ -29,13 +29,13 @@ export class MainViewModel implements app.menu.IController, app.series.IControll
   }
 
   @mobx.action
-  handleEvent(event: api.models.Event) {
+  async handleEventAsync(event: api.models.Event) {
     if (event.sectionId !== this.sectionId) {
       return;
     } else if (event.type === 'sections') {
-      this.refreshAsync();
+      await this.refreshAsync();
     } else if (event.type === 'series') {
-      this.refreshAsync();
+      await this.refreshAsync();
     }
   }
 
@@ -52,7 +52,7 @@ export class MainViewModel implements app.menu.IController, app.series.IControll
 
   @mobx.action
   async refreshAsync() {
-    await core.screen.waitAsync(async () => {
+    await core.screen.waitAsync(async (exclusiveLock) => {
       const sectionsPromise = core.api.sections.readAsync();
       const seriesPromise = core.api.series.entriesAsync(this.sectionId);
       const section = await sectionsPromise.then(x => x.value?.find(x => x.id === this.sectionId));
@@ -62,6 +62,7 @@ export class MainViewModel implements app.menu.IController, app.series.IControll
         this.title = section.title;
       } else if (series.status === 404) {
         this.currentPlayer?.close();
+        exclusiveLock.resolve();
         await core.screen.backAsync();
       } else {
         // TODO: Handle error.

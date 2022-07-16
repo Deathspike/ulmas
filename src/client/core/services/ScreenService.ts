@@ -1,7 +1,10 @@
 import * as mobx from 'mobx';
 import {core} from 'client/core';
+import {Future} from 'client/core';
 
 export class ScreenService {
+  private waitQueue: Promise<any> = Promise.resolve();
+
   constructor() {
     mobx.makeObservable(this);
   }
@@ -22,11 +25,18 @@ export class ScreenService {
   }
 
   @mobx.action
-  async waitAsync<T>(runAsync: () => Promise<T>) {
+  async waitAsync<T>(runAsync: (exclusiveLock: Future<void>) => Promise<T>) {
+    let exclusiveLock = new Future<void>();
+    let resultPromise: Promise<any>;
     this.waitCount += 1;
-    return await runAsync().finally(() => {
-      this.waitCount -= 1;
+    this.waitQueue = this.waitQueue.then(async () => {
+      resultPromise = runAsync(exclusiveLock).finally(() => {
+        exclusiveLock.resolve();
+        this.waitCount -= 1;
+      });
+      await exclusiveLock.getAsync();
     });
+    return await this.waitQueue.then(() => resultPromise) as T;
   }
 
   @mobx.computed
@@ -46,16 +56,13 @@ export class ScreenService {
   waitCount = 0;
 
   private async buildAsync() {
-    window.stop();
-    await this.waitAsync(async () => {
-      const view = this.currentView;
-      const element = view
-        ? await view.createAsync()
-        : undefined;
-      if (view === this.currentView) {
-        this.element = element;  
-      }
-    });
+    const view = this.currentView;
+    const element = view
+      ? await view.createAsync()
+      : undefined;
+    if (view === this.currentView) {
+      this.element = element;
+    }
   }
 }
 

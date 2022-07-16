@@ -31,13 +31,13 @@ export class MainViewModel {
   }
 
   @mobx.action
-  handleEvent(event: api.models.Event) {
+  async handleEventAsync(event: api.models.Event) {
     if (event.sectionId !== this.sectionId) {
       return;
     } else if (event.type === 'sections') {
-      this.refreshAsync();
+      await this.refreshAsync();
     } else if (event.type === 'series') {
-      this.refreshAsync();
+      await this.refreshAsync();
     }
   }
 
@@ -87,7 +87,7 @@ export class MainViewModel {
 
   @mobx.action
   async refreshAsync() {
-    await core.screen.waitAsync(async () => {
+    await core.screen.waitAsync(async (exclusiveLock) => {
       const series = await core.api.series.itemAsync(this.sectionId, this.seriesId);
       if (series.value) {
         this.source = series.value;
@@ -102,6 +102,7 @@ export class MainViewModel {
           : this.seasons[0];
       } else if (series.status === 404) {
         this.currentPlayer?.close();
+        exclusiveLock.resolve();
         await core.screen.backAsync();
       } else {
         // TODO: Handle error.

@@ -3,9 +3,9 @@ import * as React from 'react';
 import * as ui from 'client/ui';
 import {core} from 'client/core';
 
-export const EventListener = ui.createView<{onEvent: (event: api.models.Event) => void}>(({onEvent}) => {
+export const EventListener = ui.createView<{onEventAsync: (event: api.models.Event) => Promise<void>}>(({onEventAsync}) => {
   React.useEffect(() => {
-    core.event.addEventListener(onEvent);
-    return () => core.event.removeEventListener(onEvent);
+    core.event.addEventListener(onEventAsync);
+    return () => core.event.removeEventListener(onEventAsync);
   });
 });

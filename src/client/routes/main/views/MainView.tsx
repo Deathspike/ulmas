@@ -7,7 +7,7 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => (
   <ui.HeaderView tabIndex={-1} title={app.language.title}
     additionalContent={<app.menu.MainView vm={vm.menu} />}
     onKeyDown={core.input.keyDown(k => vm.handleKey(k))}>
-    <ui.EventListener onEvent={x => vm.handleEvent(x)} />
+    <ui.EventListener onEventAsync={x => vm.handleEventAsync(x)} />
     <ui.material.Grid sx={styles.rootContainer}>
       {vm.searchResults
         ? <app.SearchView vm={vm} />

@@ -8,7 +8,7 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => vm.titl
     additionalContent={<app.menu.MainView vm={vm.menu} />}
     onButton={core.input.click(() => vm.onBackAsync())}
     onKeyDown={core.input.keyDown(k => vm.handleKey(k))}>
-    <ui.EventListener onEvent={x => vm.handleEvent(x)} />
+    <ui.EventListener onEventAsync={x => vm.handleEventAsync(x)} />
     <ui.material.Grid sx={styles.moviesContainer}>
       {vm.pages?.map((x, i) => (
         <ui.ImageLinkGridView key={i} imageHeight={21} columns={6} columnGap={2} rowGap={1}>

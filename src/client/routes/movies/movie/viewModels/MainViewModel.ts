@@ -28,13 +28,13 @@ export class MainViewModel {
   }
 
   @mobx.action
-  handleEvent(event: api.models.Event) {
+  async handleEventAsync(event: api.models.Event) {
     if (event.sectionId !== this.sectionId) {
       return;
     } else if (event.type === 'sections') {
-      this.refreshAsync();
+      await this.refreshAsync();
     } else if (event.type === 'movies') {
-      this.refreshAsync();
+      await this.refreshAsync();
     }
   }
 
@@ -66,12 +66,13 @@ export class MainViewModel {
 
   @mobx.action
   async refreshAsync() {
-    await core.screen.waitAsync(async () => {
+    await core.screen.waitAsync(async (exclusiveLock) => {
       const movie = await core.api.movies.itemAsync(this.sectionId, this.movieId);
       if (movie.value) {
         this.source = movie.value;
       } else if (movie.status === 404) {
         this.currentPlayer?.close();
+        exclusiveLock.resolve();
         await core.screen.backAsync();
       } else {
         // TODO: Handle error.
