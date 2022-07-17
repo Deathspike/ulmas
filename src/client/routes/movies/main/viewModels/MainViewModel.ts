@@ -84,7 +84,7 @@ export class MainViewModel implements app.menu.IController, app.movies.IControll
   }
 
   @mobx.observable
-  currentPlayer?: app.movies.PlayerViewModel;
+  currentPlayer: app.movies.PlayerViewModel | undefined;
 
   @mobx.observable
   menu: app.menu.MainViewModel;

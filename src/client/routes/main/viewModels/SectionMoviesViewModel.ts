@@ -43,6 +43,13 @@ export class SectionMoviesViewModel implements app.movies.IController {
   }
 
   @mobx.computed
+  get currentPlayer() {
+    return this.mvm.currentPlayer instanceof app.movies.PlayerViewModel
+      ? this.mvm.currentPlayer
+      : undefined;
+  }
+  
+  @mobx.computed
   get previewItems() {
     return this.source
       .filter(app.createFilter(this.mvm.menu))
