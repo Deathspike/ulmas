@@ -25,13 +25,14 @@ export class EpisodeInfo {
     return episodeInfo;
   }
 
-  static async saveAsync(fullPath: string, episodeInfo: EpisodeInfo) {
+  static async saveAsync<T extends EpisodeInfo>(fullPath: string, episodeInfo: T) {
     await clv.validateOrReject(episodeInfo);
     const episodeInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(EpisodeInfoXml.parseAsync);
     merge(episodeInfo, episodeInfoXml);
     await fs.promises.mkdir(path.dirname(fullPath), {recursive: true});
     await fs.promises.writeFile(`${fullPath}.tmp`, episodeInfoXml.toString());
     await fs.promises.rename(`${fullPath}.tmp`, fullPath);
+    return episodeInfo;
   }
 
   @clv.IsNumber()
@@ -56,7 +57,7 @@ export class EpisodeInfo {
 
   @clv.IsOptional()
   @clv.IsNumber()
-  @clv.Min(1)
+  @clv.Min(0)
   readonly playCount?: number;
 
   @clv.IsOptional()

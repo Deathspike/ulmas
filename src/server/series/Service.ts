@@ -26,8 +26,11 @@ export class Service {
       const section: Array<app.api.models.SeriesEntry> = [];
       const sectionCache = new SectionCache(sectionId);
       await Promise.all(rootPaths.map(async (rootPath) => {
-        for await (const series of this.inspectRootAsync(rootPath)) {
-          await new SeriesCache(sectionId, series.id).saveAsync(series);
+        for await (const result of this.inspectRootAsync(rootPath)) {
+          const seriesCache = new SeriesCache(sectionId, result.id);
+          const seriesPrevious = await seriesCache.loadAsync().catch(() => undefined);
+          const series = await this.mergeSeriesAsync(result, seriesPrevious);
+          await seriesCache.saveAsync(series);
           section.push(app.api.models.SeriesEntry.from(series));
         }
       }));
@@ -50,6 +53,7 @@ export class Service {
         if (seriesInfo) {
           const seriesUpdate = await this
             .inspectSeriesAsync(context, seriesInfo)
+            .then(x => this.mergeSeriesAsync(x, series))
             .catch(() => logger.error(`Invalid series: ${seriesInfo.fullPath}`));
           if (seriesUpdate) {
             section[seriesIndex] = app.api.models.SeriesEntry.from(seriesUpdate);
@@ -158,6 +162,28 @@ export class Service {
       media: new app.api.models.MediaSource({images, subtitles, videos}),
       dateAdded: episodeInfo.dateAdded ?? DateTime.fromJSDate(episodeStats.birthtime).toUTC().toISO({suppressMilliseconds: true})
     });
+  }
+
+  private async mergeSeriesAsync(series: app.api.models.Series, previous?: app.api.models.Series) {
+    const episodes = await Promise.all(series.episodes.map(x => this.mergeEpisodeAsync(x, previous?.episodes.find(y => x.id == y.id))));
+    return new app.api.models.Series({...series, episodes});
+  }
+
+  private async mergeEpisodeAsync(episode: app.api.models.Episode, previous?: app.api.models.Episode) {
+    if ((typeof episode.lastPlayed === 'undefined' && previous?.lastPlayed)
+      || (typeof episode.playCount === 'undefined' && previous?.playCount)
+      || (typeof episode.resume === 'undefined' && previous?.resume)
+      || (typeof episode.watched === 'undefined' && previous?.watched)) {
+      return await EpisodeInfo.saveAsync(episode.path, new app.api.models.Episode({
+        ...episode,
+        lastPlayed: episode.lastPlayed ?? previous?.lastPlayed,
+        playCount: episode.playCount ?? previous?.playCount,
+        resume: episode.resume ?? previous?.resume,
+        watched: episode.watched ?? previous?.watched
+      }));
+    } else {
+      return episode;
+    }
   }
 
   private patchSeries(series: app.api.models.Series, episodeUpdates: Array<app.api.models.Episode>, now: string) {

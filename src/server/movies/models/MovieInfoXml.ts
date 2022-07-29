@@ -51,17 +51,17 @@ export class MovieInfoXml {
   }
 
   get playCount() {
-    const value = Number(this.$('movie > playcount')
+    const value = this.$('movie > playcount')
       .first()
-      .text());
+      .text();
     return value
-      ? value
+      ? Number(value) || 0
       : undefined;
   }
 
   set playCount(value: number | undefined) {
     const selector = this.$('movie > playcount');
-    if (!value) {
+    if (typeof value === 'undefined') {
       selector.first().remove();
     } else if (!selector.length) {
       this.$('movie').prepend(`<playcount>${value}</playcount>`);
@@ -106,14 +106,14 @@ export class MovieInfoXml {
     const value = this.$('movie > watched')
       .first()
       .text();
-    return value.length && /^true$/i.test(value)
-      ? true
+    return value.length
+      ? /^true$/i.test(value)
       : undefined;
   }
 
   set watched(value: boolean | undefined) {
     const selector = this.$('movie > watched');
-    if (!value) {
+    if (typeof value === 'undefined') {
       selector.first().remove();
     } else if (!selector.length) {
       this.$('movie').prepend(`<watched>${value}</watched>`);

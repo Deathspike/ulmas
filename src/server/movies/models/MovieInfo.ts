@@ -23,13 +23,14 @@ export class MovieInfo {
     return movieInfo;
   }
 
-  static async saveAsync(fullPath: string, movieInfo: MovieInfo) {
+  static async saveAsync<T extends MovieInfo>(fullPath: string, movieInfo: T) {
     await clv.validateOrReject(movieInfo);
     const movieInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(MovieInfoXml.parseAsync);
     merge(movieInfo, movieInfoXml);
     await fs.promises.mkdir(path.dirname(fullPath), {recursive: true});
     await fs.promises.writeFile(`${fullPath}.tmp`, movieInfoXml.toString());
     await fs.promises.rename(`${fullPath}.tmp`, fullPath);
+    return movieInfo;
   }
 
   @clv.IsString()
@@ -46,7 +47,7 @@ export class MovieInfo {
 
   @clv.IsOptional()
   @clv.IsNumber()
-  @clv.Min(1)
+  @clv.Min(0)
   readonly playCount?: number;
 
   @clv.IsOptional()

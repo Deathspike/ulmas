@@ -24,8 +24,11 @@ export class Service {
       const section: Array<app.api.models.MovieEntry> = [];
       const sectionCache = new SectionCache(sectionId);
       await Promise.all(rootPaths.map(async (rootPath) => {
-        for await (const movie of this.inspectRootAsync(rootPath)) {
-          await new MovieCache(sectionId, movie.id).saveAsync(movie);
+        for await (const result of this.inspectRootAsync(rootPath)) {
+          const movieCache = new MovieCache(sectionId, result.id);
+          const moviePrevious = await movieCache.loadAsync().catch(() => undefined);
+          const movie = await this.mergeAsync(result, moviePrevious);
+          await movieCache.saveAsync(movie);
           section.push(app.api.models.MovieEntry.from(movie));
         }
       }));
@@ -48,6 +51,7 @@ export class Service {
         if (movieInfo) {
           const movieUpdate = await this
             .inspectMovieAsync(context, movieInfo)
+            .then(x => this.mergeAsync(x, movie))
             .catch(() => logger.error(`Invalid movie: ${movieInfo.fullPath}`));
           if (movieUpdate) {
             section[movieIndex] = app.api.models.MovieEntry.from(movieUpdate);
@@ -130,6 +134,23 @@ export class Service {
       media: new app.api.models.MediaSource({images, subtitles, videos}),
       dateAdded: movieInfo.dateAdded ?? DateTime.fromJSDate(movieStats.birthtime).toUTC().toISO({suppressMilliseconds: true})
     });
+  }
+
+  private async mergeAsync(movie: app.api.models.Movie, previous?: app.api.models.Movie) {
+    if ((typeof movie.lastPlayed === 'undefined' && previous?.lastPlayed)
+      || (typeof movie.playCount === 'undefined' && previous?.playCount)
+      || (typeof movie.resume === 'undefined' && previous?.resume)
+      || (typeof movie.watched === 'undefined' && previous?.watched)) {
+      return await MovieInfo.saveAsync(movie.path, new app.api.models.Movie({
+        ...movie,
+        lastPlayed: movie.lastPlayed ?? previous?.lastPlayed,
+        playCount: movie.playCount ?? previous?.playCount,
+        resume: movie.resume ?? previous?.resume,
+        watched: movie.watched ?? previous?.watched
+      }));
+    } else {
+      return movie;
+    }
   }
 
   private patchMovie(movie: app.api.models.Movie, moviePatch: app.api.models.MoviePatch, now: string) {

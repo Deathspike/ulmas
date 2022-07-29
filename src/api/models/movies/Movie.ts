@@ -49,7 +49,7 @@ export class Movie {
 
   @clv.IsOptional()
   @clv.IsNumber()
-  @clv.Min(1)
+  @clv.Min(0)
   @swg.ApiPropertyOptional()
   readonly playCount?: number;
 

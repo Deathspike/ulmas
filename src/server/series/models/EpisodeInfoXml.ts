@@ -69,17 +69,17 @@ export class EpisodeInfoXml {
   }
 
   get playCount() {
-    const value = Number(this.$('episodedetails > playcount')
+    const value = this.$('episodedetails > playcount')
       .first()
-      .text());
+      .text();
     return value
-      ? value
+      ? Number(value) || 0
       : undefined;
   }
 
   set playCount(value: number | undefined) {
     const selector = this.$('episodedetails > playcount');
-    if (!value) {
+    if (typeof value === 'undefined') {
       selector.first().remove();
     } else if (!selector.length) {
       this.$('episodedetails').prepend(`<playcount>${value}</playcount>`);
@@ -124,14 +124,14 @@ export class EpisodeInfoXml {
     const value = this.$('episodedetails > watched')
       .first()
       .text();
-    return value.length && /^true$/i.test(value)
-      ? true
+    return value.length
+      ? /^true$/i.test(value)
       : undefined;
   }
 
   set watched(value: boolean | undefined) {
     const selector = this.$('episodedetails > watched');
-    if (!value) {
+    if (typeof value === 'undefined') {
       selector.first().remove();
     } else if (!selector.length) {
       this.$('episodedetails').prepend(`<watched>${value}</watched>`);
