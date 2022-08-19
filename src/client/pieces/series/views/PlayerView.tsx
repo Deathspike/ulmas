@@ -5,7 +5,7 @@ import {core} from 'client/core';
 
 export const PlayerView = ui.createView<{vm: app.PlayerViewModel}>(({vm}) => (
   <ui.material.Fade in={vm.isActive} unmountOnExit>
-    <ui.material.Backdrop open>
+    <ui.material.Backdrop sx={styles.backContainer} open>
       <ui.material.Grid sx={styles.rootContainer}>
         <ui.material.Grid sx={styles.titleContainer}>
           <ui.material.Typography variant="h3">
@@ -48,6 +48,9 @@ function getStateTitle(state: app.PlayerViewModel['state']) {
 }
 
 const styles = {
+  backContainer: {
+    zIndex: 3000
+  },
   rootContainer: {
     backgroundColor: '#333',
     width: '30vw',
