@@ -16,9 +16,6 @@ export class MainViewModel {
     } else if (keyName === 'escape') {
       this.onBackAsync();
       return true;
-    } else if (keyName === 'space' && this.currentPlayer?.isActive) {
-      this.currentPlayer.continue();
-      return true;
     } else if (keyName === 'space') {
       this.playAsync();
       return true;
@@ -58,10 +55,14 @@ export class MainViewModel {
 
   @mobx.action
   async playAsync() {
-    if (!this.source) return;
-    this.currentPlayer = new app.movies.PlayerViewModel(this.sectionId, this.source);
-    this.currentPlayer.load();
-    await this.currentPlayer.waitAsync();
+    if (this.currentPlayer?.isActive) {
+      this.currentPlayer.continue();
+      await this.currentPlayer.waitAsync();
+    } else if (this.source) {
+      this.currentPlayer = new app.movies.PlayerViewModel(this.sectionId, this.source);
+      this.currentPlayer.load();
+      await this.currentPlayer.waitAsync();
+    }
   }
 
   @mobx.action

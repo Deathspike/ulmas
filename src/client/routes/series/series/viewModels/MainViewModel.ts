@@ -19,9 +19,6 @@ export class MainViewModel {
     } else if (keyName === 'escape') {
       this.onBackAsync();
       return true;
-    } else if (keyName === 'space' && this.currentPlayer?.isActive) {
-      this.currentPlayer.continue();
-      return true;
     } else if (keyName === 'space') {
       this.playAsync();
       return true;
@@ -145,9 +142,13 @@ export class MainViewModel {
   source?: Omit<api.models.Series, 'unwatchedCount'>;
 
   private async loadAsync(episodes: Array<api.models.Episode>, current?: api.models.Episode) {
-    if (!this.source) return;
-    this.currentPlayer = new app.series.PlayerViewModel(this.sectionId, this.source.id, episodes, current);
-    this.currentPlayer.load();
-    await this.currentPlayer.waitAsync();
+    if (this.currentPlayer?.isActive) {
+      this.currentPlayer.continue();
+      await this.currentPlayer.waitAsync();
+    } else if (this.source) {
+      this.currentPlayer = new app.series.PlayerViewModel(this.sectionId, this.source.id, episodes, current);
+      this.currentPlayer.load();
+      await this.currentPlayer.waitAsync();
+    }
   }
 }
