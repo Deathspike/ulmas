@@ -49,7 +49,7 @@ export class Service {
         const seriesCache = new SeriesCache(sectionId, seriesId);
         const series = await seriesCache.loadAsync();
         const context = await this.contextService.contextAsync(path.dirname(series.path));
-        const seriesInfo = context.info['tvshow.nfo'];
+        const seriesInfo = context.info.get('tvshow.nfo');
         if (seriesInfo) {
           const seriesUpdate = await this
             .inspectSeriesAsync(context, seriesInfo)
@@ -100,9 +100,9 @@ export class Service {
 
   private async *inspectRootAsync(rootPath: string) {
     const context = await this.contextService.contextAsync(rootPath);
-    for (const {fullPath} of Object.values(context.directories)) {
+    for (const {fullPath} of context.directories.values()) {
       const context = await this.contextService.contextAsync(fullPath);
-      const seriesInfo = context.info['tvshow.nfo'];
+      const seriesInfo = context.info.get('tvshow.nfo');
       if (seriesInfo) {
         const series = await this
           .inspectSeriesAsync(context, seriesInfo)
@@ -115,21 +115,20 @@ export class Service {
   private async inspectSeriesAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, seriesStats: fs.Stats & {fullPath: string}) {
     const seriesInfo = await SeriesInfo
       .loadAsync(seriesStats.fullPath);
-    const rootEpisodes = await app.sequenceAsync(
-      Object.entries(context.info).filter(([x]) => x !== 'tvshow.nfo'),
-      ([_, x]) => this.inspectEpisodeAsync(context, x).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
-    const subdirContexts = await app.sequenceAsync(
-      Object.values(context.directories),
-      x => this.contextService.contextAsync(x.fullPath));
-    const subdirEpisodes = await app.sequenceAsync(
-      subdirContexts.flatMap(context => Object.values(context.info).map(x => ({context, ...x}))),
-      x => this.inspectEpisodeAsync(x.context, x).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
-    const episodes = fun.ensure(rootEpisodes
-      .concat(subdirEpisodes))
+    const rootEpisodes = app.linq(context.info.entries())
+      .filter(([x]) => x !== 'tvshow.nfo')
+      .map(([_, x]) => this.inspectEpisodeAsync(context, x).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
+    const subdirEpisodes = app.linq(context.directories.values())
+      .map(x => this.contextService.contextAsync(x.fullPath))
+      .flatMap(context => app.linq(context.info.values()).map(x => ({context, ...x})))
+      .map(x => this.inspectEpisodeAsync(x.context, x).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
+    const episodes = (await rootEpisodes.concat(subdirEpisodes)
+      .toArray())
       .sort((a, b) => a.season - b.season || a.episode - b.episode);
-    const images = Object.entries(context.images)
+    const images = await app.linq(context.images.entries())
       .filter(([_, x]) => episodes.every(y => !y.media.images?.some(z => z.path === x.fullPath)))
-      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
+      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}))
+      .toArray();
     return new app.api.models.Series({
       ...seriesInfo,
       id: app.id(seriesStats.fullPath),
@@ -146,15 +145,18 @@ export class Service {
     const {name} = path.parse(episodeStats.fullPath);
     const episodeInfo = await EpisodeInfo
       .loadAsync(episodeStats.fullPath);
-    const images = Object.entries(context.images)
+    const images = await app.linq(context.images.entries())
       .filter(([x]) => x.startsWith(`${name}-`))
-      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
-    const subtitles = Object.entries(context.subtitles)
+      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}))
+      .toArray();
+    const subtitles = await app.linq(context.subtitles.entries())
       .filter(([x]) => x.startsWith(`${name}.`))
-      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
-    const videos = Object.entries(context.videos)
+      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}))
+      .toArray();
+    const videos = await app.linq(context.videos.entries())
       .filter(([x]) => x.startsWith(`${name}.`))
-      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}));
+      .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}))
+      .toArray();
     return new app.api.models.Episode({
       ...episodeInfo,
       id: app.id(episodeStats.fullPath),
@@ -196,12 +198,12 @@ export class Service {
   }
 
   private *patchSeriesEpisodes(series: app.api.models.Series, seriesPatch: app.api.models.SeriesPatch, now: string) {
-    const episodePatches = seriesPatch.episodes
-      .map(x => ({i: series.episodes.findIndex(y => y.id === x.id), x}))
-      .filter(({i}) => i !== -1);
-    for (const {x, i} of episodePatches) {
-      series.episodes[i] = this.patchEpisode(series.episodes[i], x, now);
-      yield series.episodes[i];
+    for (const episode of seriesPatch.episodes) {
+      const index = series.episodes.findIndex(y => y.id === episode.id);
+      if (index !== -1) {
+        series.episodes[index] = this.patchEpisode(series.episodes[index], episode, now);
+        yield series.episodes[index];
+      }
     }
   }
 

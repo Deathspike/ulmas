@@ -1,3 +1,4 @@
+import * as app from '.';
 import crypto from 'crypto'
 
 export function id(value: string) {
@@ -6,8 +7,6 @@ export function id(value: string) {
   return hash.digest('base64url'); 
 }
 
-export async function sequenceAsync<T, R>(items: Array<T>, fn: (item: T) => Promise<R>) {
-  const result: Array<R> = Array(items.length);
-  for (let i = 0; i < items.length; i++) result[i] = await fn(items[i]);
-  return result;
+export function linq<T>(items: AsyncIterable<T> | Iterable<T> | Promise<Array<T>>) {
+  return new app.LinqIterable(items);
 }

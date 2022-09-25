@@ -1,7 +1,7 @@
 import * as core from 'client/core';
 
 export class GamepadManager {
-  private readonly gamepads: Record<number, core.GamepadObserver> = [];
+  private readonly gamepads = new Map<number, core.GamepadObserver>();
   private tickInterval?: NodeJS.Timer;
 
   static createEmulator() {
@@ -11,13 +11,13 @@ export class GamepadManager {
   }
 
   connect(index: number) {
-    this.gamepads[index] = new core.GamepadObserver(index);
+    this.gamepads.set(index, new core.GamepadObserver(index));
     this.tickInterval ??= setInterval(() => this.onTick(), 100);
   }
 
   disconnect(index: number) {
-    delete this.gamepads[index];
-    if (!Object.keys(this.gamepads).length && this.tickInterval) {
+    this.gamepads.delete(index);
+    if (!this.gamepads.size && this.tickInterval) {
       clearInterval(this.tickInterval);
       delete this.tickInterval;
     }
@@ -27,7 +27,7 @@ export class GamepadManager {
     const activeElement = document.activeElement && document.activeElement !== document.body
       ? document.activeElement
       : document.documentElement;
-    for (const gamepad of Object.values(this.gamepads)) {
+    for (const gamepad of this.gamepads.values()) {
       const buttons = Array.from(gamepad.buttons());
       const keyNames = buttons.map(translateButton);
       for (const keyName of keyNames) {

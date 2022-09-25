@@ -15,11 +15,11 @@ export class ContextService {
   private async inspectAsync(context: Context, rootPath: string, name: string) {
     const extname = path.extname(name);
     const stats = await this.statAsync(rootPath, name);
-    if (stats.isDirectory()) context.directories[name] = stats;
-    else if (/^\.(gif|jpg|png|webp)$/i.test(extname)) context.images[name] = stats;
-    else if (/^\.(nfo)$/i.test(extname)) context.info[name] = stats;
-    else if (/^\.(ass|idx|srt|vtt)$/i.test(extname)) context.subtitles[name] = stats;
-    else if (/^\.(avi|mp4|mkv|ogm|webm)$/i.test(extname)) context.videos[name] = stats;
+    if (stats.isDirectory()) context.directories.set(name, stats);
+    else if (/^\.(gif|jpg|png|webp)$/i.test(extname)) context.images.set(name, stats);
+    else if (/^\.(nfo)$/i.test(extname)) context.info.set(name, stats);
+    else if (/^\.(ass|idx|srt|vtt)$/i.test(extname)) context.subtitles.set(name, stats);
+    else if (/^\.(avi|mp4|mkv|ogm|webm)$/i.test(extname)) context.videos.set(name, stats);
   }
 
   private async statAsync(rootPath: string, name: string) {

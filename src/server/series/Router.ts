@@ -33,8 +33,8 @@ export class Router {
   @swg.ApiResponse({status: 404})
   async scanListAsync(
     @nst.Param() params: app.api.params.Section) {
-    const sectionList = await this.sectionsService.readAsync('series');
-    const section = sectionList.find(x => x.id === params.sectionId);
+    const sectionList = await this.sectionsService.readAsync();
+    const section = sectionList.find(x => x.id === params.sectionId && x.type === 'series');
     if (!section) throw new nst.NotFoundException();
     await this.seriesService.scanRootAsync(section.id, section.paths);
   }

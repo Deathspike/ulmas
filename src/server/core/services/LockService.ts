@@ -2,19 +2,20 @@ import * as nst from '@nestjs/common';
 
 @nst.Injectable()
 export class LockService {
-  private readonly entries: Record<string, Lock> = {};
+  private readonly entries = new Map<string, Lock>();
 
   async lockAsync<T>(key: string, reason: string | undefined, runAsync: () => Promise<T>) {
     while (true) {
-      if (!this.entries[key]) {
-        const result = runAsync().finally(() => delete this.entries[key]);
-        this.entries[key] = {reason, result};
+      const entry = this.entries.get(key);
+      if (!entry) {
+        const result = runAsync().finally(() => this.entries.delete(key));
+        this.entries.set(key, {reason, result});
         return await result as T;
-      } else if (reason && this.entries[key].reason === reason) {
-        const result = this.entries[key].result;
+      } else if (reason && entry.reason === reason) {
+        const result = entry.result;
         return await result as T;
       } else {
-        const result = this.entries[key].result;
+        const result = entry.result;
         await result.catch(() => {});
       }
     }

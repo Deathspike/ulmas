@@ -1,7 +1,7 @@
 export class GamepadObserver {
   constructor(
     private readonly index: number,
-    private readonly states: Record<number, number> = {}) {}
+    private readonly states = new Map<number, number>()) {}
 
   *buttons() {
     const gamepads = navigator.getGamepads();
@@ -14,13 +14,15 @@ export class GamepadObserver {
   }
 
   private *checkAxes(gamepad: Gamepad, now: number) {
-    for (let i = 0; i < gamepad.axes.length; i++) {
-      const axis = gamepad.axes[i];
-      const vertical = i % 2;
+    for (let axisIndex = 0; axisIndex < gamepad.axes.length; axisIndex++) {
+      const axis = gamepad.axes[axisIndex];
+      const vertical = axisIndex % 2;
+      const i = vertical ? (axis < 0 ? 12 : 13) : (axis < 0 ? 14 : 15);
       if (Math.abs(axis) >= 0.5) {
-        const button = vertical ? (axis < 0 ? 12 : 13) : (axis < 0 ? 14 : 15);
-        if (!this.states[button]) yield button;
-        this.states[button] = now;
+        if (!this.states.has(i)) yield i;
+        this.states.set(i, now);
+      } else if (this.states.has(i) && Number(this.states.get(i)) < now) {
+        this.states.delete(i);
       }
     }
   }
@@ -29,11 +31,10 @@ export class GamepadObserver {
     for (let i = 0; i < gamepad.buttons.length; i++) {
       const button = gamepad.buttons[i];
       if (button.pressed) {
-        if (this.states[i]) continue;
-        this.states[i] = now;
-        yield i;
-      } else if (this.states[i] < now) {
-        this.states[i] = 0;
+        if (!this.states.has(i)) yield i;
+        this.states.set(i, now);
+      } else if (this.states.has(i) && Number(this.states.get(i)) < now) {
+        this.states.delete(i);
       }
     }
   }

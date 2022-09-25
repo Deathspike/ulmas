@@ -25,10 +25,10 @@ export class Service {
     await this.eventService.sendAsync('sections', section.id);
   }
 
-  async readAsync(sectionType?: string) {
+  async readAsync() {
     this.context ??= await Context.loadAsync(app.settings.sections);
     this.context.sections.sort((a, b) => a.title.localeCompare(b.title));
-    return sectionType ? this.context.sections.filter(x => x.type === sectionType) : this.context.sections;
+    return this.context.sections;
   }
 
   async updateAsync(section: Section) {
