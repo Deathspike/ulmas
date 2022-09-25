@@ -28,9 +28,14 @@ export class SectionMoviesViewModel implements app.movies.IController {
 
   @mobx.action
   async playAsync(movie: api.models.Movie) {
-    this.mvm.currentPlayer = new app.movies.PlayerViewModel(this.id, movie);
-    this.mvm.currentPlayer.load();
-    await this.mvm.currentPlayer.waitAsync();
+    if (this.mvm.currentPlayer?.isActive) {
+      this.mvm.currentPlayer.continue();
+      await this.mvm.currentPlayer.waitAsync();
+    } else {
+      this.mvm.currentPlayer = new app.movies.PlayerViewModel(this.id, movie);
+      this.mvm.currentPlayer.load();
+      await this.mvm.currentPlayer.waitAsync();
+    }
   }
 
   @mobx.computed

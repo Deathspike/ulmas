@@ -69,9 +69,14 @@ export class MainViewModel implements app.menu.IController, app.movies.IControll
 
   @mobx.action
   async playAsync(movie: api.models.Movie) {
-    this.currentPlayer = new app.movies.PlayerViewModel(this.sectionId, movie);
-    this.currentPlayer.load();
-    await this.currentPlayer.waitAsync();
+    if (this.currentPlayer?.isActive) {
+      this.currentPlayer.continue();
+      await this.currentPlayer.waitAsync();
+    } else {
+      this.currentPlayer = new app.movies.PlayerViewModel(this.sectionId, movie);
+      this.currentPlayer.load();
+      await this.currentPlayer.waitAsync();
+    }
   }
 
   @mobx.computed

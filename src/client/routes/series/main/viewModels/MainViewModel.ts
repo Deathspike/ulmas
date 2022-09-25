@@ -72,9 +72,14 @@ export class MainViewModel implements app.menu.IController, app.series.IControll
 
   @mobx.action
   async playAsync(series: api.models.Series) {
-    this.currentPlayer = new app.series.PlayerViewModel(this.sectionId, series.id, series.episodes);
-    this.currentPlayer.load();
-    await this.currentPlayer.waitAsync();
+    if (this.currentPlayer?.isActive) {
+      this.currentPlayer.continue();
+      await this.currentPlayer.waitAsync();
+    } else {
+      this.currentPlayer = new app.series.PlayerViewModel(this.sectionId, series.id, series.episodes);
+      this.currentPlayer.load();
+      await this.currentPlayer.waitAsync();
+    }
   }
 
   @mobx.computed
