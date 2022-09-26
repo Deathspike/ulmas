@@ -34,9 +34,9 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => (
         selected={vm.filter.value === 'all'}
         title={app.language.filterAll} />
       <ui.HeaderMenuItemView
-        onClick={() => vm.changeFilter('ended')}
-        selected={vm.filter.value === 'ended'}
-        title={app.language.filterEnded} />
+        onClick={() => vm.changeFilter('finished')}
+        selected={vm.filter.value === 'finished'}
+        title={app.language.filterFinished} />
       <ui.HeaderMenuItemView
         onClick={() => vm.changeFilter('ongoing')}
         selected={vm.filter.value === 'ongoing'}

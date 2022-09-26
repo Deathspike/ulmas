@@ -46,7 +46,7 @@ export class MainViewModel {
   }
   
   @mobx.observable
-  filter: LocalStorage<'all' | 'ended' | 'ongoing' | 'unseen'>;
+  filter: LocalStorage<'all' | 'finished' | 'ongoing' | 'unseen'>;
 
   @mobx.observable
   order: LocalStorage<'ascending' | 'descending'>;

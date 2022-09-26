@@ -1,9 +1,9 @@
 import {MovieEntry} from './models';
 import {SeriesEntry} from './models';
 
-export function filterBy(a: MovieEntry | SeriesEntry, filter: 'all' | 'ended' | 'ongoing' | 'unseen') {
+export function filterBy(a: MovieEntry | SeriesEntry, filter: 'all' | 'finished' | 'ongoing' | 'unseen') {
   switch (filter) {
-    case 'ended':
+    case 'finished':
       return Boolean(a instanceof MovieEntry ? a.watched : !a.unwatchedCount);
     case 'ongoing':
       return Boolean(a instanceof MovieEntry ? a.resume : a.unwatchedCount !== a.totalCount && a.unwatchedCount);

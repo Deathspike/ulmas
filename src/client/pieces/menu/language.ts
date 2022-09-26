@@ -1,6 +1,6 @@
 export const language = {
   filterAll: 'All',
-  filterEnded: 'Ended',
+  filterFinished: 'Finished',
   filterOngoing: 'Ongoing',
   filterUnseen: 'Unseen',
   sortDateAdded: 'Date Added',
