@@ -99,9 +99,12 @@ export class Service {
   }
 
   private async *inspectRootAsync(rootPath: string) {
-    const context = await this.contextService.contextAsync(rootPath);
-    for (const {fullPath} of context.directories.values()) {
-      const context = await this.contextService.contextAsync(fullPath);
+    const context = await this.contextService
+      .contextAsync(rootPath);
+    const subdirContexts = app.linq(context.directories.values())
+      .filter(x => !path.basename(x.fullPath).startsWith('.'))
+      .map(x => this.contextService.contextAsync(x.fullPath));
+    for await (const context of subdirContexts) {
       const seriesInfo = context.info.get('tvshow.nfo');
       if (seriesInfo) {
         const series = await this
@@ -200,10 +203,9 @@ export class Service {
   private *patchSeriesEpisodes(series: app.api.models.Series, seriesPatch: app.api.models.SeriesPatch, now: string) {
     for (const episode of seriesPatch.episodes) {
       const index = series.episodes.findIndex(y => y.id === episode.id);
-      if (index !== -1) {
-        series.episodes[index] = this.patchEpisode(series.episodes[index], episode, now);
-        yield series.episodes[index];
-      }
+      if (index === -1) continue;
+      series.episodes[index] = this.patchEpisode(series.episodes[index], episode, now);
+      yield series.episodes[index];
     }
   }
 

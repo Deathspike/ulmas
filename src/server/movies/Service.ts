@@ -100,6 +100,7 @@ export class Service {
     const contextMovies = app.linq(context.info.values())
       .map(x => ({context, ...x}));
     const subdirContexts = app.linq(context.directories.values())
+      .filter(x => !path.basename(x.fullPath).startsWith('.'))
       .map(x => this.contextService.contextAsync(x.fullPath));
     const subdirMovies = subdirContexts
       .flatMap(context => app.linq(context.info.values()).map(x => ({context, ...x})));

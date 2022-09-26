@@ -2,7 +2,7 @@ import * as api from '..';
 
 export class Series {
   constructor(
-    readonly baseUrl: URL) {}
+    private readonly baseUrl: URL) {}
   
   async getListAsync(sectionId: string) {
     const url = new URL(`/api/series/${sectionId}`, this.baseUrl);

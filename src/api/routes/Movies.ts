@@ -2,7 +2,7 @@ import * as api from '..';
 
 export class Movies {
   constructor(
-    readonly baseUrl: URL) {}
+    private readonly baseUrl: URL) {}
 
   async getListAsync(sectionId: string) {
     const url = new URL(`/api/movies/${sectionId}`, this.baseUrl);

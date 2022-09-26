@@ -1,7 +1,8 @@
 import * as observers from './observers';
 
 export class ApiService {
-  private readonly baseUrl = new URL(`${window.location.protocol}//${window.location.hostname}:6877/`);
+  constructor(
+    private readonly baseUrl = new URL(`${window.location.protocol}//${window.location.hostname}:6877/`)) {}
 
   get media() {
     return new observers.Media();
