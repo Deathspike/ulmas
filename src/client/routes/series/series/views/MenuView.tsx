@@ -7,9 +7,11 @@ export const MenuView = ui.createView<{vm: app.MenuViewModel}>(({vm}) => (
   <ui.material.Grid sx={styles.rootContainer}>
     <ui.material.Grid>
       <ui.material.IconButton tabIndex={1}
-        onClick={() => vm.refreshAsync()}
+        onClick={() => vm.scanAsync()}
         onKeyDown={core.input.keyRestore()}>
-        <ui.icons.Refresh />
+        <ui.SpinView isSpinning={vm.isScanning}>
+          <ui.icons.Cached />
+        </ui.SpinView>
       </ui.material.IconButton>
     </ui.material.Grid>
   </ui.material.Grid>

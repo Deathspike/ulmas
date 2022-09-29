@@ -21,7 +21,7 @@ export class MainViewModel {
   @mobx.action
   changeSort(sort: MainViewModel['sort']['value']) {
     if (this.sort.value === sort) {
-      this.order.change(this.ascending ? 'descending' : 'ascending')
+      this.order.change(this.isAscending ? 'descending' : 'ascending')
       requestAnimationFrame(() => window.scrollTo(0, 0));
     } else if (sort === 'title') {
       this.order.change('ascending');
@@ -35,16 +35,20 @@ export class MainViewModel {
   }
   
   @mobx.action
-  async refreshAsync() {
-    await this.controller.refreshAsync();
-    requestAnimationFrame(() => window.scrollTo(0, 0));
+  async scanAsync() {
+    await this.controller.scanAsync();
   }
 
   @mobx.computed
-  get ascending() {
+  get isAscending() {
     return this.order.value === 'ascending';
   }
   
+  @mobx.computed
+  get isScanning() {
+    return this.controller.isScanning;
+  }
+
   @mobx.observable
   filter: LocalStorage<'all' | 'finished' | 'ongoing' | 'unseen'>;
 

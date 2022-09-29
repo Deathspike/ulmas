@@ -48,6 +48,18 @@ export class MainViewModel implements app.menu.IController, app.movies.IControll
   }
 
   @mobx.action
+  async playAsync(movie: api.models.Movie) {
+    if (this.currentPlayer?.isActive) {
+      this.currentPlayer.continue();
+      await this.currentPlayer.waitAsync();
+    } else {
+      this.currentPlayer = new app.movies.PlayerViewModel(this.sectionId, movie);
+      this.currentPlayer.load();
+      await this.currentPlayer.waitAsync();
+    }
+  }
+  
+  @mobx.action
   async refreshAsync() {
     await core.screen.waitAsync(async (exclusiveLock) => {
       const sectionsPromise = core.api.sections.readAsync();
@@ -68,15 +80,13 @@ export class MainViewModel implements app.menu.IController, app.movies.IControll
   }
 
   @mobx.action
-  async playAsync(movie: api.models.Movie) {
-    if (this.currentPlayer?.isActive) {
-      this.currentPlayer.continue();
-      await this.currentPlayer.waitAsync();
-    } else {
-      this.currentPlayer = new app.movies.PlayerViewModel(this.sectionId, movie);
-      this.currentPlayer.load();
-      await this.currentPlayer.waitAsync();
-    }
+  async scanAsync() {
+    await core.scan.moviesAsync(this.sectionId);
+  }
+
+  @mobx.computed
+  get isScanning() {
+    return core.scan.hasMovies(this.sectionId);
   }
 
   @mobx.computed

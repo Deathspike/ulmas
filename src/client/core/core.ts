@@ -5,6 +5,7 @@ export const core = {
   event: new app.EventService(),
   image: new app.ImageService(),
   input: new app.InputService(),
+  scan: new app.ScanService(),
   screen: new app.ScreenService(),
   state: new app.StateService()
 };

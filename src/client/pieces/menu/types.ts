@@ -1,3 +1,4 @@
 export interface IController {
-  refreshAsync(): Promise<void>;
+  get isScanning(): boolean;
+  scanAsync(): Promise<void>;
 }

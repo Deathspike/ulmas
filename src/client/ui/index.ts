@@ -14,3 +14,4 @@ export * from './views/ImageProgressView';
 export * from './views/ImageStatusView';
 export * from './views/ImageView';
 export * from './views/LazyView';
+export * from './views/SpinView';

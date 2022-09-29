@@ -32,6 +32,14 @@ export const theme = ui.material.createTheme({
           border: '0.5vw solid #333',
           borderRadius: '1.5vw',
           minHeight: '3vw'
+        },
+        '@keyframes spinner': {
+          '0%': {
+            transform: 'rotate(0deg)'
+          },
+          '100%': {
+            transform: 'rotate(360deg)'
+          }
         }
       }
     },

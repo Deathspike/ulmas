@@ -51,6 +51,18 @@ export class MainViewModel implements app.menu.IController, app.series.IControll
   }
 
   @mobx.action
+  async playAsync(series: api.models.Series) {
+    if (this.currentPlayer?.isActive) {
+      this.currentPlayer.continue();
+      await this.currentPlayer.waitAsync();
+    } else {
+      this.currentPlayer = new app.series.PlayerViewModel(this.sectionId, series.id, series.episodes);
+      this.currentPlayer.load();
+      await this.currentPlayer.waitAsync();
+    }
+  }
+
+  @mobx.action
   async refreshAsync() {
     await core.screen.waitAsync(async (exclusiveLock) => {
       const sectionsPromise = core.api.sections.readAsync();
@@ -71,15 +83,13 @@ export class MainViewModel implements app.menu.IController, app.series.IControll
   }
 
   @mobx.action
-  async playAsync(series: api.models.Series) {
-    if (this.currentPlayer?.isActive) {
-      this.currentPlayer.continue();
-      await this.currentPlayer.waitAsync();
-    } else {
-      this.currentPlayer = new app.series.PlayerViewModel(this.sectionId, series.id, series.episodes);
-      this.currentPlayer.load();
-      await this.currentPlayer.waitAsync();
-    }
+  async scanAsync() {
+    await core.scan.seriesAsync(this.sectionId);
+  }
+  
+  @mobx.computed
+  get isScanning() {
+    return core.scan.hasSeries(this.sectionId);
   }
 
   @mobx.computed

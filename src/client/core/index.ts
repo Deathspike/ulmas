@@ -7,6 +7,7 @@ export * from './services/ApiService';
 export * from './services/EventService';
 export * from './services/ImageService';
 export * from './services/InputService';
+export * from './services/ScanService';
 export * from './services/ScreenService';
 export * from './services/StateService';
 export * from './views/InputView';

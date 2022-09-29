@@ -1,14 +1,18 @@
-import * as app from '..';
 import * as mobx from 'mobx';
+import {core} from 'client/core';
 
 export class MenuViewModel {
-  constructor(private readonly mvm: app.MainViewModel) {
+  constructor(private readonly sectionId: string, private readonly movieId: string) {
     mobx.makeObservable(this);
   }
 
   @mobx.action
-  async refreshAsync() {
-    await this.mvm.refreshAsync();
-    requestAnimationFrame(() => window.scrollTo(0, 0));
+  async scanAsync() {
+    await core.scan.moviesAsync(this.sectionId, this.movieId);
+  }
+
+  @mobx.computed
+  get isScanning() {
+    return core.scan.hasMovies(this.sectionId, this.movieId);
   }
 }

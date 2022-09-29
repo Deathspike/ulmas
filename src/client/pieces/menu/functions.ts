@@ -13,6 +13,6 @@ export function createFilter(menu: app.MainViewModel) {
 
 export function createSort(menu: app.MainViewModel) {
   return (a: api.models.MovieEntry | api.models.SeriesEntry, b: api.models.MovieEntry | api.models.SeriesEntry) => {
-    return api.sortBy(a, b, menu.sort.value) * (menu.ascending ? 1 : -1);
+    return api.sortBy(a, b, menu.sort.value) * (menu.isAscending ? 1 : -1);
   };
 }

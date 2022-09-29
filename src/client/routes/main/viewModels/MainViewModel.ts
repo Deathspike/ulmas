@@ -54,6 +54,14 @@ export class MainViewModel implements app.menu.IController {
     });
   }
 
+  @mobx.action
+  async scanAsync() {
+    if (!this.source) return;
+    await Promise.all(this.source.map(x => x instanceof app.SectionMoviesViewModel
+      ? core.scan.moviesAsync(x.id)
+      : core.scan.seriesAsync(x.id)));
+  }
+
   @mobx.computed
   get continueWatching() {
     const result = this.source
@@ -64,6 +72,14 @@ export class MainViewModel implements app.menu.IController {
     return result?.length
       ? result
       : undefined;
+  }
+
+  @mobx.computed
+  get isScanning() {
+    if (!this.source) return false;
+    return this.source.some(x => x instanceof app.SectionMoviesViewModel
+      ? core.scan.hasMovies(x.id)
+      : core.scan.hasSeries(x.id));
   }
 
   @mobx.computed

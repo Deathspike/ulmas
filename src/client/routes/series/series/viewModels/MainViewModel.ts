@@ -5,7 +5,7 @@ import {core} from 'client/core';
 
 export class MainViewModel {
   constructor(private readonly sectionId: string, private readonly seriesId: string) {
-    this.menu = new app.MenuViewModel(this);
+    this.menu = new app.MenuViewModel(sectionId, seriesId);
     mobx.makeObservable(this);
   }
 

@@ -8,22 +8,22 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => (
     <app.SearchView vm={vm.search} />
     <ui.HeaderMenuView icon={<ui.icons.SortByAlpha />}>
       <ui.HeaderMenuItemView
-        ascending={vm.ascending}
+        ascending={vm.isAscending}
         onClick={() => vm.changeSort('title')}
         selected={vm.sort.value === 'title'}
         title={app.language.sortTitle} />
       <ui.HeaderMenuItemView
-        ascending={vm.ascending}
+        ascending={vm.isAscending}
         onClick={() => vm.changeSort('dateAdded')}
         selected={vm.sort.value === 'dateAdded'}
         title={app.language.sortDateAdded} />
       <ui.HeaderMenuItemView
-        ascending={vm.ascending}
+        ascending={vm.isAscending}
         onClick={() => vm.changeSort('lastPlayed')}
         selected={vm.sort.value === 'lastPlayed'}
         title={app.language.sortLastPlayed} />
       <ui.HeaderMenuItemView disabled
-        ascending={vm.ascending}
+        ascending={vm.isAscending}
         onClick={() => vm.changeSort('premieredDate')}
         selected={vm.sort.value === 'premieredDate'}
         title={app.language.sortPremieredDate} />
@@ -48,9 +48,11 @@ export const MainView = ui.createView<{vm: app.MainViewModel}>(({vm}) => (
     </ui.HeaderMenuView>
     <ui.material.Grid>
       <ui.material.IconButton tabIndex={1}
-        onClick={() => vm.refreshAsync()}
+        onClick={() => vm.scanAsync()}
         onKeyDown={core.input.keyRestore()}>
-        <ui.icons.Refresh />
+        <ui.SpinView isSpinning={vm.isScanning}>
+          <ui.icons.Cached />
+        </ui.SpinView>
       </ui.material.IconButton>
     </ui.material.Grid>
   </ui.material.Grid>
