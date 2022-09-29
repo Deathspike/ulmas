@@ -103,7 +103,7 @@ export class Router {
 
 function *mediaOf(series: app.api.models.Series) {
   if (series.images) yield *series.images;
-  for (let episode of series.episodes) {
+  for (const episode of series.episodes) {
     if (episode.media.images) yield *episode.media.images;
     if (episode.media.subtitles) yield *episode.media.subtitles;
     if (episode.media.videos) yield *episode.media.videos;

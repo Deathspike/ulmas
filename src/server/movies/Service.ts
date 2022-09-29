@@ -14,7 +14,8 @@ export class Service {
     private readonly cacheService: app.core.CacheService,
     private readonly contextService: app.core.ContextService,
     private readonly lockService: app.core.LockService,
-    private readonly eventService: app.core.EventService) {
+    private readonly eventService: app.core.EventService,
+    private readonly timeService: app.core.TimeService) {
     this.eventService.addEventListener(x => this.handleEventAsync(x));
   }
   
@@ -135,7 +136,10 @@ export class Service {
       id: app.id(movieStats.fullPath),
       path: movieStats.fullPath,
       media: new app.api.models.MediaSource({images, subtitles, videos}),
-      dateAdded: movieInfo.dateAdded ?? DateTime.fromJSDate(movieStats.birthtime).toUTC().toISO({suppressMilliseconds: true})
+      dateAdded: movieInfo.dateAdded ?? await this.timeService.getAsync(app.linq(context.videos.entries())
+        .filter(([x]) => x.startsWith(`${name}.`))
+        .map(([_, x]) => x)
+        .concat([movieStats]))
     });
   }
 
