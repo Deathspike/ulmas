@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as ui from 'client/ui';
 import {core} from 'client/core';
 
-export const SectionView = ui.createView<{vm: app.SectionMoviesViewModel | app.SectionSeriesViewModel}>(({vm}) => (
+export const SectionView = ui.createView<{vm: app.SectionViewModel}>(({vm}) => (
   <ui.material.Grid sx={styles.rootContainer} tabIndex={0} data-capture-y
     onClick={core.input.click(() => vm.open())}
     onKeyDown={core.input.keyDown(x => vm.handleKey(x))}

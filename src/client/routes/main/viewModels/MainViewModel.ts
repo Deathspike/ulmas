@@ -45,8 +45,8 @@ export class MainViewModel implements app.menu.IController {
       const response = await core.api.sections.readAsync();
       const sections = await this.fetchSectionsAsync(response.value);
       if (sections.every(Boolean)) {
-        this.source = new Array<app.SectionMoviesViewModel | app.SectionSeriesViewModel>()
-          .concat(sections.map(x => x!))
+        this.source = sections
+          .map(x => x!)
           .sort((a, b) => a.title.localeCompare(b.title));
       } else {
         // TODO: Handle error.
@@ -57,7 +57,7 @@ export class MainViewModel implements app.menu.IController {
   @mobx.action
   async scanAsync() {
     if (!this.source) return;
-    await Promise.all(this.source.map(x => x instanceof app.SectionMoviesViewModel
+    await Promise.all(this.source.map(x => x.type === 'movies'
       ? core.scan.moviesAsync(x.id)
       : core.scan.seriesAsync(x.id)));
   }
@@ -77,7 +77,7 @@ export class MainViewModel implements app.menu.IController {
   @mobx.computed
   get isScanning() {
     if (!this.source) return false;
-    return this.source.some(x => x instanceof app.SectionMoviesViewModel
+    return this.source.some(x => x.type === 'movies'
       ? core.scan.hasMovies(x.id)
       : core.scan.hasSeries(x.id));
   }
@@ -98,17 +98,17 @@ export class MainViewModel implements app.menu.IController {
   menu: app.menu.MainViewModel;
   
   @mobx.observable
-  source?: Array<app.SectionMoviesViewModel | app.SectionSeriesViewModel>;
+  source?: Array<app.SectionViewModel>;
 
   async fetchSectionsAsync(sections?: Array<api.models.Section>) {
     return await Promise.all(sections?.map(async (section) => {
       switch (section.type) { 
         case 'movies':
           const movie = await core.api.movies.getListAsync(section.id);
-          return movie.value && new app.SectionMoviesViewModel(this, section, movie.value);
+          return movie.value && new app.SectionViewModel(this, section, movie.value);
         case 'series':
           const series = await core.api.series.getListAsync(section.id);
-          return series.value && new app.SectionSeriesViewModel(this, section, series.value);
+          return series.value && new app.SectionViewModel(this, section, series.value);
         default:
           throw new Error();
       }
