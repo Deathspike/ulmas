@@ -6,7 +6,7 @@ import {core} from 'client/core';
 
 export class MainViewModel implements app.menu.IController, app.movies.IController {
   constructor(private readonly sectionId: string) {
-    this.menu = new app.menu.MainViewModel(this);
+    this.menu = new app.menu.MainViewModel(this, true);
     mobx.makeObservable(this);
   }
   

@@ -3,7 +3,7 @@ import * as mobx from 'mobx';
 import {LocalStorage} from 'client/core';
 
 export class MainViewModel {
-  constructor(private readonly controller: app.IController) {
+  constructor(private readonly controller: app.IController, private readonly shouldResetScroll: boolean = false) {
     this.filter = new LocalStorage('menu.filter', 'all');
     this.order = new LocalStorage('menu.order', 'descending');
     this.search = new app.SearchViewModel('menu.search');
@@ -15,22 +15,22 @@ export class MainViewModel {
   changeFilter(filter: MainViewModel['filter']['value']) {
     if (this.filter.value === filter) return;
     this.filter.change(filter);
-    requestAnimationFrame(() => window.scrollTo(0, 0));
+    this.tryResetScroll();
   }
 
   @mobx.action
   changeSort(sort: MainViewModel['sort']['value']) {
     if (this.sort.value === sort) {
       this.order.change(this.isAscending ? 'descending' : 'ascending')
-      requestAnimationFrame(() => window.scrollTo(0, 0));
+      this.tryResetScroll();
     } else if (sort === 'title') {
       this.order.change('ascending');
       this.sort.change(sort);
-      requestAnimationFrame(() => window.scrollTo(0, 0));
+      this.tryResetScroll();
     } else {
       this.order.change('descending');
       this.sort.change(sort);
-      requestAnimationFrame(() => window.scrollTo(0, 0));
+      this.tryResetScroll();
     }
   }
   
@@ -60,4 +60,9 @@ export class MainViewModel {
 
   @mobx.observable
   sort: LocalStorage<'dateAdded' | 'lastPlayed' | 'premieredDate' | 'title'>;
+
+  private tryResetScroll() {
+    if (!this.shouldResetScroll) return;
+    requestAnimationFrame(() => window.scrollTo(0, 0));
+  }
 }
