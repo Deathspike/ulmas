@@ -24,7 +24,11 @@ export class SectionViewModel implements app.movies.IController, app.series.ICon
 
   @mobx.action
   open() {
-    routes.movies.main.open(this.id);
+    if (this.type === 'movies') {
+      routes.movies.main.open(this.id);
+    } else {
+      routes.series.main.open(this.id);
+    }
   }
 
   @mobx.action
