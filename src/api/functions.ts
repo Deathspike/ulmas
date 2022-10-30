@@ -8,7 +8,7 @@ export function filterBy(a: MovieEntry | SeriesEntry, filter: 'all' | 'finished'
     case 'ongoing':
       return Boolean(a instanceof MovieEntry ? a.resume : a.unwatchedCount && a.unwatchedCount !== a.totalCount);
     case 'unseen':
-      return Boolean(a instanceof MovieEntry ? !a.watched : a.totalCount && a.unwatchedCount === a.totalCount);
+      return Boolean(a instanceof MovieEntry ? !a.resume && !a.watched : a.totalCount && a.unwatchedCount === a.totalCount);
     default:
       return true;
   }
