@@ -5,7 +5,7 @@ export * as sections from './sections';
 export * as movies from './movies';
 export * as series from './series';
 export * from './functions';
-export * from './LinqIterable';
+export * from './Linq';
 export * from './Server';
 export * from './ServerModule';
 export * from './settings';

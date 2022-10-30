@@ -102,7 +102,7 @@ export class Service {
   private async *inspectRootAsync(rootPath: string) {
     const context = await this.contextService
       .contextAsync(rootPath);
-    const subdirContexts = app.linq(context.directories.values())
+    const subdirContexts = new app.Linq(context.directories.values())
       .filter(x => !path.basename(x.fullPath).startsWith('.'))
       .map(x => this.contextService.contextAsync(x.fullPath));
     for await (const context of subdirContexts) {
@@ -119,20 +119,20 @@ export class Service {
   private async inspectSeriesAsync(context: Awaited<ReturnType<app.core.ContextService['contextAsync']>>, seriesStats: fs.Stats & {fullPath: string}) {
     const seriesInfo = await SeriesInfo
       .loadAsync(seriesStats.fullPath);
-    const rootEpisodes = app.linq(context.info.entries())
+    const rootEpisodes = new app.Linq(context.info.entries())
       .filter(([x]) => x !== 'tvshow.nfo')
       .map(([_, x]) => this.inspectEpisodeAsync(context, x).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
-    const subdirEpisodes = app.linq(context.directories.values())
+    const subdirEpisodes = new app.Linq(context.directories.values())
       .map(x => this.contextService.contextAsync(x.fullPath))
-      .flatMap(context => app.linq(context.info.values()).map(x => ({context, ...x})))
+      .flatMap(context => new app.Linq(context.info.values()).map(x => ({context, ...x})))
       .map(x => this.inspectEpisodeAsync(x.context, x).catch(() => logger.warn(`Invalid episode: ${x.fullPath}`)));
     const episodes = (await rootEpisodes.concat(subdirEpisodes)
-      .toArray())
+      .toArrayAsync())
       .sort((a, b) => a.season - b.season || a.episode - b.episode);
-    const images = await app.linq(context.images.entries())
+    const images = await new app.Linq(context.images.entries())
       .filter(([_, x]) => episodes.every(y => !y.media.images?.some(z => z.path === x.fullPath)))
       .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}))
-      .toArray();
+      .toArrayAsync();
     return new app.api.models.Series({
       ...seriesInfo,
       id: app.id(seriesStats.fullPath),
@@ -141,9 +141,9 @@ export class Service {
       dateEpisodeAdded: fun.fetchEpisodeAdded(episodes),
       totalCount: episodes.length || undefined,
       unwatchedCount: fun.fetchUnwatchedCount(episodes),
-      dateAdded: seriesInfo.dateAdded ?? await this.timeService.getAsync(app.linq(episodes)
-        .map<fs.Stats | string>(x => x.dateAdded)
-        .concat([seriesStats]))
+      dateAdded: seriesInfo.dateAdded ?? await this.timeService.getAsync(new app.Linq(episodes)
+        .map(x => DateTime.fromISO(x.dateAdded))
+        .concat(DateTime.fromJSDate(seriesStats.birthtime)))
     });
   }
   
@@ -151,27 +151,27 @@ export class Service {
     const {name} = path.parse(episodeStats.fullPath);
     const episodeInfo = await EpisodeInfo
       .loadAsync(episodeStats.fullPath);
-    const images = await app.linq(context.images.entries())
+    const images = await new app.Linq(context.images.entries())
       .filter(([x]) => x.startsWith(`${name}-`))
       .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}))
-      .toArray();
-    const subtitles = await app.linq(context.subtitles.entries())
+      .toArrayAsync();
+    const subtitles = await new app.Linq(context.subtitles.entries())
       .filter(([x]) => x.startsWith(`${name}.`))
       .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}))
-      .toArray();
-    const videos = await app.linq(context.videos.entries())
+      .toArrayAsync();
+    const videos = await new app.Linq(context.videos.entries())
       .filter(([x]) => x.startsWith(`${name}.`))
       .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}))
-      .toArray();
+      .toArrayAsync();
     return new app.api.models.Episode({
       ...episodeInfo,
       id: app.id(episodeStats.fullPath),
       path: episodeStats.fullPath,
       media: new app.api.models.MediaSource({images, subtitles, videos}),
-      dateAdded: episodeInfo.dateAdded ?? await this.timeService.getAsync(app.linq(context.videos.entries())
+      dateAdded: episodeInfo.dateAdded ?? await this.timeService.getAsync(new app.Linq(context.videos.entries())
         .filter(([x]) => x.startsWith(`${name}.`))
-        .map(([_, x]) => x)
-        .concat([episodeStats]))
+        .map(([_, x]) => DateTime.fromJSDate(x.birthtime))
+        .concat(DateTime.fromJSDate(episodeStats.birthtime)))
     });
   }
 

@@ -98,13 +98,13 @@ export class Service {
   private async *inspectRootAsync(rootPath: string) {
     const context = await this.contextService
       .contextAsync(rootPath);
-    const contextMovies = app.linq(context.info.values())
+    const contextMovies = new app.Linq(context.info.values())
       .map(x => ({context, ...x}));
-    const subdirContexts = app.linq(context.directories.values())
+    const subdirContexts = new app.Linq(context.directories.values())
       .filter(x => !path.basename(x.fullPath).startsWith('.'))
       .map(x => this.contextService.contextAsync(x.fullPath));
     const subdirMovies = subdirContexts
-      .flatMap(context => app.linq(context.info.values()).map(x => ({context, ...x})));
+      .flatMap(context => new app.Linq(context.info.values()).map(x => ({context, ...x})));
     for await (const movieData of contextMovies.concat(subdirMovies)) {
       const movie = await this
         .inspectMovieAsync(movieData.context, movieData)
@@ -117,29 +117,29 @@ export class Service {
     const {name} = path.parse(movieStats.fullPath);
     const movieInfo = await MovieInfo
       .loadAsync(movieStats.fullPath);
-    const hasPrivateRoot = await app.linq(context.info.values())
-      .every(x => x.fullPath === movieStats.fullPath);
-    const images = await app.linq(context.images.entries())
+    const hasPrivateRoot = await new app.Linq(context.info.values())
+      .everyAsync(x => x.fullPath === movieStats.fullPath);
+    const images = await new app.Linq(context.images.entries())
       .filter(([x]) => x.startsWith(`${name}-`) || hasPrivateRoot)
       .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}))
-      .toArray();
-    const subtitles = await app.linq(context.subtitles.entries())
+      .toArrayAsync();
+    const subtitles = await new app.Linq(context.subtitles.entries())
       .filter(([x]) => x.startsWith(`${name}.`))
       .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}))
-      .toArray();
-    const videos = await app.linq(context.videos.entries())
+      .toArrayAsync();
+    const videos = await new app.Linq(context.videos.entries())
       .filter(([x]) => x.startsWith(`${name}.`))
       .map(([_, x]) => new app.api.models.Media({id: app.id(`${x.fullPath}/${x.mtimeMs}`), path: x.fullPath}))
-      .toArray();
+      .toArrayAsync();
     return new app.api.models.Movie({
       ...movieInfo,
       id: app.id(movieStats.fullPath),
       path: movieStats.fullPath,
       media: new app.api.models.MediaSource({images, subtitles, videos}),
-      dateAdded: movieInfo.dateAdded ?? await this.timeService.getAsync(app.linq(context.videos.entries())
+      dateAdded: movieInfo.dateAdded ?? await this.timeService.getAsync(new app.Linq(context.videos.entries())
         .filter(([x]) => x.startsWith(`${name}.`))
-        .map(([_, x]) => x)
-        .concat([movieStats]))
+        .map(([_, x]) => DateTime.fromJSDate(x.birthtime))
+        .concat(DateTime.fromJSDate(movieStats.birthtime)))
     });
   }
 

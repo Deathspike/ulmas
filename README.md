@@ -6,7 +6,7 @@ Ulmas is a *media solution*, akin to the likes of *Emby*, *Jellyfin*, *Kodi* or 
 
 * **Ulmas is not a media player:** You will need to install [*mpv*](https://github.com/mpv-player/mpv) media player yourself. Ulmas launches your *mpv* media player and tracks your watch progress through a programmatic interface. This ensures that you have full control over your watch experience, and Ulmas doesn't have to pretend to be a *somewhat decent* media player.
 
-* **Ulmas is not ambitious:** If you need an advanced feature from an application such as *Jellyfin* or *Kodi*, you're best served sticking to them. Ulmas serves a *niche*. It aims to provide a amazing user interface and a slick user experience for those who *demand* control over their *metadata*, and *insist* on having the best watch experience.
+* **Ulmas is not ambitious:** If you need an advanced feature from an application such as *Jellyfin* or *Kodi*, you're best served sticking to them. Ulmas serves a *niche*. It aims to provide an amazing user interface and a slick user experience for those who *demand* control over their *metadata*, and *insist* on having the best watch experience.
 
 ## Preview
 

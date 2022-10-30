@@ -7,19 +7,19 @@ import path from 'path';
 export class ContextService {
   async contextAsync(rootPath: string) {
     const context = new Context();
-    const items = await fs.promises.readdir(rootPath).catch(() => []);
-    for (const item of items) await this.inspectAsync(context, rootPath, item);
+    const fileNames = await fs.promises.readdir(rootPath).catch(() => []);
+    for (const fileName of fileNames) await this.inspectAsync(context, rootPath, fileName);
     return context;
   }
   
-  private async inspectAsync(context: Context, rootPath: string, name: string) {
-    const extname = path.extname(name);
-    const stats = await this.statAsync(rootPath, name);
-    if (stats.isDirectory()) context.directories.set(name, stats);
-    else if (/^\.(gif|jpg|png|webp)$/i.test(extname)) context.images.set(name, stats);
-    else if (/^\.(nfo)$/i.test(extname)) context.info.set(name, stats);
-    else if (/^\.(ass|idx|srt|vtt)$/i.test(extname)) context.subtitles.set(name, stats);
-    else if (/^\.(avi|mp4|mkv|ogm|webm)$/i.test(extname)) context.videos.set(name, stats);
+  private async inspectAsync(context: Context, rootPath: string, fileName: string) {
+    const extname = path.extname(fileName);
+    const stats = await this.statAsync(rootPath, fileName);
+    if (stats.isDirectory()) context.directories.set(fileName, stats);
+    else if (/^\.(gif|jpg|png|webp)$/i.test(extname)) context.images.set(fileName, stats);
+    else if (/^\.(nfo)$/i.test(extname)) context.info.set(fileName, stats);
+    else if (/^\.(ass|idx|srt|vtt)$/i.test(extname)) context.subtitles.set(fileName, stats);
+    else if (/^\.(avi|mp4|mkv|ogm|webm)$/i.test(extname)) context.videos.set(fileName, stats);
   }
 
   private async statAsync(rootPath: string, name: string) {
