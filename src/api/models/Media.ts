@@ -6,7 +6,7 @@ export class Media {
     this.id = source?.id ?? '';
     this.path = source?.path ?? '';
   }
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()

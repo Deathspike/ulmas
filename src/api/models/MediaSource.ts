@@ -5,9 +5,15 @@ import {Media} from './Media';
 
 export class MediaSource {
   constructor(source?: MediaSource) {
-    this.images = source?.images?.length ? source.images.map(x => new Media(x)) : undefined;
-    this.subtitles = source?.subtitles?.length ? source.subtitles.map(x => new Media(x)) : undefined;
-    this.videos = source?.videos?.length ? source.videos.map(x => new Media(x)) : undefined;
+    this.images = source?.images?.length
+      ? source.images.map(x => new Media(x))
+      : undefined;
+    this.subtitles = source?.subtitles?.length
+      ? source.subtitles.map(x => new Media(x))
+      : undefined;
+    this.videos = source?.videos?.length
+      ? source.videos.map(x => new Media(x))
+      : undefined;
   }
 
   @clv.IsOptional()
@@ -17,7 +23,7 @@ export class MediaSource {
   @clt.Type(() => Media)
   @swg.ApiPropertyOptional({type: [Media]})
   readonly images?: Array<Media>;
-  
+
   @clv.IsOptional()
   @clv.IsArray()
   @clv.ArrayNotEmpty()

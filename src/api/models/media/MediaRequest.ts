@@ -7,7 +7,7 @@ export class MediaRequest {
     this.subtitleUrls = source?.subtitleUrls ?? [];
     this.videoUrl = source?.videoUrl ?? '';
   }
-  
+
   @clv.IsNumber()
   @clv.Min(0)
   @swg.ApiProperty()
@@ -17,7 +17,7 @@ export class MediaRequest {
   @clv.IsUrl({require_protocol: true, require_tld: false}, {each: true})
   @swg.ApiProperty()
   readonly subtitleUrls: Array<string>;
-  
+
   @clv.IsUrl({require_protocol: true, require_tld: false})
   @swg.ApiProperty()
   readonly videoUrl: string;

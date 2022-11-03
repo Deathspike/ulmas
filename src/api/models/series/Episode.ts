@@ -19,7 +19,7 @@ export class Episode {
     this.resume = source?.resume && new MediaResume(source?.resume);
     this.watched = source?.watched;
   }
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()

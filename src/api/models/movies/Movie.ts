@@ -17,7 +17,7 @@ export class Movie {
     this.resume = source?.resume && new MediaResume(source?.resume);
     this.watched = source?.watched;
   }
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()
@@ -32,7 +32,7 @@ export class Movie {
   @clt.Type(() => MediaSource)
   @swg.ApiProperty({type: [MediaSource]})
   readonly media: MediaSource;
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()

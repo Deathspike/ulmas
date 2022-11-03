@@ -9,11 +9,9 @@ export class SeriesPatch {
   constructor(source?: SeriesPatch) {
     this.episodes = source?.episodes.map(x => new EpisodePatch(x)) ?? [];
   }
-  
-  static create(source: Array<Episode> | Episode, value: MediaResume | boolean) {
-    const episodes = new Array<Episode>()
-      .concat(source)
-      .map(x => EpisodePatch.create(x, value));
+
+  static create(source: Array<Episode>, value: MediaResume | boolean) {
+    const episodes = source.map(x => EpisodePatch.create(x, value));
     return new SeriesPatch({episodes});
   }
 

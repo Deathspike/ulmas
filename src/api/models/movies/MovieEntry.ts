@@ -20,7 +20,7 @@ export class MovieEntry {
     const images = source.media.images?.map(MediaEntry.from);
     return new MovieEntry({...source, images});
   }
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()
@@ -33,16 +33,16 @@ export class MovieEntry {
   @clt.Type(() => MediaEntry)
   @swg.ApiPropertyOptional({type: [MediaEntry]})
   readonly images?: Array<MediaEntry>;
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()
   readonly title: string;
-  
+
   @clv.IsDateString()
   @swg.ApiProperty()
   readonly dateAdded: string;
-  
+
   @clv.IsOptional()
   @clv.IsDateString()
   @swg.ApiPropertyOptional()

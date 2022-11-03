@@ -14,7 +14,7 @@ export class MediaEntry {
     const name = match ? match[0] : '';
     return new MediaEntry({id, name});
   }
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()

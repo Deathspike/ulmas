@@ -10,9 +10,11 @@ export class MoviePatch {
   }
 
   static create(value: MediaResume | boolean) {
-    return value instanceof MediaResume
-      ? new MoviePatch({resume: value})
-      : new MoviePatch({watched: value});
+    if (value instanceof MediaResume) {
+      return new MoviePatch({resume: value});
+    } else {
+      return new MoviePatch({watched: value});
+    }
   }
 
   @clv.IsOptional()

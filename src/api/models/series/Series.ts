@@ -18,7 +18,7 @@ export class Series {
     this.dateAdded = source?.dateAdded ?? '';
     this.plot = source?.plot;
   }
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()

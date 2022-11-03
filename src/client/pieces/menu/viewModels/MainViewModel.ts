@@ -1,3 +1,4 @@
+import * as api from 'api';
 import * as app from '..';
 import * as mobx from 'mobx';
 import {LocalStorage} from 'client/core';
@@ -50,7 +51,7 @@ export class MainViewModel {
   }
 
   @mobx.observable
-  filter: LocalStorage<'all' | 'finished' | 'ongoing' | 'unseen'>;
+  filter: LocalStorage<api.FilterType>;
 
   @mobx.observable
   order: LocalStorage<'ascending' | 'descending'>;
@@ -59,7 +60,7 @@ export class MainViewModel {
   search: app.SearchViewModel;
 
   @mobx.observable
-  sort: LocalStorage<'dateAdded' | 'lastPlayed' | 'premieredDate' | 'title'>;
+  sort: LocalStorage<api.SortType>;
 
   private tryResetScroll() {
     if (!this.shouldResetScroll) return;

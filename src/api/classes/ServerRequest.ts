@@ -1,4 +1,4 @@
-import * as api from '.';
+import * as api from '..';
 
 export class ServerRequest {
   private readonly url: string;
@@ -19,8 +19,8 @@ export class ServerRequest {
     try {
       const response = await fetch(this.url, this.options);
       const success = response.status >= 200 && response.status < 300;
-      const unsafe = success && await response.json();
-      const value = Array.isArray(unsafe) ? unsafe.map(x => new cls(x)) : undefined;
+      const unsafe = success && (await response.json());
+      const value = unsafe && Array.from(unsafe).map(x => new cls(x));
       return new api.ServerResponse<Array<T>>(response.status, value);
     } catch (error) {
       console.error(error);
@@ -42,7 +42,7 @@ export class ServerRequest {
     try {
       const response = await fetch(this.url, this.options);
       const success = response.status >= 200 && response.status < 300;
-      const unsafe = success && await response.json();
+      const unsafe = success && (await response.json());
       const value = unsafe && new cls(unsafe);
       return new api.ServerResponse<T>(response.status, value);
     } catch (error) {

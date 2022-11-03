@@ -20,12 +20,12 @@ export class Section {
   @clv.ArrayNotEmpty()
   @swg.ApiProperty()
   readonly paths: Array<string>;
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()
   readonly title: string;
-  
+
   @clv.IsString()
   @clv.IsIn(['movies', 'series'])
   @swg.ApiProperty({enum: ['movies', 'series']})

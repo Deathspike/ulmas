@@ -20,7 +20,7 @@ export class SeriesEntry {
     const images = source.images?.map(MediaEntry.from);
     return new SeriesEntry({...source, images});
   }
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()
@@ -33,7 +33,7 @@ export class SeriesEntry {
   @clt.Type(() => MediaEntry)
   @swg.ApiPropertyOptional({type: [MediaEntry]})
   readonly images?: Array<MediaEntry>;
-  
+
   @clv.IsOptional()
   @clv.IsDateString()
   @swg.ApiPropertyOptional()
@@ -60,7 +60,7 @@ export class SeriesEntry {
   @clv.IsNotEmpty()
   @swg.ApiProperty()
   readonly title: string;
-  
+
   @clv.IsDateString()
   @swg.ApiProperty()
   readonly dateAdded: string;

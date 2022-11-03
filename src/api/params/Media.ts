@@ -17,7 +17,7 @@ export class Media {
   @clv.IsNotEmpty()
   @swg.ApiProperty()
   readonly resourceId: string;
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()

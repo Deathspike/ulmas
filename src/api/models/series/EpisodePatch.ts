@@ -12,11 +12,13 @@ export class EpisodePatch {
   }
 
   static create(source: Episode, value: MediaResume | boolean) {
-    return value instanceof MediaResume
-      ? new EpisodePatch({id: source.id, resume: value})
-      : new EpisodePatch({id: source.id, watched: value});
+    if (value instanceof MediaResume) {
+      return new EpisodePatch({id: source.id, resume: value});
+    } else {
+      return new EpisodePatch({id: source.id, watched: value});
+    }
   }
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()

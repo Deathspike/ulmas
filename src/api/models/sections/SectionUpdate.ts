@@ -13,7 +13,7 @@ export class SectionUpdate {
   @clv.ArrayNotEmpty()
   @swg.ApiProperty()
   readonly paths: Array<string>;
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   @swg.ApiProperty()

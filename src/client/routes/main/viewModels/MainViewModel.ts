@@ -65,7 +65,7 @@ export class MainViewModel implements app.menu.IController {
   @mobx.computed
   get continueWatching() {
     const result = this.source
-      ?.flatMap(x => x.continueWatching as Array<app.movies.MovieViewModel | app.series.SeriesViewModel>)
+      ?.flatMap(x => x.continueWatching)
       ?.sort((a, b) => api.sortBy(a.source, b.source, 'lastPlayed'))
       ?.reverse()
       ?.slice(0, 6);
@@ -86,7 +86,7 @@ export class MainViewModel implements app.menu.IController {
   get searchResults() {
     if (!this.source || !this.menu.search.debounceValue) return;
     return Array.from(ui.createPages(24, this.source
-      .flatMap(x => x.source as Array<app.movies.MovieViewModel | app.series.SeriesViewModel>)
+      .flatMap(x => x.source)
       .filter(app.createFilter(this.menu))
       .sort(app.createSort(this.menu))));
   }

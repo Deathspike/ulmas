@@ -4,7 +4,7 @@ import * as mobx from 'mobx';
 import * as routes from 'client/routes';
 
 export class SectionViewModel implements app.movies.IController, app.series.IController {
-  constructor(private readonly mvm: app.MainViewModel, section: api.models.Section, source: Array<api.models.Movie | api.models.SeriesEntry>) {
+  constructor(private readonly mvm: app.MainViewModel, section: api.models.Section, source: Array<api.Entry>) {
     this.id = section.id;
     this.source = source.map(x => this.createItemModel(x));
     this.title = section.title;
@@ -77,7 +77,7 @@ export class SectionViewModel implements app.movies.IController, app.series.ICon
   @mobx.observable
   type: string;
 
-  private createItemModel(value: api.models.Movie | api.models.SeriesEntry) {
+  private createItemModel(value: api.Entry) {
     return value instanceof api.models.MovieEntry
       ? new app.movies.MovieViewModel(this, this.id, value)
       : new app.series.SeriesViewModel(this, this.id, value);
@@ -90,7 +90,7 @@ export class SectionViewModel implements app.movies.IController, app.series.ICon
   }
 }
 
-function isUnwatched(value: api.models.MovieEntry | api.models.SeriesEntry) {
+function isUnwatched(value: api.Entry) {
   return value instanceof api.models.MovieEntry
     ? !value.watched
     : Boolean(value.unwatchedCount);

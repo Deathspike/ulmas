@@ -25,7 +25,7 @@ export class EpisodeViewModel {
   async markAsync() {
     await core.screen.waitAsync(async () => {
       if (!this.mvm.source) return;
-      const model = api.models.SeriesPatch.create(this.source, !this.source.watched);
+      const model = api.models.SeriesPatch.create([this.source], !this.source.watched);
       await core.api.series.patchItemAsync(this.sectionId, this.mvm.source.id, model);
     });
   }
