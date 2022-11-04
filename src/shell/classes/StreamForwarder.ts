@@ -5,8 +5,7 @@ export class StreamForwarder {
   private renderer?: electron.WebContents;
   private sendPromise = Promise.resolve();
 
-  private constructor(
-    private readonly stream: NodeJS.WriteStream) {}
+  private constructor(private readonly stream: NodeJS.WriteStream) {}
 
   static create(stream: NodeJS.WriteStream) {
     const forwarder = new StreamForwarder(stream);
@@ -17,7 +16,7 @@ export class StreamForwarder {
   attach() {
     const self = this;
     const write = this.stream.write;
-    this.stream.write = function() {
+    this.stream.write = function () {
       self.send(arguments[0]);
       return write.apply(self.stream, arguments as any);
     };
@@ -41,8 +40,10 @@ export class StreamForwarder {
   }
 
   private send(value: string) {
-    this.sendPromise = this.sendPromise.then(() => this.renderer
-      ? this.renderer.executeJavaScript(`console.log(${JSON.stringify(value.trim())})`)
-      : this.sendQueue.push(value));
+    this.sendPromise = this.sendPromise.then(async () => {
+      if (!this.renderer) return this.sendQueue.push(value);
+      const result = `console.log(${JSON.stringify(value.trim())})`;
+      return await this.renderer.executeJavaScript(result);
+    });
   }
 }
