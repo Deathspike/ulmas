@@ -2,7 +2,11 @@ import * as app from '..';
 
 export function fetchEpisodeAdded(episodes: Array<app.api.models.Episode>) {
   let result: string | undefined;
-  for (const episode of episodes) result = !result || result.localeCompare(episode.dateAdded) < 0 ? episode.dateAdded : result;
+  for (const episode of episodes)
+    result =
+      !result || result.localeCompare(episode.dateAdded) < 0
+        ? episode.dateAdded
+        : result;
   return result;
 }
 

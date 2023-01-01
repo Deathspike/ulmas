@@ -1,0 +1,7 @@
+eslint for using ordering
+
+SHOULD HAVE:
+* empty texts on series/movies without hits for the filters.
+NICE TO HAVE
+* if you lose focus becuz of a refresh, select the first element again?
+  * when you lose focus (series jumps away from unseen to watched), select first element, so space to continue works.

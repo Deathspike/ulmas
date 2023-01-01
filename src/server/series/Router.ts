@@ -12,14 +12,16 @@ import fs from 'fs';
 export class Router {
   constructor(
     private readonly sectionsService: app.sections.Service,
-    private readonly seriesService: Service) {}
-  
+    private readonly seriesService: Service
+  ) {}
+
   @nst.Get(':sectionId')
   @swg.ApiResponse({status: 200, type: [app.api.models.SeriesEntry]})
   @swg.ApiResponse({status: 404})
   async getListAsync(
     @nst.Param() params: app.api.params.Section,
-    @nst.Response() response: express.Response) {
+    @nst.Response() response: express.Response
+  ) {
     const cache = new SectionCache(params.sectionId);
     const stats = await fs.promises.stat(cache.fullPath).catch(() => {});
     if (!stats) await this.scanListAsync(params);
@@ -31,10 +33,11 @@ export class Router {
   @nst.HttpCode(204)
   @swg.ApiResponse({status: 204})
   @swg.ApiResponse({status: 404})
-  async scanListAsync(
-    @nst.Param() params: app.api.params.Section) {
+  async scanListAsync(@nst.Param() params: app.api.params.Section) {
     const sectionList = await this.sectionsService.readAsync();
-    const section = sectionList.find(x => x.id === params.sectionId && x.type === 'series');
+    const section = sectionList.find(
+      x => x.id === params.sectionId && x.type === 'series'
+    );
     if (!section) throw new nst.NotFoundException();
     await this.seriesService.scanRootAsync(section.id, section.paths);
   }
@@ -44,7 +47,8 @@ export class Router {
   @swg.ApiResponse({status: 404})
   async getItemAsync(
     @nst.Param() params: app.api.params.Resource,
-    @nst.Response() response: express.Response) {
+    @nst.Response() response: express.Response
+  ) {
     const cache = new SeriesCache(params.sectionId, params.resourceId);
     response.type('json');
     response.sendFile(cache.fullPath, () => response.status(404).end());
@@ -56,22 +60,35 @@ export class Router {
   @swg.ApiResponse({status: 404})
   async patchItemAsync(
     @nst.Param() params: app.api.params.Resource,
-    @nst.Body() body: app.api.models.SeriesPatch) {
+    @nst.Body() body: app.api.models.SeriesPatch
+  ) {
     const cache = new SectionCache(params.sectionId);
     const stats = await fs.promises.stat(cache.fullPath).catch(() => {});
     if (!stats) await this.scanListAsync(params);
-    if (!await this.seriesService.patchAsync(params.sectionId, params.resourceId, body)) throw new nst.NotFoundException();
+    if (
+      !(await this.seriesService.patchAsync(
+        params.sectionId,
+        params.resourceId,
+        body
+      ))
+    )
+      throw new nst.NotFoundException();
   }
-  
+
   @nst.Put(':sectionId/:resourceId')
   @swg.ApiResponse({status: 200, type: app.api.models.Series})
   @swg.ApiResponse({status: 404})
-  async scanItemAsync(
-    @nst.Param() params: app.api.params.Resource) {
+  async scanItemAsync(@nst.Param() params: app.api.params.Resource) {
     const cache = new SectionCache(params.sectionId);
     const stats = await fs.promises.stat(cache.fullPath).catch(() => {});
     if (!stats) await this.scanListAsync(params);
-    if (!await this.seriesService.scanSeriesAsync(params.sectionId, params.resourceId)) throw new nst.NotFoundException();
+    if (
+      !(await this.seriesService.scanSeriesAsync(
+        params.sectionId,
+        params.resourceId
+      ))
+    )
+      throw new nst.NotFoundException();
   }
 
   @nst.Get(':sectionId/:resourceId/:mediaId')
@@ -79,7 +96,8 @@ export class Router {
   @swg.ApiResponse({status: 404})
   async mediaAsync(
     @nst.Param() params: app.api.params.Media,
-    @nst.Response() response: express.Response) {
+    @nst.Response() response: express.Response
+  ) {
     const filePath = await this.findAsync(params).catch(() => {});
     if (!filePath) throw new nst.NotFoundException();
     response.attachment(filePath);
@@ -88,7 +106,10 @@ export class Router {
   }
 
   private async findAsync(params: app.api.params.Media) {
-    const series = await new SeriesCache(params.sectionId, params.resourceId).loadAsync();
+    const series = await new SeriesCache(
+      params.sectionId,
+      params.resourceId
+    ).loadAsync();
     const media = Array.from(mediaOf(series));
     if (/\.sub$/i.test(params.mediaId)) {
       const mediaId = params.mediaId.replace(/\.sub$/i, '');
@@ -101,11 +122,11 @@ export class Router {
   }
 }
 
-function *mediaOf(series: app.api.models.Series) {
-  if (series.images) yield *series.images;
+function* mediaOf(series: app.api.models.Series) {
+  if (series.images) yield* series.images;
   for (const episode of series.episodes) {
-    if (episode.media.images) yield *episode.media.images;
-    if (episode.media.subtitles) yield *episode.media.subtitles;
-    if (episode.media.videos) yield *episode.media.videos;
+    if (episode.media.images) yield* episode.media.images;
+    if (episode.media.subtitles) yield* episode.media.subtitles;
+    if (episode.media.videos) yield* episode.media.videos;
   }
 }

@@ -8,18 +8,23 @@ export class Context {
   constructor(sections?: Array<Section>) {
     this.sections = sections?.map(x => new Section(x)) ?? [];
   }
-  
+
   static async loadAsync(fullPath: string) {
-    const contextJson = await fs.promises.readFile(fullPath, 'utf-8').catch(() => '[]');
+    const contextJson = await fs.promises
+      .readFile(fullPath, 'utf-8')
+      .catch(() => '[]');
     const context = new Context(JSON.parse(contextJson));
     await clv.validateOrReject(context);
     return context;
   }
 
   static async saveAsync(fullPath: string, context: Context) {
-    await clv.validateOrReject(context);  
+    await clv.validateOrReject(context);
     await fs.promises.mkdir(path.dirname(fullPath), {recursive: true});
-    await fs.promises.writeFile(`${fullPath}.tmp`, JSON.stringify(context.sections, null, 2));
+    await fs.promises.writeFile(
+      `${fullPath}.tmp`,
+      JSON.stringify(context.sections)
+    );
     await fs.promises.rename(`${fullPath}.tmp`, fullPath);
   }
 

@@ -5,19 +5,28 @@ export class Mpv {
   private position = 0;
   private total = 0;
 
-  async openAsync(signal: AbortSignal, start: number, subtitleUrls: Array<string>, videoUrl: string) {
-    await this.runAsync(signal, ['--fs', '--hwdec=auto']
+  async openAsync(
+    signal: AbortSignal,
+    start: number,
+    subtitleUrls: Array<string>,
+    videoUrl: string
+  ) {
+    const args = ['--fs', '--hwdec=auto']
       .concat(videoUrl)
       .concat(`--start=${start}`)
-      .concat(subtitleUrls.map(x => `--sub-file=${x}`)));
+      .concat(subtitleUrls.map(x => `--sub-file=${x}`));
+    await this.runAsync(signal, args);
     return {position: this.position, total: this.total};
   }
 
   private onData(chunk: Buffer) {
-    const match = String(chunk).match(/AV: (\d{2}):(\d{2}):(\d{2}) \/ (\d{2}):(\d{2}):(\d{2})/);
+    const expression = /AV: (\d{2}):(\d{2}):(\d{2}) \/ (\d{2}):(\d{2}):(\d{2})/;
+    const match = String(chunk).match(expression);
     if (!match) return;
-    this.position = Number(match[1]) * 3600 + Number(match[2]) * 60 + Number(match[3]);
-    this.total = Number(match[4]) * 3600 + Number(match[5]) * 60 + Number(match[6]);
+    this.position =
+      Number(match[1]) * 3600 + Number(match[2]) * 60 + Number(match[3]);
+    this.total =
+      Number(match[4]) * 3600 + Number(match[5]) * 60 + Number(match[6]);
   }
 
   private async runAsync(signal: AbortSignal, args: Array<string>) {

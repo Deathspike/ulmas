@@ -7,8 +7,7 @@ import {Section} from './models/Section';
 export class Service {
   private context?: Context;
 
-  constructor(
-    private readonly eventService: app.core.EventService) {}
+  constructor(private readonly eventService: app.core.EventService) {}
 
   async createAsync(paths: Array<string>, title: string, type: string) {
     const id = Date.now().toString(16);
@@ -20,7 +19,10 @@ export class Service {
 
   async deleteAsync(section: Section) {
     this.context ??= await Context.loadAsync(app.settings.sections);
-    this.context.sections.splice(this.context.sections.findIndex(x => x.id === section.id), 1);
+    this.context.sections.splice(
+      this.context.sections.findIndex(x => x.id === section.id),
+      1
+    );
     await Context.saveAsync(app.settings.sections, this.context);
     await this.eventService.sendAsync('sections', section.id);
   }
@@ -33,7 +35,11 @@ export class Service {
 
   async updateAsync(section: Section) {
     this.context ??= await Context.loadAsync(app.settings.sections);
-    this.context.sections.splice(this.context.sections.findIndex(x => x.id === section.id), 1, section);
+    this.context.sections.splice(
+      this.context.sections.findIndex(x => x.id === section.id),
+      1,
+      section
+    );
     await Context.saveAsync(app.settings.sections, this.context);
     await this.eventService.sendAsync('sections', section.id);
   }

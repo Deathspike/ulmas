@@ -6,9 +6,11 @@ module.exports = Object.assign(common, {
   performance: {hints: false},
   optimization: {
     minimize: true,
-    minimizer: [new TerserPlugin({
-      extractComments: false,
-      terserOptions: {format: {comments: false}}
-    })]
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false,
+        terserOptions: {format: {comments: false}}
+      })
+    ]
   }
 });

@@ -15,10 +15,16 @@ export class Router {
   @swg.ApiResponse({status: 403})
   async mpvAsync(
     @nst.Body() media: app.api.models.MediaRequest,
-    @nst.Response({passthrough: true}) response: express.Response) {
+    @nst.Response({passthrough: true}) response: express.Response
+  ) {
     const player = new Mpv();
     const signal = this.createAbortSignal(response);
-    const status = await player.openAsync(signal, media.position, media.subtitleUrls, media.videoUrl);
+    const status = await player.openAsync(
+      signal,
+      media.position,
+      media.subtitleUrls,
+      media.videoUrl
+    );
     return new app.api.models.MediaResume(status);
   }
 

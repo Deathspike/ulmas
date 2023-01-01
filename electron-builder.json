@@ -14,30 +14,36 @@
     "category": "video",
     "icon": "electron-icon.png",
     "target": "AppImage",
-    "publish": [{
-      "provider": "github",
-      "publishAutoUpdate": false,
-      "releaseType": "prerelease"
-    }]
+    "publish": [
+      {
+        "provider": "github",
+        "publishAutoUpdate": false,
+        "releaseType": "prerelease"
+      }
+    ]
   },
   "mac": {
     "category": "public.app-category.video",
     "icon": "electron-icon.png",
     "target": "dmg",
-    "publish": [{
-      "provider": "github",
-      "publishAutoUpdate": false,
-      "releaseType": "prerelease"
-    }]
+    "publish": [
+      {
+        "provider": "github",
+        "publishAutoUpdate": false,
+        "releaseType": "prerelease"
+      }
+    ]
   },
   "win": {
     "icon": "electron-icon.png",
     "target": "nsis",
-    "publish": [{
-      "provider": "github",
-      "publishAutoUpdate": false,
-      "releaseType": "prerelease"
-    }]
+    "publish": [
+      {
+        "provider": "github",
+        "publishAutoUpdate": false,
+        "releaseType": "prerelease"
+      }
+    ]
   },
   "dmg": {
     "writeUpdateInfo": false
