@@ -12,7 +12,8 @@ export class SeriesInfo {
   }
 
   static async loadAsync(fullPath: string) {
-    const seriesInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(SeriesInfoXml.parseAsync);
+    const seriesInfoXmlRaw = await fs.promises.readFile(fullPath, 'utf-8');
+    const seriesInfoXml = await SeriesInfoXml.parseAsync(seriesInfoXmlRaw);
     const seriesInfo = new SeriesInfo(seriesInfoXml);
     await clv.validateOrReject(seriesInfo);
     return seriesInfo;
@@ -20,7 +21,8 @@ export class SeriesInfo {
 
   static async saveAsync(fullPath: string, seriesInfo: SeriesInfo) {
     await clv.validateOrReject(seriesInfo);
-    const seriesInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(SeriesInfoXml.parseAsync);
+    const seriesInfoXmlRaw = await fs.promises.readFile(fullPath, 'utf-8');
+    const seriesInfoXml = await SeriesInfoXml.parseAsync(seriesInfoXmlRaw);
     merge(seriesInfo, seriesInfoXml);
     await fs.promises.mkdir(path.dirname(fullPath), {recursive: true});
     await fs.promises.writeFile(`${fullPath}.tmp`, seriesInfoXml.toString());

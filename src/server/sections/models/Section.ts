@@ -17,11 +17,11 @@ export class Section {
   @clv.IsNotEmpty({each: true})
   @clv.ArrayNotEmpty()
   readonly paths: Array<string>;
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   readonly title: string;
-  
+
   @clv.IsString()
   @clv.IsIn(['movies', 'series'])
   readonly type: string;

@@ -5,7 +5,8 @@ import path from 'path';
 
 export class MovieCache {
   constructor(sectionId: string, movieId: string) {
-    this.fullPath = path.join(app.settings.cache, `movies.${sectionId}.${movieId}.json`);
+    const name = `movies.${sectionId}.${movieId}.json`;
+    this.fullPath = path.join(app.settings.cache, name);
   }
 
   async loadAsync() {
@@ -17,9 +18,10 @@ export class MovieCache {
 
   async saveAsync(movie: app.api.models.Movie) {
     await clv.validateOrReject(movie);
+    const tempPath = `${this.fullPath}.tmp`;
     await fs.promises.mkdir(path.dirname(this.fullPath), {recursive: true});
-    await fs.promises.writeFile(`${this.fullPath}.tmp`, JSON.stringify(movie));
-    await fs.promises.rename(`${this.fullPath}.tmp`, this.fullPath);
+    await fs.promises.writeFile(tempPath, JSON.stringify(movie));
+    await fs.promises.rename(tempPath, this.fullPath);
   }
 
   @clv.IsString()

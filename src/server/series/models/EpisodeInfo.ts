@@ -4,6 +4,7 @@ import * as clv from 'class-validator';
 import {EpisodeInfoXml} from './EpisodeInfoXml';
 import fs from 'fs';
 import path from 'path';
+import MediaResume = app.api.models.MediaResume;
 
 export class EpisodeInfo {
   constructor(episodeInfo?: EpisodeInfo) {
@@ -14,25 +15,26 @@ export class EpisodeInfo {
     this.lastPlayed = episodeInfo?.lastPlayed;
     this.playCount = episodeInfo?.playCount;
     this.plot = episodeInfo?.plot;
-    this.resume = episodeInfo?.resume && new app.api.models.MediaResume(episodeInfo.resume);
+    this.resume = episodeInfo?.resume && new MediaResume(episodeInfo.resume);
     this.watched = episodeInfo?.watched;
   }
 
   static async loadAsync(fullPath: string) {
-    const episodeInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(EpisodeInfoXml.parseAsync);
+    const episodeInfoXmlRaw = await fs.promises.readFile(fullPath, 'utf-8');
+    const episodeInfoXml = await EpisodeInfoXml.parseAsync(episodeInfoXmlRaw);
     const episodeInfo = new EpisodeInfo(episodeInfoXml);
     await clv.validateOrReject(episodeInfo);
     return episodeInfo;
   }
 
-  static async saveAsync<T extends EpisodeInfo>(fullPath: string, episodeInfo: T) {
+  static async saveAsync(fullPath: string, episodeInfo: EpisodeInfo) {
     await clv.validateOrReject(episodeInfo);
-    const episodeInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(EpisodeInfoXml.parseAsync);
+    const episodeInfoXmlRaw = await fs.promises.readFile(fullPath, 'utf-8');
+    const episodeInfoXml = await EpisodeInfoXml.parseAsync(episodeInfoXmlRaw);
     merge(episodeInfo, episodeInfoXml);
     await fs.promises.mkdir(path.dirname(fullPath), {recursive: true});
     await fs.promises.writeFile(`${fullPath}.tmp`, episodeInfoXml.toString());
     await fs.promises.rename(`${fullPath}.tmp`, fullPath);
-    return episodeInfo;
   }
 
   @clv.IsNumber()
@@ -42,7 +44,7 @@ export class EpisodeInfo {
   @clv.IsNumber()
   @clv.Min(0)
   readonly season: number;
-  
+
   @clv.IsString()
   @clv.IsNotEmpty()
   readonly title: string;

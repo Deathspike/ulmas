@@ -3,8 +3,7 @@ import {DateTime} from 'luxon';
 import xmlFormatter from 'xml-formatter';
 
 export class MovieInfoXml {
-  private constructor(
-    private readonly $: cheerio.CheerioAPI) {}
+  private constructor(private readonly $: cheerio.CheerioAPI) {}
 
   static async parseAsync(xml: string) {
     const $ = cheerio.load(xml, {xml: {decodeEntities: false}});
@@ -12,51 +11,39 @@ export class MovieInfoXml {
   }
 
   get title() {
-    const value = this.$('movie > title')
-      .first()
-      .text();
-    return value.length
-      ? cheerio.load(value).text()
-      : '';
+    const selector = this.$('movie > title');
+    const value = selector.first().text();
+    return value.length ? cheerio.load(value).text() : '';
   }
 
   get dateAdded() {
-    const value = this.$('movie > dateadded')
-      .first()
-      .text();
-    return value.length
-      ? DateTime.fromSQL(value).toUTC().toISO({suppressMilliseconds: true})
-      : undefined;
+    const selector = this.$('movie > dateadded');
+    const value = selector.first().text();
+    return value.length ? toISO(DateTime.fromSQL(value)) : undefined;
   }
 
   get lastPlayed() {
-    const value = this.$('movie > lastplayed')
-      .first()
-      .text();
-    return value.length
-      ? DateTime.fromSQL(value).toUTC().toISO({suppressMilliseconds: true})
-      : undefined;
+    const selector = this.$('movie > lastplayed');
+    const value = selector.first().text();
+    return value.length ? toISO(DateTime.fromSQL(value)) : undefined;
   }
 
-  set lastPlayed(value: string | undefined) {
-    const date = value && DateTime.fromISO(value).toFormat('yyyy-MM-dd HH:mm:ss');
+  set lastPlayed(isoValue: string | undefined) {
     const selector = this.$('movie > lastplayed');
-    if (!date) {
+    const value = isoValue && toXML(DateTime.fromISO(isoValue));
+    if (!value) {
       selector.first().remove();
     } else if (!selector.length) {
-      this.$('movie').prepend(`<lastplayed>${date}</lastplayed>`);
+      this.$('movie').prepend(`<lastplayed>${value}</lastplayed>`);
     } else {
-      selector.first().text(date);
+      selector.first().text(value);
     }
   }
 
   get playCount() {
-    const value = this.$('movie > playcount')
-      .first()
-      .text();
-    return value
-      ? Number(value) || 0
-      : undefined;
+    const selector = this.$('movie > playcount');
+    const value = selector.first().text();
+    return value ? Number(value) || 0 : undefined;
   }
 
   set playCount(value: number | undefined) {
@@ -71,44 +58,36 @@ export class MovieInfoXml {
   }
 
   get plot() {
-    const value = this.$('movie > plot')
-      .first()
-      .text();
-    return value.length
-      ? cheerio.load(value).text()
-      : undefined;
+    const selector = this.$('movie > plot');
+    const value = selector.first().text();
+    return value.length ? cheerio.load(value).text() : undefined;
   }
 
   get resume() {
-    const position = Number(this.$('movie > resume > position')
-      .first()
-      .text());
-    const total = Number(this.$('movie > resume > total')
-      .first()
-      .text());
-    return position && total
-      ? {position, total}
-      : undefined;
+    const positionSelector = this.$('movie > resume > position');
+    const position = Number(positionSelector.first().text());
+    const totalSelector = this.$('movie > resume > total');
+    const total = Number(totalSelector.first().text());
+    return position && total ? {position, total} : undefined;
   }
 
-  set resume(value: {position: number, total: number} | undefined) {
+  set resume(value: {position: number; total: number} | undefined) {
     const selector = this.$('movie > resume');
     if (!value) {
       selector.first().remove();
     } else if (!selector.length) {
-      this.$('movie').prepend(`<resume><position>${value.position}</position><total>${value.total}</total></resume>`);
+      const element = `<resume><position>${value.position}</position><total>${value.total}</total></resume>`;
+      this.$('movie').prepend(element);
     } else {
-      selector.replaceWith(`<resume><position>${value.position}</position><total>${value.total}</total></resume>`);
+      const element = `<resume><position>${value.position}</position><total>${value.total}</total></resume>`;
+      selector.replaceWith(element);
     }
   }
 
   get watched() {
-    const value = this.$('movie > watched')
-      .first()
-      .text();
-    return value.length
-      ? /^true$/i.test(value)
-      : undefined;
+    const selector = this.$('movie > watched');
+    const value = selector.first().text();
+    return value.length ? /^true$/i.test(value) : undefined;
   }
 
   set watched(value: boolean | undefined) {
@@ -128,4 +107,12 @@ export class MovieInfoXml {
       indentation: '  '
     });
   }
+}
+
+function toISO(date: DateTime) {
+  return date.toUTC().toISO({suppressMilliseconds: true});
+}
+
+function toXML(date: DateTime) {
+  return date.toFormat('yyyy-MM-dd HH:mm:ss');
 }

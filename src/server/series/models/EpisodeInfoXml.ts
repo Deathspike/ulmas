@@ -3,8 +3,7 @@ import {DateTime} from 'luxon';
 import xmlFormatter from 'xml-formatter';
 
 export class EpisodeInfoXml {
-  private constructor(
-    private readonly $: cheerio.CheerioAPI) {}
+  private constructor(private readonly $: cheerio.CheerioAPI) {}
 
   static async parseAsync(xml: string) {
     const $ = cheerio.load(xml, {xml: {decodeEntities: false}});
@@ -12,69 +11,51 @@ export class EpisodeInfoXml {
   }
 
   get episode() {
-    const value = Number(this.$('episodedetails > episode')
-      .first()
-      .text());
-    return isFinite(value)
-      ? value
-      : -1;
+    const selector = this.$('episodedetails > episode');
+    const value = Number(selector.first().text());
+    return isFinite(value) ? value : -1;
   }
 
   get season() {
-    const value = Number(this.$('episodedetails > season')
-      .first()
-      .text());
-    return isFinite(value)
-      ? value
-      : -1;
+    const selector = this.$('episodedetails > season');
+    const value = Number(selector.first().text());
+    return isFinite(value) ? value : -1;
   }
-  
+
   get title() {
-    const value = this.$('episodedetails > title')
-      .first()
-      .text();
-    return value.length
-      ? cheerio.load(value).text()
-      : '';
+    const selector = this.$('episodedetails > title');
+    const value = selector.first().text();
+    return value.length ? cheerio.load(value).text() : '';
   }
 
   get dateAdded() {
-    const value = this.$('episodedetails > dateadded')
-      .first()
-      .text();
-    return value.length
-      ? DateTime.fromSQL(value).toUTC().toISO({suppressMilliseconds: true})
-      : undefined;
+    const selector = this.$('episodedetails > dateadded');
+    const value = selector.first().text();
+    return value.length ? toISO(DateTime.fromSQL(value)) : undefined;
   }
 
   get lastPlayed() {
-    const value = this.$('episodedetails > lastplayed')
-      .first()
-      .text();
-    return value.length
-      ? DateTime.fromSQL(value).toUTC().toISO({suppressMilliseconds: true})
-      : undefined;
+    const selector = this.$('episodedetails > lastplayed');
+    const value = selector.first().text();
+    return value.length ? toISO(DateTime.fromSQL(value)) : undefined;
   }
 
-  set lastPlayed(value: string | undefined) {
-    const date = value && DateTime.fromISO(value).toFormat('yyyy-MM-dd HH:mm:ss');
+  set lastPlayed(isoValue: string | undefined) {
     const selector = this.$('episodedetails > lastplayed');
-    if (!date) {
+    const value = isoValue && toXML(DateTime.fromISO(isoValue));
+    if (!value) {
       selector.first().remove();
     } else if (!selector.length) {
-      this.$('episodedetails').prepend(`<lastplayed>${date}</lastplayed>`);
+      this.$('episodedetails').prepend(`<lastplayed>${value}</lastplayed>`);
     } else {
-      selector.first().text(date);
+      selector.first().text(value);
     }
   }
 
   get playCount() {
-    const value = this.$('episodedetails > playcount')
-      .first()
-      .text();
-    return value
-      ? Number(value) || 0
-      : undefined;
+    const selector = this.$('episodedetails > playcount');
+    const value = selector.first().text();
+    return value ? Number(value) || 0 : undefined;
   }
 
   set playCount(value: number | undefined) {
@@ -89,44 +70,36 @@ export class EpisodeInfoXml {
   }
 
   get plot() {
-    const value = this.$('episodedetails > plot')
-      .first()
-      .text();
-    return value.length
-      ? cheerio.load(value).text()
-      : undefined;
+    const selector = this.$('episodedetails > plot');
+    const value = selector.first().text();
+    return value.length ? cheerio.load(value).text() : undefined;
   }
 
   get resume() {
-    const position = Number(this.$('episodedetails > resume > position')
-      .first()
-      .text());
-    const total = Number(this.$('episodedetails > resume > total')
-      .first()
-      .text());
-    return position && total
-      ? {position, total}
-      : undefined;
+    const positionSelector = this.$('episodedetails > resume > position');
+    const position = Number(positionSelector.first().text());
+    const totalSelector = this.$('episodedetails > resume > total');
+    const total = Number(totalSelector.first().text());
+    return position && total ? {position, total} : undefined;
   }
 
-  set resume(value: {position: number, total: number} | undefined) {
+  set resume(value: {position: number; total: number} | undefined) {
     const selector = this.$('episodedetails > resume');
     if (!value) {
       selector.first().remove();
     } else if (!selector.length) {
-      this.$('episodedetails').prepend(`<resume><position>${value.position}</position><total>${value.total}</total></resume>`);
+      const element = `<resume><position>${value.position}</position><total>${value.total}</total></resume>`;
+      this.$('episodedetails').prepend(element);
     } else {
-      selector.replaceWith(`<resume><position>${value.position}</position><total>${value.total}</total></resume>`);
+      const element = `<resume><position>${value.position}</position><total>${value.total}</total></resume>`;
+      selector.replaceWith(element);
     }
   }
 
   get watched() {
-    const value = this.$('episodedetails > watched')
-      .first()
-      .text();
-    return value.length
-      ? /^true$/i.test(value)
-      : undefined;
+    const selector = this.$('episodedetails > watched');
+    const value = selector.first().text();
+    return value.length ? /^true$/i.test(value) : undefined;
   }
 
   set watched(value: boolean | undefined) {
@@ -146,4 +119,12 @@ export class EpisodeInfoXml {
       indentation: '  '
     });
   }
+}
+
+function toISO(date: DateTime) {
+  return date.toUTC().toISO({suppressMilliseconds: true});
+}
+
+function toXML(date: DateTime) {
+  return date.toFormat('yyyy-MM-dd HH:mm:ss');
 }

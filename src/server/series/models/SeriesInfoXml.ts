@@ -3,8 +3,7 @@ import {DateTime} from 'luxon';
 import xmlFormatter from 'xml-formatter';
 
 export class SeriesInfoXml {
-  private constructor(
-    private readonly $: cheerio.CheerioAPI) {}
+  private constructor(private readonly $: cheerio.CheerioAPI) {}
 
   static async parseAsync(xml: string) {
     const $ = cheerio.load(xml, {xml: {decodeEntities: false}});
@@ -12,51 +11,39 @@ export class SeriesInfoXml {
   }
 
   get title() {
-    const value = this.$('tvshow > title')
-      .first()
-      .text();
-    return value.length
-      ? cheerio.load(value).text()
-      : '';
+    const selector = this.$('tvshow > title');
+    const value = selector.first().text();
+    return value.length ? cheerio.load(value).text() : '';
   }
 
   get dateAdded() {
-    const value = this.$('tvshow > dateadded')
-      .first()
-      .text();
-    return value.length
-      ? DateTime.fromSQL(value).toUTC().toISO({suppressMilliseconds: true})
-      : undefined;
+    const selector = this.$('tvshow > dateadded');
+    const value = selector.first().text();
+    return value.length ? toISO(DateTime.fromSQL(value)) : undefined;
   }
 
   get lastPlayed() {
-    const value = this.$('tvshow > lastplayed')
-      .first()
-      .text();
-    return value.length
-      ? DateTime.fromSQL(value).toUTC().toISO({suppressMilliseconds: true})
-      : undefined;
+    const selector = this.$('tvshow > lastplayed');
+    const value = selector.first().text();
+    return value.length ? toISO(DateTime.fromSQL(value)) : undefined;
   }
 
-  set lastPlayed(value: string | undefined) {
-    const date = value && DateTime.fromISO(value).toFormat('yyyy-MM-dd HH:mm:ss');
+  set lastPlayed(isoValue: string | undefined) {
     const selector = this.$('tvshow > lastplayed');
-    if (!date) {
+    const value = isoValue && toXML(DateTime.fromISO(isoValue));
+    if (!value) {
       selector.first().remove();
     } else if (!selector.length) {
-      this.$('tvshow').prepend(`<lastplayed>${date}</lastplayed>`);
+      this.$('tvshow').prepend(`<lastplayed>${value}</lastplayed>`);
     } else {
-      selector.first().text(date);
+      selector.first().text(value);
     }
   }
-  
+
   get plot() {
-    const value = this.$('tvshow > plot')
-      .first()
-      .text();
-    return value.length
-      ? cheerio.load(value).text()
-      : undefined;
+    const selector = this.$('tvshow > plot');
+    const value = selector.first().text();
+    return value.length ? cheerio.load(value).text() : undefined;
   }
 
   toString() {
@@ -65,4 +52,12 @@ export class SeriesInfoXml {
       indentation: '  '
     });
   }
+}
+
+function toISO(date: DateTime) {
+  return date.toUTC().toISO({suppressMilliseconds: true});
+}
+
+function toXML(date: DateTime) {
+  return date.toFormat('yyyy-MM-dd HH:mm:ss');
 }

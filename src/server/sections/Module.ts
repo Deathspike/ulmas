@@ -7,5 +7,6 @@ import {Service} from './Service';
   imports: [app.core.Module],
   controllers: [Router],
   providers: [Service],
-  exports: [Service]})
+  exports: [Service]
+})
 export class Module {}

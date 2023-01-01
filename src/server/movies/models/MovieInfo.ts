@@ -4,6 +4,7 @@ import * as clv from 'class-validator';
 import {MovieInfoXml} from './MovieInfoXml';
 import fs from 'fs';
 import path from 'path';
+import MediaResume = app.api.models.MediaResume;
 
 export class MovieInfo {
   constructor(movieInfo?: MovieInfo) {
@@ -12,12 +13,13 @@ export class MovieInfo {
     this.lastPlayed = movieInfo?.lastPlayed;
     this.playCount = movieInfo?.playCount;
     this.plot = movieInfo?.plot;
-    this.resume = movieInfo?.resume && new app.api.models.MediaResume(movieInfo.resume);
+    this.resume = movieInfo?.resume && new MediaResume(movieInfo.resume);
     this.watched = movieInfo?.watched;
   }
 
   static async loadAsync(fullPath: string) {
-    const movieInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(MovieInfoXml.parseAsync);
+    const movieInfoXmlRaw = await fs.promises.readFile(fullPath, 'utf-8');
+    const movieInfoXml = await MovieInfoXml.parseAsync(movieInfoXmlRaw);
     const movieInfo = new MovieInfo(movieInfoXml);
     await clv.validateOrReject(movieInfo);
     return movieInfo;
@@ -25,7 +27,8 @@ export class MovieInfo {
 
   static async saveAsync<T extends MovieInfo>(fullPath: string, movieInfo: T) {
     await clv.validateOrReject(movieInfo);
-    const movieInfoXml = await fs.promises.readFile(fullPath, 'utf-8').then(MovieInfoXml.parseAsync);
+    const movieInfoXmlRaw = await fs.promises.readFile(fullPath, 'utf-8');
+    const movieInfoXml = await MovieInfoXml.parseAsync(movieInfoXmlRaw);
     merge(movieInfo, movieInfoXml);
     await fs.promises.mkdir(path.dirname(fullPath), {recursive: true});
     await fs.promises.writeFile(`${fullPath}.tmp`, movieInfoXml.toString());
@@ -36,7 +39,7 @@ export class MovieInfo {
   @clv.IsString()
   @clv.IsNotEmpty()
   readonly title: string;
-  
+
   @clv.IsOptional()
   @clv.IsDateString()
   readonly dateAdded?: string;

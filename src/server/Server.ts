@@ -9,8 +9,7 @@ import path from 'path';
 const packageData = require('../../package');
 
 export class Server {
-  private constructor(
-    private readonly server: nst.INestApplication) {}
+  private constructor(private readonly server: nst.INestApplication) {}
 
   static async createAsync() {
     const options = {cors: true};
@@ -24,7 +23,7 @@ export class Server {
     this.attachSwagger();
     await this.server.listen(process.env.PORT || 6877).catch(() => {});
   }
-  
+
   private attachMiddleware() {
     const publicPath = path.join(__dirname, '../../public');
     this.server.use(compression());
@@ -32,14 +31,14 @@ export class Server {
   }
 
   private attachOptions() {
-    const options = {forbidNonWhitelisted: true, forbidUnknownValues: true, transform: true, whitelist: true};
+    const options = {transform: true, whitelist: true};
     this.server.useGlobalPipes(new nst.ValidationPipe(options));
     this.server.useWebSocketAdapter(new WsAdapter(this.server));
   }
 
   private attachSwagger() {
-    const documentBuilder = getDocumentBuilder();
-    const document = swg.SwaggerModule.createDocument(this.server, documentBuilder.build());
+    const options = getDocumentBuilder().build();
+    const document = swg.SwaggerModule.createDocument(this.server, options);
     swg.SwaggerModule.setup('api', this.server, document);
   }
 }
